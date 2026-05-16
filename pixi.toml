@@ -1,0 +1,12 @@
+[workspace]
+authors = ["Jacob Williams <jacobwilliams@users.noreply.github.com>"]
+channels = ["conda-forge"]
+name = "jacchia-roberts-fortran"
+platforms = ["osx-arm64"]
+version = "0.1.0"
+
+[tasks]
+
+[dependencies]
+gfortran = ">=15.2.0,<15.3"
+fpm = ">=0.13.0,<0.14"
