@@ -145,7 +145,7 @@ module jacchia_roberts_utilities
       ! Convert JDN to MJD at midnight (00:00 UTC)
       ! JDN is at noon, so JDN - 0.5 gives midnight
       ! MJD = JD - 2400000.5 = (JDN - 0.5) - 2400000.5 = JDN - 2400001.0
-      mjd = real(jdn, dp) - 2400001.0_dp
+      mjd = real(jdn - 2400001, dp)
 
    end subroutine date_to_mjd
 
