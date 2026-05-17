@@ -1,26 +1,20 @@
 !------------------------------------------------------------------------------
-! Module: jacchia_roberts_module
-!------------------------------------------------------------------------------
-! Description:
+!>
 !   Jacchia-Roberts atmospheric density model
 !   Ported from GMAT C++ implementation
 !
 !   The Jacchia-Roberts atmosphere model is valid for altitudes from
 !   100 km to 2500 km.
 !
-! Reference:
+!### Reference:
 !   Roberts, C. E., Jr., "An Analytic Model for Upper Atmosphere Densities
 !   Based Upon Jacchia's 1970 Models", Celestial Mechanics, Vol. 4,
 !   pp. 368-377, 1971.
 !
-! Original C++ code:
+!### Original C++ code:
 !   GMAT: General Mission Analysis Tool
 !   Copyright (c) 2002-2026 United States Government
 !   Licensed under the Apache License, Version 2.0
-!
-! Author: Converted to Fortran 2008
-! Date: 2026
-!------------------------------------------------------------------------------
 
 module jacchia_roberts_module
    use, intrinsic :: iso_fortran_env, only: real64, int32
@@ -190,23 +184,23 @@ module jacchia_roberts_module
    ! Type definitions
    !---------------------------------------------------------------------------
 
-   ! Geomagnetic parameters
    type :: geoparms_type
-      real(dp) :: tkp        ! Geomagnetic index Kp
-      real(dp) :: xtemp      ! Exospheric temperature
+      !! Geomagnetic parameters
+      real(dp) :: tkp        !! Geomagnetic index Kp
+      real(dp) :: xtemp      !! Exospheric temperature
    end type geoparms_type
 
-   ! Module state variables
    type :: jr_state_type
-      real(dp) :: cb_polar_radius      ! Central body polar radius (km)
-      real(dp) :: cb_polar_squared     ! Polar radius squared
-      real(dp) :: root1                ! Auxiliary temperature root
-      real(dp) :: root2                ! Auxiliary temperature root
-      real(dp) :: x_root               ! Complex root real part
-      real(dp) :: y_root               ! Complex root imaginary part (absolute value)
-      real(dp) :: t_infinity           ! Exospheric temperature at infinity
-      real(dp) :: tx                   ! Temperature at boundary
-      real(dp) :: sum                  ! Intermediate temperature sum
+      !! Module state variables
+      real(dp) :: cb_polar_radius      !! Central body polar radius (km)
+      real(dp) :: cb_polar_squared     !! Polar radius squared
+      real(dp) :: root1                !! Auxiliary temperature root
+      real(dp) :: root2                !! Auxiliary temperature root
+      real(dp) :: x_root               !! Complex root real part
+      real(dp) :: y_root               !! Complex root imaginary part (absolute value)
+      real(dp) :: t_infinity           !! Exospheric temperature at infinity
+      real(dp) :: tx                   !! Temperature at boundary
+      real(dp) :: sum                  !! Intermediate temperature sum
    end type jr_state_type
 
    ! Module-level state
@@ -215,16 +209,11 @@ module jacchia_roberts_module
 contains
 
    !---------------------------------------------------------------------------
-   ! Subroutine: jr_init
-   !---------------------------------------------------------------------------
-   ! Description:
+   !>
    !   Initialize the Jacchia-Roberts module with central body parameters
-   !
-   ! Arguments:
-   !   cb_polar_radius - Polar radius of central body (km)
-   !---------------------------------------------------------------------------
+
    subroutine jr_init(cb_polar_radius)
-      real(dp), intent(in) :: cb_polar_radius
+      real(dp), intent(in) :: cb_polar_radius !!  Polar radius of central body (km)
 
       jr_state%cb_polar_radius = cb_polar_radius
       jr_state%cb_polar_squared = cb_polar_radius * cb_polar_radius
@@ -241,62 +230,41 @@ contains
    end subroutine jr_init
 
    !---------------------------------------------------------------------------
-   ! Subroutine: jr_load_space_weather
-   !---------------------------------------------------------------------------
-   ! Description:
+   !>
    !   Load space weather data from a CSSI CSV file
-   !
-   ! Arguments:
-   !   filename - Path to CSSI space weather CSV file
-   !   status   - Output status (0=success, non-zero=error)
-   !---------------------------------------------------------------------------
+
    subroutine jr_load_space_weather(filename, status)
-      character(len=*), intent(in) :: filename
-      integer(ip), intent(out) :: status
+      character(len=*), intent(in) :: filename !! Path to CSSI space weather file
+      integer(ip), intent(out) :: status  !! Output status (0=success, non-zero=error)
 
       call sw_init(filename, status)
 
    end subroutine jr_load_space_weather
 
    !---------------------------------------------------------------------------
-   ! Subroutine: jr_cleanup
-   !---------------------------------------------------------------------------
-   ! Description:
+   !>
    !   Clean up module resources
-   !---------------------------------------------------------------------------
+
    subroutine jr_cleanup()
       call sw_cleanup()
    end subroutine jr_cleanup
 
    !---------------------------------------------------------------------------
-   ! Function: jacchia_roberts_density
-   !---------------------------------------------------------------------------
-   ! Description:
+   !>
    !   Compute atmospheric density using the Jacchia-Roberts model
    !
    !   This version automatically retrieves space weather data (F10.7, Kp)
    !   from the loaded space weather file based on the provided MJD.
-   !
-   ! Arguments:
-   !   height       - Spacecraft height above reference ellipsoid (km)
-   !   position     - Spacecraft position vector (km, TOD/GCI)
-   !   sun_vector   - Unit vector to Sun (TOD/GCI)
-   !   geo_lat      - Geodetic latitude (degrees)
-   !   sun_dec      - Sun declination (radians)
-   !   utc_mjd      - UTC Modified Julian Date
-   !
-   ! Returns:
-   !   density - Atmospheric density (kg/m^3)
-   !---------------------------------------------------------------------------
+
    function jacchia_roberts_density(height, position, sun_vector, geo_lat, &
                                     sun_dec, utc_mjd) result(density)
-      real(dp), intent(in) :: height
-      real(dp), intent(in) :: position(3)
-      real(dp), intent(in) :: sun_vector(3)
-      real(dp), intent(in) :: geo_lat
-      real(dp), intent(in) :: sun_dec
-      real(dp), intent(in) :: utc_mjd
-      real(dp) :: density
+      real(dp), intent(in) :: height !! Spacecraft height above reference ellipsoid (km)
+      real(dp), intent(in) :: position(3) !! Spacecraft position vector (km, TOD/GCI)
+      real(dp), intent(in) :: sun_vector(3) !! Unit vector to Sun (TOD/GCI)
+      real(dp), intent(in) :: geo_lat !! Geodetic latitude (degrees)
+      real(dp), intent(in) :: sun_dec !! Sun declination (radians)
+      real(dp), intent(in) :: utc_mjd !! UTC Modified Julian Date
+      real(dp) :: density !! Atmospheric density (kg/m^3)
 
       real(dp) :: temperature, t_500
       real(dp) :: geo_lat_rad
@@ -360,32 +328,19 @@ contains
    end function jacchia_roberts_density
 
    !---------------------------------------------------------------------------
-   ! Function: exotherm
-   !---------------------------------------------------------------------------
-   ! Description:
+   !>
    !   Compute the temperature of Earth's atmosphere and auxiliary
    !   temperature-related quantities at a given altitude
-   !
-   ! Arguments:
-   !   position     - Spacecraft position (km)
-   !   sun_vector   - Sun unit vector
-   !   geo          - Geomagnetic parameters
-   !   height       - Spacecraft height (km)
-   !   sun_dec      - Sun declination (radians)
-   !   geo_lat      - Geodetic latitude (radians)
-   !
-   ! Returns:
-   !   exotemp - Local exospheric temperature (K)
-   !---------------------------------------------------------------------------
+
    function exotherm(position, sun_vector, geo, height, sun_dec, geo_lat) &
                      result(exotemp)
-      real(dp), intent(in) :: position(3)
-      real(dp), intent(in) :: sun_vector(3)
-      type(geoparms_type), intent(in) :: geo
-      real(dp), intent(in) :: height
-      real(dp), intent(in) :: sun_dec
-      real(dp), intent(in) :: geo_lat
-      real(dp) :: exotemp
+      real(dp), intent(in) :: position(3) !! Spacecraft position (km)
+      real(dp), intent(in) :: sun_vector(3) !! Sun unit vector
+      type(geoparms_type), intent(in) :: geo !! Geomagnetic parameters
+      real(dp), intent(in) :: height !! Spacecraft height (km)
+      real(dp), intent(in) :: sun_dec !! Sun declination (radians)
+      real(dp), intent(in) :: geo_lat !! Geodetic latitude (radians)
+      real(dp) :: exotemp !! Local exospheric temperature (K)
 
       real(dp) :: expkp, hour_angle, cross_denom
       real(dp) :: theta, eta, tau, th22, t1, sun_denom, cos_denom
@@ -530,22 +485,13 @@ contains
    end function exotherm
 
    !---------------------------------------------------------------------------
-   ! Function: rho_100
-   !---------------------------------------------------------------------------
-   ! Description:
+   !>
    !   Compute density of the atmosphere between 90 and 100 km
-   !
-   ! Arguments:
-   !   height      - Spacecraft altitude (km)
-   !   temperature - Exospheric temperature (K)
-   !
-   ! Returns:
-   !   Density in g/cm^3
-   !---------------------------------------------------------------------------
+
    function rho_100(height, temperature) result(density)
-      real(dp), intent(in) :: height
-      real(dp), intent(in) :: temperature
-      real(dp) :: density
+      real(dp), intent(in) :: height !! Spacecraft altitude (km)
+      real(dp), intent(in) :: temperature !! Exospheric temperature (K)
+      real(dp) :: density !! Atmospheric density (g/cm^3)
 
       real(dp) :: m_poly, s_poly, f2, p1, p2, p3, p4, p5, p6, b(6)
       real(dp) :: x_star, u(2), w(2), v, factor_k, roots_2, log_f1
@@ -646,22 +592,13 @@ contains
    end function rho_100
 
    !---------------------------------------------------------------------------
-   ! Function: rho_125
-   !---------------------------------------------------------------------------
-   ! Description:
+   !>
    !   Compute density of the atmosphere between 100 and 125 km
-   !
-   ! Arguments:
-   !   height      - Spacecraft altitude (km)
-   !   temperature - Exospheric temperature (K)
-   !
-   ! Returns:
-   !   Density in g/cm^3
-   !---------------------------------------------------------------------------
+
    function rho_125(height, temperature) result(density)
-      real(dp), intent(in) :: height
-      real(dp), intent(in) :: temperature
-      real(dp) :: density
+      real(dp), intent(in) :: height !! Spacecraft altitude (km)
+      real(dp), intent(in) :: temperature !! Exospheric temperature (K)
+      real(dp) :: density !! Atmospheric density (g/cm^3)
 
       real(dp) :: f4, q1, q2, q3, q4, q5, q6
       real(dp) :: rho_prime, x_star, u(2), w(2), v, factor_k, t_100
@@ -745,27 +682,15 @@ contains
    end function rho_125
 
    !---------------------------------------------------------------------------
-   ! Function: rho_high
-   !---------------------------------------------------------------------------
-   ! Description:
+   !>
    !   Compute density of the atmosphere between 125 and 2500 km
-   !
-   ! Arguments:
-   !   height      - Spacecraft altitude (km)
-   !   temperature - Exospheric temperature (K)
-   !   t_500       - Temperature at 500 km (K)
-   !   sun_dec     - Sun declination (radians)
-   !   geo_lat     - Geodetic latitude (radians)
-   !
-   ! Returns:
-   !   Density in g/cm^3
-   !---------------------------------------------------------------------------
+
    function rho_high(height, temperature, t_500, sun_dec, geo_lat) result(density)
-      real(dp), intent(in) :: height
-      real(dp), intent(in) :: temperature
-      real(dp), intent(in) :: t_500
-      real(dp), intent(in) :: sun_dec
-      real(dp), intent(in) :: geo_lat
+      real(dp), intent(in) :: height !! Spacecraft altitude (km)
+      real(dp), intent(in) :: temperature !! Exospheric temperature (K)
+      real(dp), intent(in) :: t_500 !! Temperature at 500 km (K)
+      real(dp), intent(in) :: sun_dec !! Sun declination (radians)
+      real(dp), intent(in) :: geo_lat !! Geodetic latitude (radians)
       real(dp) :: density
 
       real(dp) :: f, log_di, gamma, exp1, r
@@ -829,26 +754,15 @@ contains
    end function rho_high
 
    !---------------------------------------------------------------------------
-   ! Function: rho_cor
-   !---------------------------------------------------------------------------
-   ! Description:
+   !>
    !   Calculates the density correction factor
-   !
-   ! Arguments:
-   !   height  - Spacecraft altitude (km)
-   !   utc_mjd - UTC Modified Julian Date
-   !   geo_lat - Geodetic latitude (radians)
-   !   geo     - Geomagnetic parameters
-   !
-   ! Returns:
-   !   Correction factor (multiplicative)
-   !---------------------------------------------------------------------------
+
    function rho_cor(height, utc_mjd, geo_lat, geo) result(correction)
-      real(dp), intent(in) :: height
-      real(dp), intent(in) :: utc_mjd
-      real(dp), intent(in) :: geo_lat
-      type(geoparms_type), intent(in) :: geo
-      real(dp) :: correction
+      real(dp), intent(in) :: height !! Spacecraft altitude (km)
+      real(dp), intent(in) :: utc_mjd !! UTC Modified Julian Date
+      real(dp), intent(in) :: geo_lat !! Geodetic latitude (radians)
+      type(geoparms_type), intent(in) :: geo !! Geomagnetic parameters
+      real(dp) :: correction !! Correction factor (multiplicative)
 
       real(dp) :: geo_cor, semian_cor, slat_cor, f, g, day_58, tausa, alpha
       real(dp) :: sin_lat, eta_lat
@@ -880,22 +794,14 @@ contains
    end function rho_cor
 
    !---------------------------------------------------------------------------
-   ! Subroutine: roots
-   !---------------------------------------------------------------------------
-   ! Description:
+   !>
    !   Finds the roots of a polynomial using Newton's method
-   !
-   ! Arguments:
-   !   a      - Array of polynomial coefficients (lowest power first)
-   !   na     - Number of coefficients
-   !   croots - Initial guesses and output roots (real, imaginary)
-   !   irl    - Number of roots to solve for
-   !---------------------------------------------------------------------------
+
    subroutine roots(a, na, croots, irl)
-      real(dp), intent(in) :: a(:)
-      integer(ip), intent(in) :: na
-      real(dp), intent(inout) :: croots(:,:)
-      integer(ip), intent(in) :: irl
+      real(dp), intent(in) :: a(:) !! Array of polynomial coefficients (lowest power first)
+      integer(ip), intent(in) :: na !! Number of coefficients
+      real(dp), intent(inout) :: croots(:,:) !! Initial guesses and output roots (real, imaginary)
+      integer(ip), intent(in) :: irl !! Number of roots to solve for
 
       integer(ip) :: i, ir, n1, n2, j
       real(dp) :: z(2), zs(2), cb(2), cc(2), dif, denom, temp
@@ -952,22 +858,14 @@ contains
    end subroutine roots
 
    !---------------------------------------------------------------------------
-   ! Subroutine: deflate_polynomial
-   !---------------------------------------------------------------------------
-   ! Description:
+   !>
    !   Reduces the order of a polynomial by division
-   !
-   ! Arguments:
-   !   c     - Polynomial coefficients
-   !   n     - Order + 1 of polynomial
-   !   root  - A single real root of the polynomial
-   !   c_new - Output array with new coefficients
-   !---------------------------------------------------------------------------
+
    subroutine deflate_polynomial(c, n, root, c_new)
-      real(dp), intent(in) :: c(:)
-      integer(ip), intent(in) :: n
-      real(dp), intent(in) :: root
-      real(dp), intent(inout) :: c_new(:)
+      real(dp), intent(in) :: c(:) !! Polynomial coefficients
+      integer(ip), intent(in) :: n !! Order + 1 of polynomial
+      real(dp), intent(in) :: root !! A single real root of the polynomial
+      real(dp), intent(inout) :: c_new(:) !! Output array with new coefficients
 
       integer(ip) :: i
       real(dp) :: sum, save

@@ -1,25 +1,19 @@
 !------------------------------------------------------------------------------
-! Module: space_weather_module
-!------------------------------------------------------------------------------
-! Description:
-!   Read and interpolate CSSI Space Weather data files (legacy text format)
+!>
+!   Read and interpolate CSSI Space Weather data files (legacy text format).
+!
 !   Compatible with CSSI Space Weather files from https://celestrak.org/SpaceData/
 !
 !   The CSSI Space Weather format contains:
-!   - F10.7 solar flux (observed and adjusted)
-!   - F10.7a 81-day centered average
-!   - Geomagnetic Kp indices (8 values per day, 3-hour periods)
-!   - Ap indices (geomagnetic activity)
+!    * F10.7 solar flux (observed and adjusted)
+!    * F10.7a 81-day centered average
+!    * Geomagnetic Kp indices (8 values per day, 3-hour periods)
+!    * Ap indices (geomagnetic activity)
 !
-!   Format: FORMAT(I4,I3,I3,I5,I3,8I3,I4,8I4,I4,F4.1,I2,I4,F6.1,I2,5F6.1)
+!   Format: `FORMAT(I4,I3,I3,I5,I3,8I3,I4,8I4,I4,F4.1,I2,I4,F6.1,I2,5F6.1)`
 !
-! Reference:
-!   CSSI Space Weather Data Format Specification
-!   http://celestrak.com/SpaceData/SpaceWx-format.asp
-!
-! Author: Created for Jacchia-Roberts atmosphere model
-! Date: 2026
-!------------------------------------------------------------------------------
+!### Reference:
+!   * [CSSI Space Weather Data Format Specification](http://celestrak.com/SpaceData/SpaceWx-format.asp)
 
 module space_weather_module
    use, intrinsic :: iso_fortran_env, only: real64, int32
@@ -36,26 +30,26 @@ module space_weather_module
    integer, parameter :: dp = real64
    integer, parameter :: ip = int32
 
-   ! Space weather data type
    type :: flux_data_type
-      real(dp) :: mjd                ! Modified Julian Date
-      real(dp) :: f107_obs           ! Observed F10.7 solar flux
-      real(dp) :: f107_adj           ! Adjusted F10.7 solar flux
-      real(dp) :: f107a_obs_ctr      ! Observed F10.7 81-day centered average
-      real(dp) :: f107a_adj_ctr      ! Adjusted F10.7 81-day centered average
-      real(dp) :: kp(8)              ! Kp indices for 8 3-hour periods
-      real(dp) :: ap_avg             ! Average Ap for the day
+      !! Space weather data type
+      real(dp) :: mjd                !! Modified Julian Date
+      real(dp) :: f107_obs           !! Observed F10.7 solar flux
+      real(dp) :: f107_adj           !! Adjusted F10.7 solar flux
+      real(dp) :: f107a_obs_ctr      !! Observed F10.7 81-day centered average
+      real(dp) :: f107a_adj_ctr      !! Adjusted F10.7 81-day centered average
+      real(dp) :: kp(8)              !! Kp indices for 8 3-hour periods
+      real(dp) :: ap_avg             !! Average Ap for the day
    end type flux_data_type
 
-   ! Module state
    type :: sw_data_type
+      !! Module state
       integer(ip) :: n_records = 0
       real(dp), allocatable :: mjd(:)
       real(dp), allocatable :: f107_obs(:)
       real(dp), allocatable :: f107_adj(:)
       real(dp), allocatable :: f107a_obs_ctr(:)
       real(dp), allocatable :: f107a_adj_ctr(:)
-      real(dp), allocatable :: kp(:,:)  ! (8, n_records)
+      real(dp), allocatable :: kp(:,:)  !! (8, n_records)
       real(dp), allocatable :: ap_avg(:)
       logical :: initialized = .false.
    end type sw_data_type
@@ -65,18 +59,12 @@ module space_weather_module
 contains
 
    !---------------------------------------------------------------------------
-   ! Subroutine: sw_init
-   !---------------------------------------------------------------------------
-   ! Description:
-   !   Initialize the space weather module by reading a CSSI CSV file
-   !
-   ! Arguments:
-   !   filename - Path to CSSI space weather CSV file
-   !   status   - Output status (0=success, non-zero=error)
-   !---------------------------------------------------------------------------
+   !>
+   !   Initialize the space weather module by reading a CSSI file
+
    subroutine sw_init(filename, status)
-      character(len=*), intent(in) :: filename
-      integer(ip), intent(out) :: status
+      character(len=*), intent(in) :: filename !! Path to CSSI space weather file
+      integer(ip), intent(out) :: status !! Output status (0=success, non-zero=error)
 
       integer(ip) :: unit, io_stat, i
       character(len=500) :: line
@@ -245,23 +233,16 @@ contains
    end subroutine sw_init
 
    !---------------------------------------------------------------------------
-   ! Subroutine: sw_get_flux_data
-   !---------------------------------------------------------------------------
-   ! Description:
+   !>
    !   Get space weather data for a given Modified Julian Date
    !   Performs linear interpolation if exact date not found
-   !
-   ! Arguments:
-   !   mjd        - Modified Julian Date
-   !   flux_data  - Output flux data structure
-   !   status     - Output status (0=success, 1=not initialized, 2=out of range)
-   !---------------------------------------------------------------------------
-   subroutine sw_get_flux_data(mjd, flux_data, status)
-      real(dp), intent(in) :: mjd
-      type(flux_data_type), intent(out) :: flux_data
-      integer(ip), intent(out) :: status
 
-      integer(ip) :: idx, i
+   subroutine sw_get_flux_data(mjd, flux_data, status)
+      real(dp), intent(in) :: mjd !! Modified Julian Date
+      type(flux_data_type), intent(out) :: flux_data !! Output flux data structure
+      integer(ip), intent(out) :: status !! Output status (0=success, 1=not initialized, 2=out of range)
+
+      integer(ip) :: idx
       real(dp) :: frac
 
       status = 0
@@ -324,11 +305,9 @@ contains
    end subroutine sw_get_flux_data
 
    !---------------------------------------------------------------------------
-   ! Subroutine: sw_cleanup
-   !---------------------------------------------------------------------------
-   ! Description:
+   !>
    !   Clean up allocated memory
-   !---------------------------------------------------------------------------
+
    subroutine sw_cleanup()
       if (allocated(sw_data%mjd)) then
          deallocate(sw_data%mjd)
@@ -344,12 +323,12 @@ contains
    end subroutine sw_cleanup
 
    !---------------------------------------------------------------------------
-   ! Internal subroutines
-   !---------------------------------------------------------------------------
+   !>
+   !   Copy a single record from the space weather data
 
    subroutine copy_record(idx, flux_data)
-      integer(ip), intent(in) :: idx
-      type(flux_data_type), intent(out) :: flux_data
+      integer(ip), intent(in) :: idx !! Index of the record to copy
+      type(flux_data_type), intent(out) :: flux_data !! Output flux data structure
 
       flux_data%mjd = sw_data%mjd(idx)
       flux_data%f107_obs = sw_data%f107_obs(idx)
@@ -360,6 +339,9 @@ contains
       flux_data%ap_avg = sw_data%ap_avg(idx)
    end subroutine copy_record
 
+   !---------------------------------------------------------------------------
+   !>
+   !   Convert calendar date to Modified Julian Date (MJD)
    subroutine date_to_mjd(year, month, day, mjd)
       integer(ip), intent(in) :: year, month, day
       real(dp), intent(out) :: mjd
