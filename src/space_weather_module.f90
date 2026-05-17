@@ -20,29 +20,24 @@ module space_weather_module
    implicit none
    private
 
-   ! Public interfaces
-   public :: sw_init
-   public :: sw_get_flux_data
-   public :: sw_cleanup
-   public :: flux_data_type
-
    ! Double precision kind
    integer, parameter :: dp = real64
    integer, parameter :: ip = int32
 
-   type :: flux_data_type
+   type,public :: flux_data_type
       !! Space weather data type
-      real(dp) :: mjd                !! Modified Julian Date
-      real(dp) :: f107_obs           !! Observed F10.7 solar flux
-      real(dp) :: f107_adj           !! Adjusted F10.7 solar flux
-      real(dp) :: f107a_obs_ctr      !! Observed F10.7 81-day centered average
-      real(dp) :: f107a_adj_ctr      !! Adjusted F10.7 81-day centered average
-      real(dp) :: kp(8)              !! Kp indices for 8 3-hour periods
-      real(dp) :: ap_avg             !! Average Ap for the day
+      real(dp) :: mjd            = 0.0_dp   !! Modified Julian Date
+      real(dp) :: f107_obs       = 0.0_dp   !! Observed F10.7 solar flux
+      real(dp) :: f107_adj       = 0.0_dp   !! Adjusted F10.7 solar flux
+      real(dp) :: f107a_obs_ctr  = 0.0_dp   !! Observed F10.7 81-day centered average
+      real(dp) :: f107a_adj_ctr  = 0.0_dp   !! Adjusted F10.7 81-day centered average
+      real(dp) :: kp(8)          = 0.0_dp   !! Kp indices for 8 3-hour periods
+      real(dp) :: ap_avg         = 0.0_dp   !! Average Ap for the day
    end type flux_data_type
 
-   type :: sw_data_type
-      !! Module state
+   type,public :: sw_data_type
+      !! Space weather data management type
+      private
       integer(ip) :: n_records = 0
       real(dp), allocatable :: mjd(:)
       real(dp), allocatable :: f107_obs(:)
@@ -57,9 +52,13 @@ module space_weather_module
       real(dp) :: historic_daily_end = -1.0_dp !! Last contiguous daily data epoch
       logical :: warn_epoch_before = .true.
       logical :: warn_epoch_after = .true.
+      contains
+      private
+      procedure,public :: initialize    => sw_init
+      procedure,public :: get_flux_data => sw_get_flux_data
+      procedure,public :: destroy       => sw_cleanup
+      procedure :: copy_record
    end type sw_data_type
-
-   type(sw_data_type), save :: sw_data
 
 contains
 
@@ -67,7 +66,8 @@ contains
    !>
    !   Initialize the space weather module by reading a CSSI file
 
-   subroutine sw_init(filename, status)
+   subroutine sw_init(me, filename, status)
+      class(sw_data_type), intent(inout) :: me
       character(len=*), intent(in) :: filename !! Path to CSSI space weather file
       integer(ip), intent(out) :: status !! Output status (0=success, non-zero=error)
 
@@ -84,14 +84,14 @@ contains
       status = 0
 
       ! Deallocate if already allocated
-      if (allocated(sw_data%mjd)) then
-         deallocate(sw_data%mjd)
-         deallocate(sw_data%f107_obs)
-         deallocate(sw_data%f107_adj)
-         deallocate(sw_data%f107a_obs_ctr)
-         deallocate(sw_data%f107a_adj_ctr)
-         deallocate(sw_data%kp)
-         deallocate(sw_data%ap_avg)
+      if (allocated(me%mjd)) then
+         deallocate(me%mjd)
+         deallocate(me%f107_obs)
+         deallocate(me%f107_adj)
+         deallocate(me%f107a_obs_ctr)
+         deallocate(me%f107a_adj_ctr)
+         deallocate(me%kp)
+         deallocate(me%ap_avg)
       end if
 
       ! Open file
@@ -145,20 +145,20 @@ contains
       end if
 
       ! Allocate arrays with exact size needed
-      allocate(sw_data%mjd(n_lines))
-      allocate(sw_data%f107_obs(n_lines))
-      allocate(sw_data%f107_adj(n_lines))
-      allocate(sw_data%f107a_obs_ctr(n_lines))
-      allocate(sw_data%f107a_adj_ctr(n_lines))
-      allocate(sw_data%kp(8, n_lines))
-      allocate(sw_data%ap_avg(n_lines))
+      allocate(me%mjd(n_lines))
+      allocate(me%f107_obs(n_lines))
+      allocate(me%f107_adj(n_lines))
+      allocate(me%f107a_obs_ctr(n_lines))
+      allocate(me%f107a_adj_ctr(n_lines))
+      allocate(me%kp(8, n_lines))
+      allocate(me%ap_avg(n_lines))
 
       ! Rewind file for second pass
       rewind(unit)
 
       ! Second pass: read the data
       in_data_section = .false.
-      sw_data%n_records = 0
+      me%n_records = 0
 
       do
          read(unit, '(A)', iostat=io_stat) line
@@ -205,49 +205,49 @@ contains
             ! Convert date to MJD
             call date_to_mjd(year, month, day, mjd_val)
 
-            sw_data%n_records = sw_data%n_records + 1
+            me%n_records = me%n_records + 1
 
             ! Store data (Kp values are stored as Kp*10, convert back)
-            sw_data%mjd(sw_data%n_records) = mjd_val
+            me%mjd(me%n_records) = mjd_val
             do i = 1, 8
-               sw_data%kp(i, sw_data%n_records) = real(kp_int(i), dp) / 10.0_dp
+               me%kp(i, me%n_records) = real(kp_int(i), dp) / 10.0_dp
             end do
-            sw_data%ap_avg(sw_data%n_records) = real(ap_avg_int, dp)
-            sw_data%f107_adj(sw_data%n_records) = f107_adj
-            sw_data%f107a_adj_ctr(sw_data%n_records) = f107_adj_ctr81
-            sw_data%f107_obs(sw_data%n_records) = f107_obs
-            sw_data%f107a_obs_ctr(sw_data%n_records) = f107_obs_ctr81
+            me%ap_avg(me%n_records) = real(ap_avg_int, dp)
+            me%f107_adj(me%n_records) = f107_adj
+            me%f107a_adj_ctr(me%n_records) = f107_adj_ctr81
+            me%f107_obs(me%n_records) = f107_obs
+            me%f107a_obs_ctr(me%n_records) = f107_obs_ctr81
          end if
       end do
 
       close(unit)
 
-      if (sw_data%n_records == 0) then
+      if (me%n_records == 0) then
          write(*,'(A)') 'ERROR: No valid data records found'
          status = 4
          return
       end if
 
       ! Set epoch range tracking
-      sw_data%historic_start = sw_data%mjd(1)
+      me%historic_start = me%mjd(1)
       ! Note: add 1.0 to last epoch to reach end of day
-      sw_data%historic_end = sw_data%mjd(sw_data%n_records) + 1.0_dp
+      me%historic_end = me%mjd(me%n_records) + 1.0_dp
 
       ! Find where daily data ends and monthly data begins (gaps > 1 day)
-      sw_data%historic_daily_end = sw_data%historic_end
-      do i = 2, sw_data%n_records
-         if (sw_data%mjd(i) - sw_data%mjd(i-1) > 1.01_dp) then
-            sw_data%historic_daily_end = sw_data%mjd(i-1)
+      me%historic_daily_end = me%historic_end
+      do i = 2, me%n_records
+         if (me%mjd(i) - me%mjd(i-1) > 1.01_dp) then
+            me%historic_daily_end = me%mjd(i-1)
             exit
          end if
       end do
 
-      sw_data%initialized = .true.
+      me%initialized = .true.
 
-      write(*,'(A,I0,A)') 'Space weather data loaded: ', sw_data%n_records, ' records'
-      write(*,'(A,I0,A,I0)') '  (Allocated for ', n_lines, ' lines, successfully parsed ', sw_data%n_records, ')'
-      write(*,'(A,F12.2,A,F12.2)') '  Date range (MJD): ', sw_data%mjd(1), ' to ', &
-                                    sw_data%mjd(sw_data%n_records)
+      write(*,'(A,I0,A)') 'Space weather data loaded: ', me%n_records, ' records'
+      write(*,'(A,I0,A,I0)') '  (Allocated for ', n_lines, ' lines, successfully parsed ', me%n_records, ')'
+      write(*,'(A,F12.2,A,F12.2)') '  Date range (MJD): ', me%mjd(1), ' to ', &
+                                    me%mjd(me%n_records)
 
    end subroutine sw_init
 
@@ -256,7 +256,8 @@ contains
    !   Get space weather data for a given Modified Julian Date.
    !   Uses direct indexing for daily data, no interpolation
 
-   subroutine sw_get_flux_data(mjd, flux_data, status)
+   subroutine sw_get_flux_data(me, mjd, flux_data, status)
+      class(sw_data_type), intent(inout) :: me
       real(dp), intent(in) :: mjd !! Modified Julian Date
       type(flux_data_type), intent(out) :: flux_data !! Output flux data structure
       integer(ip), intent(out) :: status !! Output status (0=success, 1=not initialized, 2=out of range)
@@ -266,31 +267,31 @@ contains
 
       status = 0
 
-      if (.not. sw_data%initialized) then
+      if (.not. me%initialized) then
          write(*,'(A)') 'ERROR: Space weather module not initialized'
          status = 1
          return
       end if
 
       ! Handle epoch before data starts
-      if (mjd < sw_data%historic_start) then
-         if (sw_data%warn_epoch_before) then
+      if (mjd < me%historic_start) then
+         if (me%warn_epoch_before) then
             write(*,'(A)') 'WARNING: Requested epoch is earlier than space weather data start'
             write(*,'(A)') '         Using first file entry'
-            sw_data%warn_epoch_before = .false.
+            me%warn_epoch_before = .false.
          end if
-         call copy_record(1, flux_data)
+         call me%copy_record(1, flux_data)
          return
       end if
 
       ! Handle epoch after data ends
-      if (mjd >= sw_data%historic_end) then
-         if (sw_data%warn_epoch_after) then
+      if (mjd >= me%historic_end) then
+         if (me%warn_epoch_after) then
             write(*,'(A)') 'WARNING: Requested epoch is later than space weather data end'
             write(*,'(A)') '         Using last file entry'
-            sw_data%warn_epoch_after = .false.
+            me%warn_epoch_after = .false.
          end if
-         call copy_record(sw_data%n_records, flux_data)
+         call me%copy_record(me%n_records, flux_data)
          return
       end if
 
@@ -298,28 +299,28 @@ contains
       ! For daily data: direct index calculation (O(1))
       ! For monthly data: linear search through monthly section only
 
-      if (mjd <= sw_data%historic_daily_end) then
+      if (mjd <= me%historic_daily_end) then
          ! Daily data: use direct index calculation
-         idx = int(mjd - sw_data%historic_start) + 1
+         idx = int(mjd - me%historic_start) + 1
 
          ! Bounds check
          if (idx < 1) idx = 1
-         if (idx > sw_data%n_records) idx = sw_data%n_records
+         if (idx > me%n_records) idx = me%n_records
 
-         call copy_record(idx, flux_data)
+         call me%copy_record(idx, flux_data)
       else
          ! Monthly data: search from daily_end to end of array
          ! Find the index where daily data ends
-         daily_end_idx = int(sw_data%historic_daily_end - sw_data%historic_start) + 1
+         daily_end_idx = int(me%historic_daily_end - me%historic_start) + 1
 
          ! Search monthly data for the record at or before mjd
          idx = daily_end_idx
-         do i = daily_end_idx, sw_data%n_records
-            if (sw_data%mjd(i) > mjd) exit
+         do i = daily_end_idx, me%n_records
+            if (me%mjd(i) > mjd) exit
             idx = i
          end do
 
-         call copy_record(idx, flux_data)
+         call me%copy_record(idx, flux_data)
       end if
 
    end subroutine sw_get_flux_data
@@ -328,41 +329,43 @@ contains
    !>
    !   Clean up allocated memory
 
-   subroutine sw_cleanup()
-      if (allocated(sw_data%mjd)) then
-         deallocate(sw_data%mjd)
-         deallocate(sw_data%f107_obs)
-         deallocate(sw_data%f107_adj)
-         deallocate(sw_data%f107a_obs_ctr)
-         deallocate(sw_data%f107a_adj_ctr)
-         deallocate(sw_data%kp)
-         deallocate(sw_data%ap_avg)
+   subroutine sw_cleanup(me)
+      class(sw_data_type), intent(inout) :: me
+      if (allocated(me%mjd)) then
+         deallocate(me%mjd)
+         deallocate(me%f107_obs)
+         deallocate(me%f107_adj)
+         deallocate(me%f107a_obs_ctr)
+         deallocate(me%f107a_adj_ctr)
+         deallocate(me%kp)
+         deallocate(me%ap_avg)
       end if
-      sw_data%initialized = .false.
-      sw_data%n_records = 0
+      me%initialized = .false.
+      me%n_records = 0
    end subroutine sw_cleanup
 
    !---------------------------------------------------------------------------
    !>
    !   Copy a single record from the space weather data
 
-   subroutine copy_record(idx, flux_data)
+   subroutine copy_record(me, idx, flux_data)
+      class(sw_data_type), intent(inout) :: me
       integer(ip), intent(in) :: idx !! Index of the record to copy
       type(flux_data_type), intent(out) :: flux_data !! Output flux data structure
 
-      flux_data%mjd = sw_data%mjd(idx)
-      flux_data%f107_obs = sw_data%f107_obs(idx)
-      flux_data%f107_adj = sw_data%f107_adj(idx)
-      flux_data%f107a_obs_ctr = sw_data%f107a_obs_ctr(idx)
-      flux_data%f107a_adj_ctr = sw_data%f107a_adj_ctr(idx)
-      flux_data%kp = sw_data%kp(:, idx)
-      flux_data%ap_avg = sw_data%ap_avg(idx)
+      flux_data%mjd           = me%mjd(idx)
+      flux_data%f107_obs      = me%f107_obs(idx)
+      flux_data%f107_adj      = me%f107_adj(idx)
+      flux_data%f107a_obs_ctr = me%f107a_obs_ctr(idx)
+      flux_data%f107a_adj_ctr = me%f107a_adj_ctr(idx)
+      flux_data%kp            = me%kp(:, idx)
+      flux_data%ap_avg        = me%ap_avg(idx)
    end subroutine copy_record
 
    !---------------------------------------------------------------------------
    !>
    !   Convert calendar date to Modified Julian Date (MJD)
-   subroutine date_to_mjd(year, month, day, mjd)
+   pure subroutine date_to_mjd(year, month, day, mjd)
       integer(ip), intent(in) :: year, month, day
       real(dp), intent(out) :: mjd
       integer(ip) :: a, y, m, jdn

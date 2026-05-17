@@ -15,16 +15,9 @@
 
 module jacchia_roberts_module
    use, intrinsic :: iso_fortran_env, only: real64, int32
-   use space_weather_module, only: sw_init, sw_get_flux_data, sw_cleanup, flux_data_type
+   use space_weather_module, only: sw_data_type, flux_data_type
    implicit none
    private
-
-   ! Public interfaces
-   public :: jacchia_roberts_density
-   public :: jr_init
-   public :: jr_load_space_weather
-   public :: jr_cleanup
-   public :: geoparms_type
 
    ! Double precision kind
    integer, parameter :: dp = real64
@@ -38,20 +31,11 @@ module jacchia_roberts_module
    ! Physical constants
    !---------------------------------------------------------------------------
 
-   ! Low altitude density in g/cm^3
-   real(dp), parameter :: RHO_ZERO = 3.46e-9_dp
-
-   ! Temperature in degrees Kelvin at height of 90 km
-   real(dp), parameter :: TZERO = 183.0_dp
-
-   ! Earth gravitational constant m/s^2
-   real(dp), parameter :: G_ZERO = 9.80665_dp
-
-   ! Gas constant (joules/(degK-mole))
-   real(dp), parameter :: GAS_CON = 8.31432_dp
-
-   ! Avogadro's number
-   real(dp), parameter :: AVOGADRO = 6.022045e23_dp
+   real(dp), parameter :: RHO_ZERO = 3.46e-9_dp     !! Low altitude density in g/cm^3
+   real(dp), parameter :: TZERO    = 183.0_dp       !! Temperature in degrees Kelvin at height of 90 km
+   real(dp), parameter :: G_ZERO   = 9.80665_dp     !! Earth gravitational constant m/s^2
+   real(dp), parameter :: GAS_CON  = 8.31432_dp     !! Gas constant (joules/(degK-mole))
+   real(dp), parameter :: AVOGADRO = 6.022045e23_dp !! Avogadro's number
 
    !---------------------------------------------------------------------------
    ! Model constants
@@ -175,25 +159,37 @@ module jacchia_roberts_module
 
    type :: geoparms_type
       !! Geomagnetic parameters
-      real(dp) :: tkp        !! Geomagnetic index Kp
-      real(dp) :: xtemp      !! Exospheric temperature
+      real(dp) :: tkp    = 0.0_dp  !! Geomagnetic index Kp
+      real(dp) :: xtemp  = 0.0_dp  !! Exospheric temperature
    end type geoparms_type
 
-   type :: jr_state_type
+   type :: jacchia_roberts_type
+      !! Jacchia-Roberts atmosphere model type
+      private
       !! Module state variables
-      real(dp) :: cb_polar_radius      !! Central body polar radius (km)
-      real(dp) :: cb_polar_squared     !! Polar radius squared
-      real(dp) :: root1                !! Auxiliary temperature root
-      real(dp) :: root2                !! Auxiliary temperature root
-      real(dp) :: x_root               !! Complex root real part
-      real(dp) :: y_root               !! Complex root imaginary part (absolute value)
-      real(dp) :: t_infinity           !! Exospheric temperature at infinity
-      real(dp) :: tx                   !! Temperature at boundary
-      real(dp) :: sum                  !! Intermediate temperature sum
-   end type jr_state_type
+      real(dp) :: cb_polar_radius  = 0.0_dp   !! Central body polar radius (km)
+      real(dp) :: cb_polar_squared = 0.0_dp   !! Polar radius squared
+      real(dp) :: root1            = 0.0_dp   !! Auxiliary temperature root
+      real(dp) :: root2            = 0.0_dp   !! Auxiliary temperature root
+      real(dp) :: x_root           = 0.0_dp   !! Complex root real part
+      real(dp) :: y_root           = 0.0_dp   !! Complex root imaginary part (absolute value)
+      real(dp) :: t_infinity       = 0.0_dp   !! Exospheric temperature at infinity
+      real(dp) :: tx               = 0.0_dp   !! Temperature at boundary
+      real(dp) :: sum              = 0.0_dp   !! Intermediate temperature sum
+      type(sw_data_type) :: sw_data  !! Space weather data type (from space_weather_module)
+      contains
+      private
+      procedure, public :: density            => jacchia_roberts_density
+      procedure, public :: initialize         => jr_init
+      procedure, public :: load_space_weather => jr_load_space_weather
+      procedure, public :: destroy            => jr_cleanup
+      procedure :: exotherm
+      procedure :: rho_100
+      procedure :: rho_125
+      procedure :: rho_high
+   end type jacchia_roberts_type
 
-   ! Module-level state
-   type(jr_state_type), save :: jr_state
+   public :: geoparms_type
 
 contains
 
@@ -201,32 +197,34 @@ contains
    !>
    !   Initialize the Jacchia-Roberts module with central body parameters
 
-   subroutine jr_init(cb_polar_radius)
+   subroutine jr_init(me, cb_polar_radius)
+      class(jacchia_roberts_type), intent(inout) :: me
       real(dp), intent(in) :: cb_polar_radius !!  Polar radius of central body (km)
 
-      jr_state%cb_polar_radius = cb_polar_radius
-      jr_state%cb_polar_squared = cb_polar_radius * cb_polar_radius
+      me%cb_polar_radius = cb_polar_radius
+      me%cb_polar_squared = cb_polar_radius * cb_polar_radius
 
       ! Initialize other state variables
-      jr_state%root1 = 0.0_dp
-      jr_state%root2 = 0.0_dp
-      jr_state%x_root = 0.0_dp
-      jr_state%y_root = 0.0_dp
-      jr_state%t_infinity = 0.0_dp
-      jr_state%tx = 0.0_dp
-      jr_state%sum = 0.0_dp
+      me%root1 = 0.0_dp
+      me%root2 = 0.0_dp
+      me%x_root = 0.0_dp
+      me%y_root = 0.0_dp
+      me%t_infinity = 0.0_dp
+      me%tx = 0.0_dp
+      me%sum = 0.0_dp
 
    end subroutine jr_init
 
    !---------------------------------------------------------------------------
    !>
-   !   Load space weather data from a CSSI CSV file
+   !   Load space weather data from a CSSI file
 
-   subroutine jr_load_space_weather(filename, status)
+   subroutine jr_load_space_weather(me, filename, status)
+      class(jacchia_roberts_type), intent(inout) :: me
       character(len=*), intent(in) :: filename !! Path to CSSI space weather file
       integer(ip), intent(out) :: status  !! Output status (0=success, non-zero=error)
 
-      call sw_init(filename, status)
+      call me%sw_data%initialize(filename, status)
 
    end subroutine jr_load_space_weather
 
@@ -234,8 +232,9 @@ contains
    !>
    !   Clean up module resources
 
-   subroutine jr_cleanup()
-      call sw_cleanup()
+   subroutine jr_cleanup(me)
+      class(jacchia_roberts_type), intent(inout) :: me
+      call me%sw_data%destroy()
    end subroutine jr_cleanup
 
    !---------------------------------------------------------------------------
@@ -245,8 +244,9 @@ contains
    !   This version automatically retrieves space weather data (F10.7, Kp)
    !   from the loaded space weather file based on the provided MJD.
 
-   function jacchia_roberts_density(height, position, sun_vector, geo_lat, &
+   function jacchia_roberts_density(me,height, position, sun_vector, geo_lat, &
                                     sun_dec, utc_mjd) result(density)
+      class(jacchia_roberts_type), intent(inout) :: me
       real(dp), intent(in) :: height !! Spacecraft height above reference ellipsoid (km)
       real(dp), intent(in) :: position(3) !! Spacecraft position vector (km, TOD/GCI)
       real(dp), intent(in) :: sun_vector(3) !! Unit vector to Sun (TOD/GCI)
@@ -270,7 +270,7 @@ contains
       end if
 
       ! Get space weather data for this date
-      call sw_get_flux_data(utc_mjd, flux_data, sw_status)
+      call me%sw_data%get_flux_data(utc_mjd, flux_data, sw_status)
 
       if (sw_status /= 0) then
          write(*,*) 'WARNING: Using nominal space weather values'
@@ -295,15 +295,15 @@ contains
       if (height < 100.0_dp) then
          raw_density = RHO_ZERO
       else if (height < 125.0_dp) then
-         temperature = exotherm(position, sun_vector, geo, height, &
+         temperature = me%exotherm(position, sun_vector, geo, height, &
                                sun_dec, geo_lat_rad)
-         raw_density = rho_100(height, temperature)
+         raw_density = me%rho_100(height, temperature)
       else if (height <= 2500.0_dp) then
-         t_500 = exotherm(position, sun_vector, geo, 500.0_dp, &
+         t_500 = me%exotherm(position, sun_vector, geo, 500.0_dp, &
                          sun_dec, geo_lat_rad)
-         temperature = exotherm(position, sun_vector, geo, height, &
+         temperature = me%exotherm(position, sun_vector, geo, height, &
                                sun_dec, geo_lat_rad)
-         raw_density = rho_high(height, temperature, t_500, sun_dec, geo_lat_rad)
+         raw_density = me%rho_high(height, temperature, t_500, sun_dec, geo_lat_rad)
       else
          raw_density = 0.0_dp
       end if
@@ -321,8 +321,9 @@ contains
    !   Compute the temperature of Earth's atmosphere and auxiliary
    !   temperature-related quantities at a given altitude
 
-   function exotherm(position, sun_vector, geo, height, sun_dec, geo_lat) &
+   function exotherm(me, position, sun_vector, geo, height, sun_dec, geo_lat) &
                      result(exotemp)
+      class(jacchia_roberts_type), intent(inout) :: me
       real(dp), intent(in) :: position(3) !! Spacecraft position (km)
       real(dp), intent(in) :: sun_vector(3) !! Sun unit vector
       type(geoparms_type), intent(in) :: geo !! Geomagnetic parameters
@@ -404,45 +405,45 @@ contains
 
       ! Compute t_infinity based on altitude
       if (height < 200.0_dp) then
-         jr_state%t_infinity = t1 + 14.0_dp * geo%tkp + 0.02_dp * expkp
+         me%t_infinity = t1 + 14.0_dp * geo%tkp + 0.02_dp * expkp
       else
-         jr_state%t_infinity = t1 + 28.0_dp * geo%tkp + 0.03_dp * expkp
+         me%t_infinity = t1 + 28.0_dp * geo%tkp + 0.03_dp * expkp
       end if
 
-      jr_state%tx = 371.6678_dp + 0.0518806_dp * jr_state%t_infinity - &
-                    294.3505_dp * exp(-0.00216222_dp * jr_state%t_infinity)
+      me%tx = 371.6678_dp + 0.0518806_dp * me%t_infinity - &
+                    294.3505_dp * exp(-0.00216222_dp * me%t_infinity)
 
       ! Compute temperature based on altitude regime
       if (height < 125.0_dp) then
          ! Compute height dependent polynomial
-         jr_state%sum = CON_C(5)
+         me%sum = CON_C(5)
          do i = 4, 1, -1
-            jr_state%sum = CON_C(i) + jr_state%sum * height
+            me%sum = CON_C(i) + me%sum * height
          end do
 
          ! Compute temperature
-         exotemp = jr_state%tx + (jr_state%tx - TZERO) * jr_state%sum / 1.500625e6_dp
+         exotemp = me%tx + (me%tx - TZERO) * me%sum / 1.500625e6_dp
 
       else if (height > 125.0_dp) then
          ! Compute temperature dependent polynomial
-         jr_state%sum = CON_L(5)
+         me%sum = CON_L(5)
          do i = 4, 1, -1
-            jr_state%sum = CON_L(i) + jr_state%sum * jr_state%t_infinity
+            me%sum = CON_L(i) + me%sum * me%t_infinity
          end do
 
          ! Compute temperature
-         exotemp = jr_state%t_infinity - (jr_state%t_infinity - jr_state%tx) * &
-                   exp(-(jr_state%tx - TZERO) / (jr_state%t_infinity - jr_state%tx) * &
-                       (height - 125.0_dp) / 35.0_dp * jr_state%sum / &
-                       (jr_state%cb_polar_radius + height))
+         exotemp = me%t_infinity - (me%t_infinity - me%tx) * &
+                   exp(-(me%tx - TZERO) / (me%t_infinity - me%tx) * &
+                       (height - 125.0_dp) / 35.0_dp * me%sum / &
+                       (me%cb_polar_radius + height))
       else
-         exotemp = jr_state%tx
+         exotemp = me%tx
       end if
 
       ! Compute auxiliary quantities for heights <= 125 km
       if (height <= 125.0_dp) then
          ! Obtain coefficients of polynomial for auxiliary quantities
-         c_star(1) = CON_C(1) + 1500625.0_dp * jr_state%tx / (jr_state%tx - TZERO)
+         c_star(1) = CON_C(1) + 1500625.0_dp * me%tx / (me%tx - TZERO)
          do i = 2, 5
             c_star(i) = CON_C(i)
          end do
@@ -451,24 +452,24 @@ contains
          aux(1,1) = 125.0_dp
          aux(1,2) = 0.0_dp
          call roots(c_star, na, aux, 1)
-         jr_state%root1 = aux(1,1)
+         me%root1 = aux(1,1)
 
-         call deflate_polynomial(c_star, na, jr_state%root1, c_star)
+         call deflate_polynomial(c_star, na, me%root1, c_star)
 
          ! Get 2nd real root
          aux(1,1) = 200.0_dp
          aux(1,2) = 0.0_dp
          call roots(c_star, na-1, aux, 1)
-         jr_state%root2 = aux(1,1)
+         me%root2 = aux(1,1)
 
-         call deflate_polynomial(c_star, na-1, jr_state%root2, c_star)
+         call deflate_polynomial(c_star, na-1, me%root2, c_star)
 
          ! Get remaining complex roots
          aux(1,1) = 10.0_dp
          aux(1,2) = 125.0_dp
          call roots(c_star, na-2, aux, 1)
-         jr_state%x_root = aux(1,1)
-         jr_state%y_root = abs(aux(1,2))
+         me%x_root = aux(1,1)
+         me%y_root = abs(aux(1,2))
       end if
 
    end function exotherm
@@ -477,7 +478,8 @@ contains
    !>
    !   Compute density of the atmosphere between 90 and 100 km
 
-   function rho_100(height, temperature) result(density)
+   function rho_100(me, height, temperature) result(density)
+      class(jacchia_roberts_type), intent(inout) :: me
       real(dp), intent(in) :: height !! Spacecraft altitude (km)
       real(dp), intent(in) :: temperature !! Exospheric temperature (K)
       real(dp) :: density !! Atmospheric density (g/cm^3)
@@ -494,85 +496,85 @@ contains
 
       ! Compute temperature dependent coefficients
       do i = 1, 6
-         b(i) = S_CON(i) + S_BETA(i) * jr_state%tx / (jr_state%tx - TZERO)
+         b(i) = S_CON(i) + S_BETA(i) * me%tx / (me%tx - TZERO)
       end do
 
       ! Compute functions of auxiliary temperature values
-      roots_2 = jr_state%x_root**2 + jr_state%y_root**2
-      x_star = -2.0_dp * jr_state%root1 * jr_state%root2 * jr_state%cb_polar_radius * &
-               (jr_state%cb_polar_squared + 2.0_dp * jr_state%cb_polar_radius * &
-                jr_state%x_root + roots_2)
-      v = (jr_state%cb_polar_radius + jr_state%root1) * &
-          (jr_state%cb_polar_radius + jr_state%root2) * &
-          (jr_state%cb_polar_squared + 2.0_dp * jr_state%cb_polar_radius * &
-           jr_state%x_root + roots_2)
-      u(1) = (jr_state%root1 - jr_state%root2) * &
-             (jr_state%root1 + jr_state%cb_polar_radius)**2 * &
-             (jr_state%root1**2 - 2.0_dp * jr_state%root1 * jr_state%x_root + roots_2)
-      u(2) = (jr_state%root1 - jr_state%root2) * &
-             (jr_state%root2 + jr_state%cb_polar_radius)**2 * &
-             (jr_state%root2**2 - 2.0_dp * jr_state%root2 * jr_state%x_root + roots_2)
-      w(1) = jr_state%root1 * jr_state%root2 * jr_state%cb_polar_radius * &
-             (jr_state%cb_polar_radius + jr_state%root1) * &
-             (jr_state%cb_polar_radius + roots_2 / jr_state%root1)
-      w(2) = jr_state%root1 * jr_state%root2 * jr_state%cb_polar_radius * &
-             (jr_state%cb_polar_radius + jr_state%root2) * &
-             (jr_state%cb_polar_radius + roots_2 / jr_state%root2)
+      roots_2 = me%x_root**2 + me%y_root**2
+      x_star = -2.0_dp * me%root1 * me%root2 * me%cb_polar_radius * &
+               (me%cb_polar_squared + 2.0_dp * me%cb_polar_radius * &
+                me%x_root + roots_2)
+      v = (me%cb_polar_radius + me%root1) * &
+          (me%cb_polar_radius + me%root2) * &
+          (me%cb_polar_squared + 2.0_dp * me%cb_polar_radius * &
+           me%x_root + roots_2)
+      u(1) = (me%root1 - me%root2) * &
+             (me%root1 + me%cb_polar_radius)**2 * &
+             (me%root1**2 - 2.0_dp * me%root1 * me%x_root + roots_2)
+      u(2) = (me%root1 - me%root2) * &
+             (me%root2 + me%cb_polar_radius)**2 * &
+             (me%root2**2 - 2.0_dp * me%root2 * me%x_root + roots_2)
+      w(1) = me%root1 * me%root2 * me%cb_polar_radius * &
+             (me%cb_polar_radius + me%root1) * &
+             (me%cb_polar_radius + roots_2 / me%root1)
+      w(2) = me%root1 * me%root2 * me%cb_polar_radius * &
+             (me%cb_polar_radius + me%root2) * &
+             (me%cb_polar_radius + roots_2 / me%root2)
 
       ! Compute S(z) polynomial for z = root1
       s_poly = b(6)
       do i = 5, 1, -1
-         s_poly = s_poly * jr_state%root1 + b(i)
+         s_poly = s_poly * me%root1 + b(i)
       end do
       p2 = s_poly / u(1)
 
       ! Compute S(z) polynomial for z = root2
       s_poly = b(6)
       do i = 5, 1, -1
-         s_poly = s_poly * jr_state%root2 + b(i)
+         s_poly = s_poly * me%root2 + b(i)
       end do
       p3 = -s_poly / u(2)
 
       ! Compute S(z) polynomial for z = negative earth radius
       s_poly = b(6)
       do i = 5, 1, -1
-         s_poly = -s_poly * jr_state%cb_polar_radius + b(i)
+         s_poly = -s_poly * me%cb_polar_radius + b(i)
       end do
       p5 = s_poly / v
 
       ! Compute power of fourth quantity in f1 function
-      p4 = (b(1) - jr_state%root1 * jr_state%root2 * jr_state%cb_polar_squared * &
-           (b(5) + b(6) * (2.0_dp * jr_state%x_root + jr_state%root1 + &
-            jr_state%root2 - jr_state%cb_polar_radius)) + w(1) * p2 + w(2) * p3 - &
-            jr_state%root1 * jr_state%root2 * b(6) * jr_state%cb_polar_radius * roots_2 + &
-            jr_state%root1 * jr_state%root2 * (jr_state%cb_polar_squared - roots_2) * p5) / x_star
+      p4 = (b(1) - me%root1 * me%root2 * me%cb_polar_squared * &
+           (b(5) + b(6) * (2.0_dp * me%x_root + me%root1 + &
+            me%root2 - me%cb_polar_radius)) + w(1) * p2 + w(2) * p3 - &
+            me%root1 * me%root2 * b(6) * me%cb_polar_radius * roots_2 + &
+            me%root1 * me%root2 * (me%cb_polar_squared - roots_2) * p5) / x_star
 
       ! Compute power of first quantity in f1 function
       p1 = b(6) - 2.0_dp * p4 - p3 - p2
 
       ! Compute p6 factor in f2 function
-      p6 = b(5) + b(6) * (2.0_dp * jr_state%x_root + jr_state%root1 + &
-           jr_state%root2 - jr_state%cb_polar_radius) - p5 - &
-           2.0_dp * (jr_state%x_root + jr_state%cb_polar_radius) * p4 - &
-           (jr_state%root2 + jr_state%cb_polar_radius) * p3 - &
-           (jr_state%root1 + jr_state%cb_polar_radius) * p2
+      p6 = b(5) + b(6) * (2.0_dp * me%x_root + me%root1 + &
+           me%root2 - me%cb_polar_radius) - p5 - &
+           2.0_dp * (me%x_root + me%cb_polar_radius) * p4 - &
+           (me%root2 + me%cb_polar_radius) * p3 - &
+           (me%root1 + me%cb_polar_radius) * p2
 
       ! Compute natural log of f1 function
-      log_f1 = p1 * log((height + jr_state%cb_polar_radius) / (90.0_dp + jr_state%cb_polar_radius)) + &
-               p2 * log((height - jr_state%root1) / (90.0_dp - jr_state%root1)) + &
-               p3 * log((height - jr_state%root2) / (90.0_dp - jr_state%root2)) + &
-               p4 * log((height**2 - 2.0_dp * jr_state%x_root * height + roots_2) / &
-                       (8100.0_dp - 180.0_dp * jr_state%x_root + roots_2))
+      log_f1 = p1 * log((height + me%cb_polar_radius) / (90.0_dp + me%cb_polar_radius)) + &
+               p2 * log((height - me%root1) / (90.0_dp - me%root1)) + &
+               p3 * log((height - me%root2) / (90.0_dp - me%root2)) + &
+               p4 * log((height**2 - 2.0_dp * me%x_root * height + roots_2) / &
+                       (8100.0_dp - 180.0_dp * me%x_root + roots_2))
 
       ! Compute f2 function
-      f2 = (height - 90.0_dp) * (M_CON(7) + p5 / ((height + jr_state%cb_polar_radius) * &
-           (90.0_dp + jr_state%cb_polar_radius))) + &
-           p6 * atan(jr_state%y_root * (height - 90.0_dp) / &
-           (jr_state%y_root**2 + (height - jr_state%x_root) * (90.0_dp - jr_state%x_root))) / &
-           jr_state%y_root
+      f2 = (height - 90.0_dp) * (M_CON(7) + p5 / ((height + me%cb_polar_radius) * &
+           (90.0_dp + me%cb_polar_radius))) + &
+           p6 * atan(me%y_root * (height - 90.0_dp) / &
+           (me%y_root**2 + (height - me%x_root) * (90.0_dp - me%x_root))) / &
+           me%y_root
 
       ! Compute factor_k
-      factor_k = -G_ZERO / (GAS_CON * (jr_state%tx - TZERO))
+      factor_k = -G_ZERO / (GAS_CON * (me%tx - TZERO))
 
       ! Compute final density
       density = RHO_ZERO * TZERO * m_poly * exp(factor_k * (log_f1 + f2)) / &
@@ -584,7 +586,8 @@ contains
    !>
    !   Compute density of the atmosphere between 100 and 125 km
 
-   function rho_125(height, temperature) result(density)
+   function rho_125(me, height, temperature) result(density)
+      class(jacchia_roberts_type), intent(inout) :: me
       real(dp), intent(in) :: height !! Spacecraft altitude (km)
       real(dp), intent(in) :: temperature !! Exospheric temperature (K)
       real(dp) :: density !! Atmospheric density (g/cm^3)
@@ -597,62 +600,62 @@ contains
       ! Compute base density polynomial
       rho_prime = ZETA_CON(7)
       do i = 6, 1, -1
-         rho_prime = rho_prime * jr_state%t_infinity + ZETA_CON(i)
+         rho_prime = rho_prime * me%t_infinity + ZETA_CON(i)
       end do
 
       ! Compute base temperature
-      t_100 = jr_state%tx + OMEGA * (jr_state%tx - TZERO)
+      t_100 = me%tx + OMEGA * (me%tx - TZERO)
 
       ! Compute functions of auxiliary temperature values
-      roots_2 = jr_state%x_root**2 + jr_state%y_root**2
-      x_star = -2.0_dp * jr_state%root1 * jr_state%root2 * jr_state%cb_polar_radius * &
-               (jr_state%cb_polar_squared + 2.0_dp * jr_state%cb_polar_radius * &
-                jr_state%x_root + roots_2)
-      v = (jr_state%cb_polar_radius + jr_state%root1) * &
-          (jr_state%cb_polar_radius + jr_state%root2) * &
-          (jr_state%cb_polar_squared + 2.0_dp * jr_state%cb_polar_radius * &
-           jr_state%x_root + roots_2)
-      u(1) = (jr_state%root1 - jr_state%root2) * &
-             (jr_state%root1 + jr_state%cb_polar_radius)**2 * &
-             (jr_state%root1**2 - 2.0_dp * jr_state%root1 * jr_state%x_root + roots_2)
-      u(2) = (jr_state%root1 - jr_state%root2) * &
-             (jr_state%root2 + jr_state%cb_polar_radius)**2 * &
-             (jr_state%root2**2 - 2.0_dp * jr_state%root2 * jr_state%x_root + roots_2)
-      w(1) = jr_state%root1 * jr_state%root2 * jr_state%cb_polar_radius * &
-             (jr_state%cb_polar_radius + jr_state%root1) * &
-             (jr_state%cb_polar_radius + roots_2 / jr_state%root1)
-      w(2) = jr_state%root1 * jr_state%root2 * jr_state%cb_polar_radius * &
-             (jr_state%cb_polar_radius + jr_state%root2) * &
-             (jr_state%cb_polar_radius + roots_2 / jr_state%root2)
+      roots_2 = me%x_root**2 + me%y_root**2
+      x_star = -2.0_dp * me%root1 * me%root2 * me%cb_polar_radius * &
+               (me%cb_polar_squared + 2.0_dp * me%cb_polar_radius * &
+                me%x_root + roots_2)
+      v = (me%cb_polar_radius + me%root1) * &
+          (me%cb_polar_radius + me%root2) * &
+          (me%cb_polar_squared + 2.0_dp * me%cb_polar_radius * &
+           me%x_root + roots_2)
+      u(1) = (me%root1 - me%root2) * &
+             (me%root1 + me%cb_polar_radius)**2 * &
+             (me%root1**2 - 2.0_dp * me%root1 * me%x_root + roots_2)
+      u(2) = (me%root1 - me%root2) * &
+             (me%root2 + me%cb_polar_radius)**2 * &
+             (me%root2**2 - 2.0_dp * me%root2 * me%x_root + roots_2)
+      w(1) = me%root1 * me%root2 * me%cb_polar_radius * &
+             (me%cb_polar_radius + me%root1) * &
+             (me%cb_polar_radius + roots_2 / me%root1)
+      w(2) = me%root1 * me%root2 * me%cb_polar_radius * &
+             (me%cb_polar_radius + me%root2) * &
+             (me%cb_polar_radius + roots_2 / me%root2)
 
       ! Compute powers
       q2 = 1.0_dp / u(1)
       q3 = -1.0_dp / u(2)
       q5 = 1.0_dp / v
-      q4 = (1.0_dp + w(1) * q2 + w(2) * q3 + jr_state%root1 * jr_state%root2 * &
-           (jr_state%cb_polar_squared - roots_2) * q5) / x_star
+      q4 = (1.0_dp + w(1) * q2 + w(2) * q3 + me%root1 * me%root2 * &
+           (me%cb_polar_squared - roots_2) * q5) / x_star
       q1 = -2.0_dp * q4 - q3 - q2
-      q6 = -q5 - 2.0_dp * (jr_state%x_root + jr_state%cb_polar_radius) * q4 - &
-           (jr_state%root2 + jr_state%cb_polar_radius) * q3 - &
-           (jr_state%root1 + jr_state%cb_polar_radius) * q2
+      q6 = -q5 - 2.0_dp * (me%x_root + me%cb_polar_radius) * q4 - &
+           (me%root2 + me%cb_polar_radius) * q3 - &
+           (me%root1 + me%cb_polar_radius) * q2
 
       ! Compute log of f3 function
-      log_f3 = q1 * log((height + jr_state%cb_polar_radius) / (100.0_dp + jr_state%cb_polar_radius)) + &
-               q2 * log((height - jr_state%root1) / (100.0_dp - jr_state%root1)) + &
-               q3 * log((height - jr_state%root2) / (100.0_dp - jr_state%root2)) + &
-               q4 * log((height**2 - 2.0_dp * jr_state%x_root * height + roots_2) / &
-                       (1.0e4_dp - 200.0_dp * jr_state%x_root + roots_2))
+      log_f3 = q1 * log((height + me%cb_polar_radius) / (100.0_dp + me%cb_polar_radius)) + &
+               q2 * log((height - me%root1) / (100.0_dp - me%root1)) + &
+               q3 * log((height - me%root2) / (100.0_dp - me%root2)) + &
+               q4 * log((height**2 - 2.0_dp * me%x_root * height + roots_2) / &
+                       (1.0e4_dp - 200.0_dp * me%x_root + roots_2))
 
       ! Compute f4 function
-      f4 = (height - 100.0_dp) * q5 / ((height + jr_state%cb_polar_radius) * &
-           (100.0_dp + jr_state%cb_polar_radius)) + &
-           q6 * atan(jr_state%y_root * (height - 100.0_dp) / &
-           (jr_state%y_root**2 + (height - jr_state%x_root) * (100.0_dp - jr_state%x_root))) / &
-           jr_state%y_root
+      f4 = (height - 100.0_dp) * q5 / ((height + me%cb_polar_radius) * &
+           (100.0_dp + me%cb_polar_radius)) + &
+           q6 * atan(me%y_root * (height - 100.0_dp) / &
+           (me%y_root**2 + (height - me%x_root) * (100.0_dp - me%x_root))) / &
+           me%y_root
 
       ! Compute f3 power
-      factor_k = -1500625.0_dp * G_ZERO * jr_state%cb_polar_squared / &
-                 (GAS_CON * CON_C(5) * (jr_state%tx - TZERO))
+      factor_k = -1500625.0_dp * G_ZERO * me%cb_polar_squared / &
+                 (GAS_CON * CON_C(5) * (me%tx - TZERO))
 
       ! Compute mass-dependent sum
       rho_sum = 0.0_dp
@@ -674,7 +677,8 @@ contains
    !>
    !   Compute density of the atmosphere between 125 and 2500 km
 
-   function rho_high(height, temperature, t_500, sun_dec, geo_lat) result(density)
+   function rho_high(me, height, temperature, t_500, sun_dec, geo_lat) result(density)
+      class(jacchia_roberts_type), intent(inout) :: me
       real(dp), intent(in) :: height !! Spacecraft altitude (km)
       real(dp), intent(in) :: temperature !! Exospheric temperature (K)
       real(dp), intent(in) :: t_500 !! Temperature at 500 km (K)
@@ -687,23 +691,23 @@ contains
       integer(ip) :: i, j
 
       density = 0.0_dp
-      polar125 = jr_state%cb_polar_radius + 125.0_dp
+      polar125 = me%cb_polar_radius + 125.0_dp
 
       do i = 1, 6
          ! Compute constituent density sum for this atmospheric component
          if (i <= 5) then  ! Skip hydrogen (i=6) for initial calculation
             log_di = CON_DEN(i,7)
             do j = 6, 1, -1
-               log_di = log_di * jr_state%t_infinity + CON_DEN(i,j)
+               log_di = log_di * me%t_infinity + CON_DEN(i,j)
             end do
             di = 10.0_dp**log_di / AVOGADRO
          end if
 
          ! Compute second exponent in density expression
-         gamma = 35.0_dp * MOL_MASS(i) * G_ZERO * jr_state%cb_polar_squared * &
-                 (jr_state%t_infinity - jr_state%tx) / &
-                 (GAS_CON * jr_state%sum * jr_state%t_infinity * &
-                  (jr_state%tx - TZERO) * polar125)
+         gamma = 35.0_dp * MOL_MASS(i) * G_ZERO * me%cb_polar_squared * &
+                 (me%t_infinity - me%tx) / &
+                 (GAS_CON * me%sum * me%t_infinity * &
+                  (me%tx - TZERO) * polar125)
 
          ! Compute first exponent in density expression
          exp1 = 1.0_dp + gamma
@@ -730,12 +734,12 @@ contains
          if (height > 500.0_dp .and. i == 6) then
             r = MOL_MASS(6) * 10.0_dp**(73.13_dp - (39.4_dp - 5.5_dp * log10(t_500)) * &
                 log10(t_500)) * (t_500 / temperature)**exp1 * &
-                ((jr_state%t_infinity - temperature) / (jr_state%t_infinity - t_500))**gamma / &
+                ((me%t_infinity - temperature) / (me%t_infinity - t_500))**gamma / &
                 AVOGADRO
             density = density + r
          else if (i <= 5) then
-            r = f * MOL_MASS(i) * di * (jr_state%tx / temperature)**exp1 * &
-                ((jr_state%t_infinity - temperature) / (jr_state%t_infinity - jr_state%tx))**gamma
+            r = f * MOL_MASS(i) * di * (me%tx / temperature)**exp1 * &
+                ((me%t_infinity - temperature) / (me%t_infinity - me%tx))**gamma
             density = density + r
          end if
       end do
