@@ -765,7 +765,7 @@ contains
       ! Note: The C++ code uses 6204.5 because GMAT uses GSFC MJD (reference epoch
       ! Jan 5, 1941 noon = MJD 29999.5). In GSFC MJD, Jan 1, 1958 midnight = 6204.5.
       ! This Fortran implementation uses standard MJD where Jan 1, 1958 midnight = 36204.0.
-      ! Verified: 36204.0 - 29999.5 = 6204.5 ✓
+      ! Verified: 36204.0 - 29999.5 = 6204.5
       day_58 = (utc_mjd - 36204.0_dp) / 365.2422_dp
 
       tausa = day_58 + 0.09544_dp * &
