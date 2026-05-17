@@ -24,12 +24,15 @@
 
 module jacchia_roberts_module
    use, intrinsic :: iso_fortran_env, only: real64, int32
+   use space_weather_module, only: sw_init, sw_get_flux_data, sw_cleanup, flux_data_type
    implicit none
    private
 
    ! Public interfaces
    public :: jacchia_roberts_density
    public :: jr_init
+   public :: jr_load_space_weather
+   public :: jr_cleanup
    public :: geoparms_type
 
    ! Double precision kind
@@ -238,10 +241,41 @@ contains
    end subroutine jr_init
 
    !---------------------------------------------------------------------------
+   ! Subroutine: jr_load_space_weather
+   !---------------------------------------------------------------------------
+   ! Description:
+   !   Load space weather data from a CSSI CSV file
+   !
+   ! Arguments:
+   !   filename - Path to CSSI space weather CSV file
+   !   status   - Output status (0=success, non-zero=error)
+   !---------------------------------------------------------------------------
+   subroutine jr_load_space_weather(filename, status)
+      character(len=*), intent(in) :: filename
+      integer(ip), intent(out) :: status
+
+      call sw_init(filename, status)
+
+   end subroutine jr_load_space_weather
+
+   !---------------------------------------------------------------------------
+   ! Subroutine: jr_cleanup
+   !---------------------------------------------------------------------------
+   ! Description:
+   !   Clean up module resources
+   !---------------------------------------------------------------------------
+   subroutine jr_cleanup()
+      call sw_cleanup()
+   end subroutine jr_cleanup
+
+   !---------------------------------------------------------------------------
    ! Function: jacchia_roberts_density
    !---------------------------------------------------------------------------
    ! Description:
    !   Compute atmospheric density using the Jacchia-Roberts model
+   !
+   !   This version automatically retrieves space weather data (F10.7, Kp)
+   !   from the loaded space weather file based on the provided MJD.
    !
    ! Arguments:
    !   height       - Spacecraft height above reference ellipsoid (km)
@@ -249,32 +283,52 @@ contains
    !   sun_vector   - Unit vector to Sun (TOD/GCI)
    !   geo_lat      - Geodetic latitude (degrees)
    !   sun_dec      - Sun declination (radians)
-   !   geo          - Geomagnetic parameters
    !   utc_mjd      - UTC Modified Julian Date
    !
    ! Returns:
    !   density - Atmospheric density (kg/m^3)
    !---------------------------------------------------------------------------
    function jacchia_roberts_density(height, position, sun_vector, geo_lat, &
-                                    sun_dec, geo, utc_mjd) result(density)
+                                    sun_dec, utc_mjd) result(density)
       real(dp), intent(in) :: height
       real(dp), intent(in) :: position(3)
       real(dp), intent(in) :: sun_vector(3)
       real(dp), intent(in) :: geo_lat
       real(dp), intent(in) :: sun_dec
-      type(geoparms_type), intent(in) :: geo
       real(dp), intent(in) :: utc_mjd
       real(dp) :: density
 
       real(dp) :: temperature, t_500
       real(dp) :: geo_lat_rad
       real(dp) :: raw_density
+      type(geoparms_type) :: geo
+      type(flux_data_type) :: flux_data
+      integer(ip) :: sw_status
 
       ! Check altitude validity
       if (height < 100.0_dp) then
          write(*,*) 'ERROR: Jacchia-Roberts model not valid below 100 km'
          density = 0.0_dp
          return
+      end if
+
+      ! Get space weather data for this date
+      call sw_get_flux_data(utc_mjd, flux_data, sw_status)
+
+      if (sw_status /= 0) then
+         write(*,*) 'WARNING: Using nominal space weather values'
+         ! Use nominal values as fallback
+         geo%xtemp = 379.0_dp + 3.24_dp * 150.0_dp + 1.3_dp * (150.0_dp - 150.0_dp)
+         geo%tkp = 3.0_dp
+      else
+         ! Calculate exospheric temperature from F10.7 data
+         ! Formula from GMAT: geo.xtemp = 379.0 + 3.24 * F107a + 1.3 * (F107 - F107a)
+         geo%xtemp = 379.0_dp + 3.24_dp * flux_data%f107a_obs_ctr + &
+                     1.3_dp * (flux_data%f107_obs - flux_data%f107a_obs_ctr)
+
+         ! Use the first Kp value (3-hour period starting at 00:00 UTC)
+         ! For more accuracy, could select Kp based on time of day
+         geo%tkp = flux_data%kp(1)
       end if
 
       ! Convert geodetic latitude to radians
@@ -927,85 +981,5 @@ contains
       end do
 
    end subroutine deflate_polynomial
-
-   !===========================================================================
-   ! PLACEHOLDER ROUTINES FOR EXTERNAL DEPENDENCIES
-   !===========================================================================
-
-   !---------------------------------------------------------------------------
-   ! Function: calculate_geodetics_placeholder
-   !---------------------------------------------------------------------------
-   ! Description:
-   !   PLACEHOLDER: Calculate geodetic coordinates from Cartesian position
-   !
-   !   In the original code, this calls CalculateGeodetics which computes:
-   !   - Geodetic altitude
-   !   - Geodetic latitude
-   !   - Geodetic longitude
-   !
-   !   This needs to be replaced with actual geodetic coordinate transformation
-   !
-   ! Arguments:
-   !   position - Cartesian position (km)
-   !   epoch    - Time (MJD)
-   !
-   ! Returns:
-   !   height   - Geodetic altitude (km)
-   !   latitude - Geodetic latitude (degrees)
-   !---------------------------------------------------------------------------
-   subroutine calculate_geodetics_placeholder(position, epoch, height, latitude)
-      real(dp), intent(in) :: position(3)
-      real(dp), intent(in) :: epoch
-      real(dp), intent(out) :: height
-      real(dp), intent(out) :: latitude
-
-      ! PLACEHOLDER IMPLEMENTATION
-      ! Replace this with actual geodetic coordinate calculation
-      real(dp) :: r
-
-      r = sqrt(position(1)**2 + position(2)**2 + position(3)**2)
-      height = r - jr_state%cb_polar_radius
-      latitude = atan2(position(3), sqrt(position(1)**2 + position(2)**2)) * 180.0_dp / PI
-
-      write(*,*) 'WARNING: Using placeholder geodetic calculation'
-
-   end subroutine calculate_geodetics_placeholder
-
-   !---------------------------------------------------------------------------
-   ! Function: get_solar_flux_placeholder
-   !---------------------------------------------------------------------------
-   ! Description:
-   !   PLACEHOLDER: Get solar flux and geomagnetic indices
-   !
-   !   In the original code, this reads F10.7, F10.7a, and Kp data from files
-   !
-   !   This needs to be replaced with actual flux data reading or constant values
-   !
-   ! Arguments:
-   !   utc_mjd - UTC Modified Julian Date
-   !   f107    - F10.7 solar flux
-   !   f107a   - F10.7 average (81-day)
-   !   kp      - Geomagnetic index
-   !
-   ! References:
-   ! * SchattenSolarFluxPrediction files: https://iswa.gsfc.nasa.gov/iswa_data_tree/model/solar/FDF/SchattenSolarFluxPrediction/
-   ! * Celestrak Space Weather Data: https://celestrak.org/SpaceData/
-   !
-   !---------------------------------------------------------------------------
-   subroutine get_solar_flux_placeholder(utc_mjd, f107, f107a, kp)
-      real(dp), intent(in) :: utc_mjd
-      real(dp), intent(out) :: f107
-      real(dp), intent(out) :: f107a
-      real(dp), intent(out) :: kp
-
-      ! PLACEHOLDER IMPLEMENTATION
-      ! Replace with actual solar flux data retrieval
-      f107 = 150.0_dp    ! Nominal value
-      f107a = 150.0_dp   ! Nominal value
-      kp = 3.0_dp        ! Nominal value
-
-      write(*,*) 'WARNING: Using placeholder solar flux values'
-
-   end subroutine get_solar_flux_placeholder
 
 end module jacchia_roberts_module
