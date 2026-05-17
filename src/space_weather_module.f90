@@ -178,9 +178,9 @@ contains
 
          ! Parse data lines using fixed-width format
          if (in_data_section .and. len_trim(line) >= 130) then
-            ! FORMAT(I4,I3,I3,I5,I3,8I3,I4,8I4,I4,F4.1,I2,I4,F6.1,I2,5F6.1)
             ! Column positions per CelesTrak documentation
-            read(line, '(I4,1X,I2,1X,I2,1X,I4,1X,I2,1X,8(I2,1X),I3,1X,8(I3,1X),I3,1X,F3.1,1X,I1,1X,I3,1X,F5.1,1X,I1,1X,5(F5.1,1X))', iostat=io_stat) &
+            read(line, '(I4,I3,I3,I5,I3,8I3,I4,8I4,I4,F4.1,I2,I4,F6.1,I2,5F6.1)', &
+                 iostat=io_stat) &
                  year, month, day, bsrn, nd, &
                  kp_int(1), kp_int(2), kp_int(3), kp_int(4), &
                  kp_int(5), kp_int(6), kp_int(7), kp_int(8), kp_sum, &

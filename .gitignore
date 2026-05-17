@@ -6,6 +6,6 @@
 !.pixi/config.toml
 
 tmp
-density_profile.dat
+density_profile*.dat
 /doc
 /coverage

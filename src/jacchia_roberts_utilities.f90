@@ -115,14 +115,14 @@ module jacchia_roberts_utilities
       real(dp), intent(inout) :: c_new(:) !! Output array with new coefficients
 
       integer(ip) :: i
-      real(dp) :: sum, save
+      real(dp) :: sum, s
 
       sum = c(n)
 
       do i = n - 1, 1, -1
-         save = c(i)
+         s = c(i)
          c_new(i) = sum
-         sum = save + sum * root
+         sum = s + sum * root
       end do
 
    end subroutine deflate_polynomial
