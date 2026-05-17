@@ -157,16 +157,16 @@ module jacchia_roberts_module
    ! Type definitions
    !---------------------------------------------------------------------------
 
-   type :: geoparms_type
+   type,public :: geoparms_type
       !! Geomagnetic parameters
       real(dp) :: tkp    = 0.0_dp  !! Geomagnetic index Kp
       real(dp) :: xtemp  = 0.0_dp  !! Exospheric temperature
    end type geoparms_type
 
-   type :: jacchia_roberts_type
+   type,public :: jacchia_roberts_type
       !! Jacchia-Roberts atmosphere model type
       private
-      !! Module state variables
+      ! Module state variables
       real(dp) :: cb_polar_radius  = 0.0_dp   !! Central body polar radius (km)
       real(dp) :: cb_polar_squared = 0.0_dp   !! Polar radius squared
       real(dp) :: root1            = 0.0_dp   !! Auxiliary temperature root
@@ -179,17 +179,15 @@ module jacchia_roberts_module
       type(sw_data_type) :: sw_data  !! Space weather data type (from space_weather_module)
       contains
       private
-      procedure, public :: density            => jacchia_roberts_density
-      procedure, public :: initialize         => jr_init
-      procedure, public :: load_space_weather => jr_load_space_weather
-      procedure, public :: destroy            => jr_cleanup
+      procedure, public :: density     => jacchia_roberts_density
+      procedure, public :: initialize  => jr_init
+      procedure, public :: destroy     => jr_cleanup
+      procedure :: jr_load_space_weather
       procedure :: exotherm
       procedure :: rho_100
       procedure :: rho_125
       procedure :: rho_high
    end type jacchia_roberts_type
-
-   public :: geoparms_type
 
 contains
 
@@ -197,9 +195,11 @@ contains
    !>
    !   Initialize the Jacchia-Roberts module with central body parameters
 
-   subroutine jr_init(me, cb_polar_radius)
+   subroutine jr_init(me, cb_polar_radius, filename, status)
       class(jacchia_roberts_type), intent(inout) :: me
       real(dp), intent(in) :: cb_polar_radius !!  Polar radius of central body (km)
+      character(len=*), intent(in) :: filename !! Path to CSSI space weather file
+      integer(ip), intent(out) :: status  !! Output status (0=success, non-zero=error)
 
       me%cb_polar_radius = cb_polar_radius
       me%cb_polar_squared = cb_polar_radius * cb_polar_radius
@@ -212,6 +212,8 @@ contains
       me%t_infinity = 0.0_dp
       me%tx = 0.0_dp
       me%sum = 0.0_dp
+
+      call me%sw_data%initialize(filename, status)
 
    end subroutine jr_init
 
@@ -262,9 +264,9 @@ contains
       type(flux_data_type) :: flux_data
       integer(ip) :: sw_status
 
-      ! Check altitude validity
-      if (height < 100.0_dp) then
-         write(*,*) 'ERROR: Jacchia-Roberts model not valid below 100 km'
+      ! Check altitude validity (C++ supports 90-2500 km internally)
+      if (height < 90.0_dp) then
+         write(*,*) 'ERROR: Jacchia-Roberts model not valid below 90 km'
          density = 0.0_dp
          return
       end if
@@ -291,13 +293,20 @@ contains
       ! Convert geodetic latitude to radians
       geo_lat_rad = geo_lat * RAD_PER_DEG
 
-      ! Compute height-dependent density
-      if (height < 100.0_dp) then
+      ! Compute height-dependent density (matches C++ algorithm exactly)
+      if (height <= 90.0_dp) then
+         ! At or below 90 km: use constant density
          raw_density = RHO_ZERO
-      else if (height < 125.0_dp) then
+      else if (height < 100.0_dp) then
+         ! 90-100 km: use rho_100
          temperature = me%exotherm(position, sun_vector, geo, height, &
                                sun_dec, geo_lat_rad)
          raw_density = me%rho_100(height, temperature)
+      else if (height <= 125.0_dp) then
+         ! 100-125 km: use rho_125
+         temperature = me%exotherm(position, sun_vector, geo, height, &
+                               sun_dec, geo_lat_rad)
+         raw_density = me%rho_125(height, temperature)
       else if (height <= 2500.0_dp) then
          t_500 = me%exotherm(position, sun_vector, geo, 500.0_dp, &
                          sun_dec, geo_lat_rad)

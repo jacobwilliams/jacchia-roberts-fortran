@@ -12,7 +12,7 @@
 !------------------------------------------------------------------------------
 
 program test_jacchia_roberts
-   use jacchia_roberts_module
+   use jacchia_roberts_module, only: jacchia_roberts_type
    use, intrinsic :: iso_fortran_env, only: real64, int32
    implicit none
 
@@ -33,6 +33,7 @@ program test_jacchia_roberts
    real(dp) :: sun_dec
    real(dp) :: utc_mjd
    integer(ip) :: sw_status
+   type(jacchia_roberts_type) :: atm
 
    ! Earth polar radius (km)
    real(dp), parameter :: EARTH_POLAR_RADIUS = 6356.766_dp
@@ -49,14 +50,8 @@ program test_jacchia_roberts
    write(*,'(A)') ''
 
    ! Initialize the module
-   call jr_init(EARTH_POLAR_RADIUS)
+   call atm%initialize(EARTH_POLAR_RADIUS, 'data/SpaceWeather-All-v1.2.txt', sw_status)
    write(*,'(A)') 'Module initialized with Earth polar radius = 6356.766 km'
-   write(*,'(A)') ''
-
-   ! Load space weather data
-   write(*,'(A)') 'Loading space weather data...'
-   call jr_load_space_weather('data/SpaceWeather-All-v1.2.txt', sw_status)
-
    if (sw_status /= 0) then
       write(*,'(A)') 'WARNING: Could not load space weather file'
       write(*,'(A)') '         Using nominal values (F10.7=150, Kp=3)'
@@ -105,8 +100,8 @@ program test_jacchia_roberts
       height = test_heights(i)
 
       ! Calculate density
-      density = jacchia_roberts_density(height, position, sun_vector, &
-                                       geo_lat, sun_dec, utc_mjd)
+      density = atm%density(height, position, sun_vector, &
+                            geo_lat, sun_dec, utc_mjd)
 
       ! Display results
       write(*,'(F12.2,8X,ES14.6,4X,ES14.6)') height, density, density * 1.0e-3_dp
@@ -124,8 +119,8 @@ program test_jacchia_roberts
 
    do i = 100, 1000, 10
       height = real(i, dp)
-      density = jacchia_roberts_density(height, position, sun_vector, &
-                                       geo_lat, sun_dec, utc_mjd)
+      density = atm%density(height, position, sun_vector, &
+                            geo_lat, sun_dec, utc_mjd)
       write(10,'(F12.2,2(2X,ES16.8))') height, density, density * 1.0e-3_dp
    end do
 
@@ -135,7 +130,7 @@ program test_jacchia_roberts
    write(*,'(A)') ''
 
    ! Clean up
-   call jr_cleanup()
+   call atm%destroy()
 
    write(*,'(A)') '======================================================'
    write(*,'(A)') '  Test completed successfully!'
