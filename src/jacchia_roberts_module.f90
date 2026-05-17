@@ -228,7 +228,7 @@ contains
    !   This version automatically retrieves space weather data (F10.7, Kp)
    !   from the loaded space weather file based on the provided MJD.
 
-   function jacchia_roberts_density(me,height, position, sun_vector, geo_lat, &
+   function jacchia_roberts_density(me, height, position, sun_vector, geo_lat, &
                                     utc_mjd) result(density)
       class(jacchia_roberts_type), intent(inout) :: me
       real(dp), intent(in) :: height !! Spacecraft height above reference ellipsoid (km)

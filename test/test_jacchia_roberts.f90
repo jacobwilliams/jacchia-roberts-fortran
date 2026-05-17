@@ -33,9 +33,12 @@ program test_jacchia_roberts
    real(dp) :: utc_mjd
    integer(ip) :: sw_status
    type(jacchia_roberts_type) :: atm
+   real(dp) :: r_mag  ! Position magnitude
 
    ! Earth polar radius (km)
+   ! Note: For spherical Earth approximation, we use the polar radius
    real(dp), parameter :: EARTH_POLAR_RADIUS = 6356.766_dp
+   real(dp), parameter :: EARTH_RADIUS = EARTH_POLAR_RADIUS
 
    ! Test parameters
    integer :: i
@@ -63,21 +66,24 @@ program test_jacchia_roberts
    position(2) = 0.0_dp
    position(3) = 0.0_dp
 
+   ! Compute height and geodetic latitude from position (spherical Earth)
+   r_mag   = norm2(position)
+   height  = r_mag - EARTH_RADIUS
+   geo_lat = asin(position(3) / r_mag) / RAD_PER_DEG  ! Convert to degrees
+
    ! Sun vector (unit vector pointing to sun)
    ! Test collinear case: sun and spacecraft both on x-axis
    sun_vector(1) = 1.0_dp
    sun_vector(2) = 0.0_dp
    sun_vector(3) = 0.0_dp
 
-   ! Geodetic latitude (degrees)
-   geo_lat = 0.0_dp
-
    ! UTC Modified Julian Date (Jan 1, 2021 12:00 UTC)
    ! This date is in the space weather file
    utc_mjd = 59215.5_dp
 
    write(*,'(A)') 'Test Scenario:'
-   write(*,'(A,F10.2,A)') '  Position magnitude:     ', sqrt(sum(position**2)), ' km'
+   write(*,'(A,F10.2,A)') '  Position magnitude:     ', r_mag, ' km'
+   write(*,'(A,F10.2,A)') '  Height above surface:   ', height, ' km'
    write(*,'(A,F10.4)') '  Geodetic latitude:      ', geo_lat
    write(*,'(A,F12.2)') '  UTC MJD:                ', utc_mjd
    write(*,'(A)') '  (Space weather retrieved from data file)'
@@ -94,6 +100,15 @@ program test_jacchia_roberts
    do i = 1, size(test_heights)
       height = test_heights(i)
 
+      ! Set position for this height (keep on x-axis for consistency)
+      r_mag = EARTH_RADIUS + height
+      position(1) = r_mag
+      position(2) = 0.0_dp
+      position(3) = 0.0_dp
+
+      ! Compute geodetic latitude from position (spherical Earth)
+      geo_lat = asin(position(3) / r_mag) / RAD_PER_DEG  ! Convert to degrees
+
       ! Calculate density
       density = atm%density(height, position, sun_vector, &
                             geo_lat, utc_mjd)
@@ -108,6 +123,14 @@ program test_jacchia_roberts
    ! test different sun vectors (general, collinear, orthogonal, anti-collinear)
    write(*,'(A)') 'Testing different sun vector orientations...'
 
+   ! Set position at 400 km altitude on x-axis
+   height = 400.0_dp
+   r_mag = EARTH_RADIUS + height
+   position(1) = r_mag
+   position(2) = 0.0_dp
+   position(3) = 0.0_dp
+   geo_lat = asin(position(3) / r_mag) / RAD_PER_DEG
+
    ! Collinear case (already tested above)
    write(*,'(A)') '  Collinear case: sun and spacecraft both on x-axis (already tested)'
 
@@ -115,7 +138,7 @@ program test_jacchia_roberts
    sun_vector(1) = 0.0_dp
    sun_vector(2) = 1.0_dp
    sun_vector(3) = 0.0_dp
-   density = atm%density(400.0_dp, position, sun_vector, &
+   density = atm%density(height, position, sun_vector, &
                            geo_lat, utc_mjd)
    write(*,'(A)') '  Orthogonal case: sun on y-axis, spacecraft on x-axis'
    write(*,'(A,F12.2,8X,ES14.6,4X,ES14.6)') '    Altitude: 400.00 km', density, density * 1.0e-3_dp
@@ -124,7 +147,7 @@ program test_jacchia_roberts
    sun_vector(1) = -1.0_dp
    sun_vector(2) = 0.0_dp
    sun_vector(3) = 0.0_dp
-   density = atm%density(400.0_dp, position, sun_vector, &
+   density = atm%density(height, position, sun_vector, &
                            geo_lat, utc_mjd)
    write(*,'(A)') '  Anti-collinear case: sun on negative x-axis, spacecraft on positive x-axis'
    write(*,'(A,F12.2,8X,ES14.6,4X,ES14.6)') '    Altitude: 400.00 km', density, density * 1.0e-3_dp
@@ -133,12 +156,10 @@ program test_jacchia_roberts
    sun_vector(1) = 1.0_dp / sqrt(2.0_dp)
    sun_vector(2) = 1.0_dp / sqrt(2.0_dp)
    sun_vector(3) = 0.0_dp
-   density = atm%density(400.0_dp, position, sun_vector, &
+   density = atm%density(height, position, sun_vector, &
                            geo_lat, utc_mjd)
    write(*,'(A)') '  General case: sun vector at 45 degrees in x-y plane'
    write(*,'(A,F12.2,8X,ES 14.6,4X,ES14.6)') '    Altitude: 400.00 km', density, density * 1.0e-3_dp
-
-
 
    write(*,'(A)') '------------------------------------------------------'
    write(*,'(A)') ''
@@ -152,6 +173,16 @@ program test_jacchia_roberts
 
    do i = 90, 2510, 5
       height = real(i, dp)
+
+      ! Set position for this height (keep on x-axis at equator)
+      r_mag = EARTH_RADIUS + height
+      position(1) = r_mag
+      position(2) = 0.0_dp
+      position(3) = 0.0_dp
+
+      ! Compute geodetic latitude from position (spherical Earth)
+      geo_lat = asin(position(3) / r_mag) / RAD_PER_DEG
+
       density = atm%density(height, position, sun_vector, &
                             geo_lat, utc_mjd)
       write(10,'(F12.2,2(2X,ES16.8))') height, density, density * 1.0e-3_dp
