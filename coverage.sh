@@ -1,10 +1,6 @@
 #!/bin/bash
 # Script to run tests with coverage and generate reports
 
-#
-# note: had to conda install lcov
-#
-
 set -e
 
 COV_DIR="coverage"
@@ -50,7 +46,8 @@ lcov --summary "$COV_DIR/coverage.info"
 echo ""
 echo "Coverage data saved to: $COV_DIR/coverage.info"
 echo ""
-echo "To generate HTML report:"
-echo "  genhtml $COV_DIR/coverage.info --output-directory $COV_DIR/html"
-echo "  open $COV_DIR/html/index.html"
+echo "generate HTML report:"
+
+genhtml $COV_DIR/coverage.info --output-directory $COV_DIR/html
+
 echo ""
