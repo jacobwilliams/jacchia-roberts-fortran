@@ -13,11 +13,8 @@
 
 program test_space_weather
    use space_weather_module, only: sw_data_type, flux_data_type
-   use, intrinsic :: iso_fortran_env, only: real64, int32
+   use jacchia_roberts_kinds, only: ip, dp
    implicit none
-
-   integer, parameter :: dp = real64
-   integer, parameter :: ip = int32
 
    type(sw_data_type) :: sw_data
    type(flux_data_type) :: flux_data

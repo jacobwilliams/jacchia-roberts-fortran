@@ -16,7 +16,7 @@
 !   * [CSSI Space Weather Data Format Specification](http://celestrak.com/SpaceData/SpaceWx-format.asp)
 
 module space_weather_module
-   use, intrinsic :: iso_fortran_env, only: dp => real64, ip => int32
+   use jacchia_roberts_kinds, only: ip, dp
    use jacchia_roberts_utilities, only: date_to_mjd
    implicit none
    private

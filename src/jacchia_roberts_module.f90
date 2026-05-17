@@ -13,7 +13,7 @@
 !     `JacchiaRobertsAtmosphere.cpp` and `SolarFluxReader.cpp`.
 
 module jacchia_roberts_module
-   use, intrinsic :: iso_fortran_env, only: dp => real64, ip => int32
+   use jacchia_roberts_kinds, only: ip, dp
    use space_weather_module, only: sw_data_type, flux_data_type
    use jacchia_roberts_utilities, only: roots, deflate_polynomial
    implicit none

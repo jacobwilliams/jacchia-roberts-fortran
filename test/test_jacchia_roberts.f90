@@ -13,15 +13,11 @@
 
 program test_jacchia_roberts
    use jacchia_roberts_module, only: jacchia_roberts_type
-   use, intrinsic :: iso_fortran_env, only: real64, int32
+   use jacchia_roberts_kinds, only: ip, dp
    implicit none
 
-   ! Kind parameter
-   integer, parameter :: dp = real64
-   integer, parameter :: ip = int32
-
    ! Constants
-   real(dp), parameter :: PI = 3.141592653589793238462643383279502884197_dp
+   real(dp), parameter :: PI = acos(-1.0_dp)
    real(dp), parameter :: RAD_PER_DEG = PI / 180.0_dp
 
    ! Variables

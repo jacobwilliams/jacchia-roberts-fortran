@@ -3,7 +3,7 @@
 !   Math utilities for Jacchia-Roberts atmospheric density model.
 
 module jacchia_roberts_utilities
-   use, intrinsic :: iso_fortran_env, only: dp => real64, ip => int32
+   use jacchia_roberts_kinds, only: ip, dp
    implicit none
    private
 
