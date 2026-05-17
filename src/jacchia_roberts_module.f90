@@ -37,7 +37,7 @@ module jacchia_roberts_module
    integer, parameter :: ip = int32
 
    ! Mathematical constants
-   real(dp), parameter :: PI = 3.141592653589793238462643383279502884197_dp
+   real(dp), parameter :: PI = acos(-1.0_dp)
    real(dp), parameter :: RAD_PER_DEG = PI / 180.0_dp
 
    !---------------------------------------------------------------------------
@@ -986,6 +986,11 @@ contains
    !   f107    - F10.7 solar flux
    !   f107a   - F10.7 average (81-day)
    !   kp      - Geomagnetic index
+   !
+   ! References:
+   ! * SchattenSolarFluxPrediction files: https://iswa.gsfc.nasa.gov/iswa_data_tree/model/solar/FDF/SchattenSolarFluxPrediction/
+   ! * Celestrak Space Weather Data: https://celestrak.org/SpaceData/
+   !
    !---------------------------------------------------------------------------
    subroutine get_solar_flux_placeholder(utc_mjd, f107, f107a, kp)
       real(dp), intent(in) :: utc_mjd
