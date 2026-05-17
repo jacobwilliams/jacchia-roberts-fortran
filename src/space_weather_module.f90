@@ -52,6 +52,11 @@ module space_weather_module
       real(dp), allocatable :: kp(:,:)  !! (8, n_records)
       real(dp), allocatable :: ap_avg(:)
       logical :: initialized = .false.
+      real(dp) :: historic_start = -1.0_dp     !! First epoch in data
+      real(dp) :: historic_end = -1.0_dp       !! Last daily epoch + 1
+      real(dp) :: historic_daily_end = -1.0_dp !! Last contiguous daily data epoch
+      logical :: warn_epoch_before = .true.
+      logical :: warn_epoch_after = .true.
    end type sw_data_type
 
    type(sw_data_type), save :: sw_data
@@ -124,7 +129,7 @@ contains
             cycle
          end if
 
-         ! Stop at monthly fit section (like C++ stops at END MONTHLY_FIT)
+         ! Stop at monthly fit section
          if (index(line, 'BEGIN MONTHLY_FIT') > 0) exit
 
          if (in_data_section .and. len_trim(line) > 80) then
@@ -179,7 +184,7 @@ contains
             cycle
          end if
 
-         ! Stop at monthly fit section (like C++ stops at END MONTHLY_FIT)
+         ! Stop at monthly fit section
          if (index(line, 'BEGIN MONTHLY_FIT') > 0) exit
 
          ! Parse data lines using fixed-width format
@@ -223,6 +228,20 @@ contains
          return
       end if
 
+      ! Set epoch range tracking
+      sw_data%historic_start = sw_data%mjd(1)
+      ! Note: add 1.0 to last epoch to reach end of day
+      sw_data%historic_end = sw_data%mjd(sw_data%n_records) + 1.0_dp
+
+      ! Find where daily data ends and monthly data begins (gaps > 1 day)
+      sw_data%historic_daily_end = sw_data%historic_end
+      do i = 2, sw_data%n_records
+         if (sw_data%mjd(i) - sw_data%mjd(i-1) > 1.01_dp) then
+            sw_data%historic_daily_end = sw_data%mjd(i-1)
+            exit
+         end if
+      end do
+
       sw_data%initialized = .true.
 
       write(*,'(A,I0,A)') 'Space weather data loaded: ', sw_data%n_records, ' records'
@@ -234,16 +253,16 @@ contains
 
    !---------------------------------------------------------------------------
    !>
-   !   Get space weather data for a given Modified Julian Date
-   !   Performs linear interpolation if exact date not found
+   !   Get space weather data for a given Modified Julian Date.
+   !   Uses direct indexing for daily data, no interpolation
 
    subroutine sw_get_flux_data(mjd, flux_data, status)
       real(dp), intent(in) :: mjd !! Modified Julian Date
       type(flux_data_type), intent(out) :: flux_data !! Output flux data structure
       integer(ip), intent(out) :: status !! Output status (0=success, 1=not initialized, 2=out of range)
 
-      integer(ip) :: idx
-      real(dp) :: frac
+      integer(ip) :: idx, i
+      integer(ip) :: daily_end_idx
 
       status = 0
 
@@ -253,53 +272,54 @@ contains
          return
       end if
 
-      ! Check if MJD is in range
-      if (mjd < sw_data%mjd(1) .or. mjd > sw_data%mjd(sw_data%n_records)) then
-         write(*,'(A,F12.2)') 'WARNING: MJD out of range: ', mjd
-         write(*,'(A,F12.2,A,F12.2)') '  Valid range: ', sw_data%mjd(1), ' to ', &
-                                       sw_data%mjd(sw_data%n_records)
-         status = 2
-         ! Return data from nearest boundary
-         if (mjd < sw_data%mjd(1)) then
-            idx = 1
-         else
-            idx = sw_data%n_records
+      ! Handle epoch before data starts
+      if (mjd < sw_data%historic_start) then
+         if (sw_data%warn_epoch_before) then
+            write(*,'(A)') 'WARNING: Requested epoch is earlier than space weather data start'
+            write(*,'(A)') '         Using first file entry'
+            sw_data%warn_epoch_before = .false.
          end if
-         call copy_record(idx, flux_data)
+         call copy_record(1, flux_data)
          return
       end if
 
-      ! Find the record (binary search would be better for large datasets)
-      do idx = 1, sw_data%n_records
-         if (sw_data%mjd(idx) >= mjd) exit
-      end do
-
-      ! If exact match or first record
-      if (abs(sw_data%mjd(idx) - mjd) < 1.0e-6_dp .or. idx == 1) then
-         call copy_record(idx, flux_data)
+      ! Handle epoch after data ends
+      if (mjd >= sw_data%historic_end) then
+         if (sw_data%warn_epoch_after) then
+            write(*,'(A)') 'WARNING: Requested epoch is later than space weather data end'
+            write(*,'(A)') '         Using last file entry'
+            sw_data%warn_epoch_after = .false.
+         end if
+         call copy_record(sw_data%n_records, flux_data)
          return
       end if
 
-      ! Linear interpolation between idx-1 and idx
-      frac = (mjd - sw_data%mjd(idx-1)) / (sw_data%mjd(idx) - sw_data%mjd(idx-1))
+      ! Within data range
+      ! For daily data: direct index calculation (O(1))
+      ! For monthly data: linear search through monthly section only
 
-      flux_data%mjd = mjd
-      flux_data%f107_obs = sw_data%f107_obs(idx-1) + frac * &
-                           (sw_data%f107_obs(idx) - sw_data%f107_obs(idx-1))
-      flux_data%f107_adj = sw_data%f107_adj(idx-1) + frac * &
-                           (sw_data%f107_adj(idx) - sw_data%f107_adj(idx-1))
-      flux_data%f107a_obs_ctr = sw_data%f107a_obs_ctr(idx-1) + frac * &
-                                (sw_data%f107a_obs_ctr(idx) - sw_data%f107a_obs_ctr(idx-1))
-      flux_data%f107a_adj_ctr = sw_data%f107a_adj_ctr(idx-1) + frac * &
-                                (sw_data%f107a_adj_ctr(idx) - sw_data%f107a_adj_ctr(idx-1))
-      flux_data%ap_avg = sw_data%ap_avg(idx-1) + frac * &
-                        (sw_data%ap_avg(idx) - sw_data%ap_avg(idx-1))
+      if (mjd <= sw_data%historic_daily_end) then
+         ! Daily data: use direct index calculation
+         idx = int(mjd - sw_data%historic_start) + 1
 
-      ! For Kp, use the values from the closest record (no interpolation)
-      if (frac < 0.5_dp) then
-         flux_data%kp = sw_data%kp(:, idx-1)
+         ! Bounds check
+         if (idx < 1) idx = 1
+         if (idx > sw_data%n_records) idx = sw_data%n_records
+
+         call copy_record(idx, flux_data)
       else
-         flux_data%kp = sw_data%kp(:, idx)
+         ! Monthly data: search from daily_end to end of array
+         ! Find the index where daily data ends
+         daily_end_idx = int(sw_data%historic_daily_end - sw_data%historic_start) + 1
+
+         ! Search monthly data for the record at or before mjd
+         idx = daily_end_idx
+         do i = daily_end_idx, sw_data%n_records
+            if (sw_data%mjd(i) > mjd) exit
+            idx = i
+         end do
+
+         call copy_record(idx, flux_data)
       end if
 
    end subroutine sw_get_flux_data

@@ -60,26 +60,22 @@ module jacchia_roberts_module
    ! Model constants
    !---------------------------------------------------------------------------
 
-   ! Constants for series expansion
    real(dp), parameter :: CON_C(5) = [ &
       -89284375.0_dp, &
          3542400.0_dp, &
          -52687.5_dp, &
             340.5_dp, &
-             -0.8_dp ]
+             -0.8_dp ] !! Constants for series expansion
 
-   ! Constants for series expansion
    real(dp), parameter :: CON_L(5) = [ &
        0.1031445e5_dp, &
        0.2341230e1_dp, &
        0.1579202e-2_dp, &
       -0.1252487e-5_dp, &
-       0.2462708e-9_dp ]
+       0.2462708e-9_dp ] !! Constants for series expansion
 
-   ! Constants required between 90 km and 100 km
-   real(dp), parameter :: MZERO = 28.82678_dp
+   real(dp), parameter :: MZERO = 28.82678_dp !! Constants required between 90 km and 100 km
 
-   ! Constants for series expansion of M(z) function
    real(dp), parameter :: M_CON(7) = [ &
       -435093.363387_dp, &
         28275.5646391_dp, &
@@ -87,30 +83,26 @@ module jacchia_roberts_module
            11.043387545_dp, &
            -0.08958790995_dp, &
             0.00038737586_dp, &
-           -0.000000697444_dp ]
+           -0.000000697444_dp ] !! Constants for series expansion of M(z) function
 
-   ! Constants for series expansion of S(z) function
    real(dp), parameter :: S_CON(6) = [ &
        3144902516.672729_dp, &
        -123774885.4832917_dp, &
           1816141.096520398_dp, &
           -11403.31079489267_dp, &
               24.36498612105595_dp, &
-               0.008957502869707995_dp ]
+               0.008957502869707995_dp ] !! Constants for series expansion of S(z) function
 
-   ! Constants for series expansion of S(z) function - temperature part
    real(dp), parameter :: S_BETA(6) = [ &
       -52864482.17910969_dp, &
          -16632.50847336828_dp, &
              -1.308252378125_dp, &
               0.0_dp, &
               0.0_dp, &
-              0.0_dp ]
+              0.0_dp ] !! Constants for series expansion of S(z) function - temperature part
 
-   ! Constants required for altitudes between 100 km and 125 km
-   real(dp), parameter :: OMEGA = -0.94585589_dp
+   real(dp), parameter :: OMEGA = -0.94585589_dp !! Constants required for altitudes between 100 km and 125 km
 
-   ! Constants for series expansion
    real(dp), parameter :: ZETA_CON(7) = [ &
        0.1985549e-10_dp, &
       -0.1833490e-14_dp, &
@@ -118,9 +110,9 @@ module jacchia_roberts_module
       -0.1021474e-20_dp, &
        0.3727894e-24_dp, &
       -0.7734110e-28_dp, &
-       0.7026942e-32_dp ]
+       0.7026942e-32_dp ] !! Constants for series expansion
 
-   ! Molecular masses of atmospheric constituents in grams/mole
+   !> Molecular masses of atmospheric constituents in grams/mole
    real(dp), parameter :: MOL_MASS(6) = [ &
       28.0134_dp, &   ! Nitrogen
       39.948_dp, &    ! Argon
@@ -129,7 +121,7 @@ module jacchia_roberts_module
       15.9994_dp, &   ! Atomic Oxygen
        1.00797_dp ]   ! Hydrogen
 
-   ! Number density divided by Avogadro's number of atmospheric constituents
+   !> Number density divided by Avogadro's number of atmospheric constituents
    real(dp), parameter :: NUM_DENS(5) = [ &
       0.78110_dp, &       ! Nitrogen
       0.93432e-2_dp, &    ! Argon
@@ -137,7 +129,7 @@ module jacchia_roberts_module
       0.161778_dp, &      ! Molecular Oxygen
       0.95544e-1_dp ]     ! Atomic Oxygen
 
-   ! Polynomial coefficients for constituent densities of each atmospheric gas
+   !> Polynomial coefficients for constituent densities of each atmospheric gas
    real(dp), parameter :: CON_DEN(5,7) = reshape([ &
       ! Nitrogen
        0.1093155e2_dp, &
