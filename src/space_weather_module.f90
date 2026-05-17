@@ -192,9 +192,7 @@ contains
             if (io_stat /= 0) cycle
 
             ! Convert date to MJD
-            ! Space weather files use noon (add 0.5 to midnight MJD)
             call date_to_mjd(year, month, day, mjd_val)
-            mjd_val = mjd_val + 0.5_dp
 
             me%n_records = me%n_records + 1
 
