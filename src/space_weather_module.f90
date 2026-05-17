@@ -16,13 +16,10 @@
 !   * [CSSI Space Weather Data Format Specification](http://celestrak.com/SpaceData/SpaceWx-format.asp)
 
 module space_weather_module
-   use, intrinsic :: iso_fortran_env, only: real64, int32
+   use, intrinsic :: iso_fortran_env, only: dp => real64, ip => int32
+   use jacchia_roberts_utilities, only: date_to_mjd
    implicit none
    private
-
-   ! Double precision kind
-   integer, parameter :: dp = real64
-   integer, parameter :: ip = int32
 
    type,public :: flux_data_type
       !! Space weather data type
@@ -361,25 +358,5 @@ contains
       flux_data%kp            = me%kp(:, idx)
       flux_data%ap_avg        = me%ap_avg(idx)
    end subroutine copy_record
-
-   !---------------------------------------------------------------------------
-   !>
-   !   Convert calendar date to Modified Julian Date (MJD)
-   pure subroutine date_to_mjd(year, month, day, mjd)
-      integer(ip), intent(in) :: year, month, day
-      real(dp), intent(out) :: mjd
-      integer(ip) :: a, y, m, jdn
-
-      ! Convert to Julian Day Number using standard algorithm
-      a = (14 - month) / 12
-      y = year + 4800 - a
-      m = month + 12 * a - 3
-
-      jdn = day + (153 * m + 2) / 5 + 365 * y + y / 4 - y / 100 + y / 400 - 32045
-
-      ! Convert JDN to MJD
-      mjd = real(jdn, dp) - 2400000.5_dp
-
-   end subroutine date_to_mjd
 
 end module space_weather_module
