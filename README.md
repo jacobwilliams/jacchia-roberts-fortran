@@ -13,25 +13,36 @@ Roberts, C. E., Jr., "An Analytic Model for Upper Atmosphere Densities Based Upo
 ## Features
 
 - **Modern Fortran 2008**: Clean, readable code using modern Fortran standards
-- **Standalone Module**: No external dependencies beyond standard Fortran libraries
-- **Altitude Regimes**: 
+- **Space Weather Integration**: Reads CSSI Space Weather files from CelesTrak
+- **High Performance**: O(1) direct indexing for daily data, efficient monthly data lookup
+- **Altitude Regimes**:
   - 90-100 km (constant density region)
   - 100-125 km (transition region)
   - 125-2500 km (high altitude region)
 - **Physical Effects Modeled**:
-  - Exospheric temperature variations
-  - Geomagnetic activity corrections
+  - Exospheric temperature variations (from F10.7 solar flux)
+  - Geomagnetic activity corrections (from Kp indices)
   - Semiannual density variations
   - Seasonal-latitudinal variations
-  - Solar activity effects (via F10.7 and Kp indices)
+  - Solar activity effects automatically retrieved from space weather data
 
 ## Files
 
 ```
 ├── src/
-│   └── jacchia_roberts_module.f90  # Main module with atmosphere model
-├── test_jacchia_roberts.f90        # Test/example program
-├── Makefile                         # Build configuration
+│   ├── jacchia_roberts_module.f90   # Main module with atmosphere model
+│   └── space_weather_module.f90     # Space weather data reader (CSSI format)
+├── test/
+│   └── test_jacchia_roberts.f90     # Test/example program
+├── data/
+│   └── SpaceWeather-All-v1.2.txt    # CSSI Space Weather data file
+├── original_cpp_code/               # Reference C++ implementation from GMAT
+│   ├── JacchiaRobertsAtmosphere.cpp
+│   ├── JacchiaRobertsAtmosphere.hpp
+│   ├── SolarFluxReader.cpp
+│   └── SolarFluxReader.hpp
+├── fpm.toml                         # FPM package manifest
+├── pixi.toml                        # Pixi environment configuration
 └── README.md                        # This file
 ```
 
@@ -48,146 +59,98 @@ Roberts, C. E., Jr., "An Analytic Model for Upper Atmosphere Densities Based Upo
 This project uses the Fortran Package Manager (fpm) for building:
 
 ```bash
-# Build the library and executable with pixi
-pixi run fpm build
+# activate the environment
+pixi shell
+
+# Build the library and test
+fpm build
 
 # Run the test program
-pixi run fpm run test_jacchia_roberts
-
-# Build and run in one command
-pixi run fpm run
+fpm test
 
 # Build with specific compiler flags
-pixi run fpm build --profile release
-
-# Run tests (if you add them later)
-pixi run fpm test
-```
-
-Or if you have fpm installed directly:
-```bash
-fpm build
-fpm run test_jacchia_roberts
-```
-
-### Using Make (Alternative)
-
-```bash
-# Build the test program
-make
-
-# Build and run the test
-make test
-
-# Build with debug flags
-make debug
-
-# Clean build files
-make clean
-```
-
-### Manual Compilation (Not Recommended)
-
-If you prefer not to use fpm or make:
-```bash
-# Create directories
-mkdir -p build bin
-
-# Compile the module
-pixi run gfortran -O2 -std=f2008 -c src/jacchia_roberts_module.f90 -o build/jacchia_roberts_module.o -Jbuild
-
-# Compile the test program
-pixi run gfortran -O2 -std=f2008 -c test_jacchia_roberts.f90 -o build/test_jacchia_roberts.o -Jbuild -Ibuild
-
-# Link the executable
-pixi run gfortran build/jacchia_roberts_module.o build/test_jacchia_roberts.o -o bin/test_jacchia_roberts
-
-# Run
-./bin/test_jacchia_roberts
-```
-
-Or without pixi (if gfortran is in your PATH):
-```bash
-# Create directories
-mkdir -p build bin
-
-# Compile the module
-gfortran -O2 -std=f2008 -c src/jacchia_roberts_module.f90 -o build/jacchia_roberts_module.o -Jbuild
-
-# Compile the test program
-gfortran -O2 -std=f2008 -c test_jacchia_roberts.f90 -o build/test_jacchia_roberts.o -Jbuild -Ibuild
-
-# Link the executable
-gfortran build/jacchia_roberts_module.o build/test_jacchia_roberts.o -o bin/test_jacchia_roberts
-
-# Run
-./bin/test_jacchia_roberts
+fpm build --profile release
 ```
 
 ## Usage
 
-### Basic Example
-
 ```fortran
-program example
-   use jacchia_roberts_module
-   implicit none
-   
-   real(8) :: density, height, position(3), sun_vector(3)
-   real(8) :: geo_lat, sun_dec, utc_mjd
-   type(geoparms_type) :: geo
-   
+integer :: sw_status
+
    ! Initialize module with Earth's polar radius (km)
    call jr_init(6356.766d0)
-   
+
+   ! Load space weather data from CSSI file
+   call jr_load_space_weather('data/SpaceWeather-All-v1.2.txt', sw_status)
+   if (sw_status /= 0) then
+      write(*,*) 'Warning: Could not load space weather data'
+      write(*,*) '         Using nominal values'
+   end if
+
    ! Set up parameters
    height = 400.0d0                    ! Altitude in km
    position = [7000.0d0, 0.0d0, 0.0d0] ! Position vector (km)
    sun_vector = [1.0d0, 0.0d0, 0.0d0]  ! Unit vector to Sun
    geo_lat = 0.0d0                     ! Geodetic latitude (degrees)
    sun_dec = 0.0d0                     ! Sun declination (radians)
-   utc_mjd = 51544.5d0                 ! Modified Julian Date
-   
+   utc_mjd = 59215.5d0                 ! Modified Julian Date (Jan 1, 2021)
+
+   ! Calculate density (returns kg/m^3)
+   ! Space weather data (F10.7, Kp) is automatically retrieved for the given date
+   density = jacchia_roberts_density(height, position, sun_vector, &
+                                     geo_lat, sun_dec, utc_mjd)
+
+   write(*,*) 'Density at', height, 'km:', density, 'kg/m^3'
+
+   ! Clean up when done
+   call jr_cleanup()e
+
    ! Geomagnetic parameters
    geo%tkp = 3.0d0                     ! Kp index
    geo%xtemp = 865.0d0                 ! Exospheric temperature (K)
-   
+
    ! Calculate density (returns kg/m^3)
    density = jacchia_roberts_density(height, position, sun_vector, &
-                                     geo_lat, sun_dec, geo, utc_mjd)
-   
-   write(*,*) 'Density at', height, 'km:', density, 'kg/m^3'
-   
-end program example
+    Space Weather Data
 ```
 
-### Calculating Exospheric Temperature
+The model automatically retrieves F10.7 solar flux and Kp geomagnetic indices from the loaded space weather file. The exospheric temperature is calculated internally using the formula:
 
-The exospheric temperature is calculated from solar flux indices:
+```
+T_exo = 379.0 + 3.24 * F10.7a + 1.3 * (F10.7 - F10.7a)
+```
 
-```fortran
-! Given F10.7 and F10.7a (81-day average)
-real(8) :: f107, f107a, xtemp
+where:
+- F10.7 is the observed daily solar flux (10⁻²² W/m²/Hz)
+- F10.7a is the 81-day centered average
+
+The space weather data file contains:
+- **Observed data**: Historical measurements from 1957-10-01 to present
+- **Daily predicted**: 45-day forecasts from NOAA SWPC
+- **Monthly predicted**: Long-term predictions extending to ~2109
+
+Data coverage: ~25,545 records spanning October 1957 through 2109.l(8) :: f107, f107a, xtemp
 
 f107 = 150.0d0   ! Daily F10.7 flux
-f107a = 150.0d0  ! 81-day average
-
-xtemp = 379.0d0 + 3.24d0 * f107a + 1.3d0 * (f107 - f107a)
-geo%xtemp = xtemp
-```
-
-## Module Interface
-
-### Public Subroutines and Functions
-
-#### `jr_init(cb_polar_radius)`
-Initialize the module with the central body's polar radius.
+f107a = 150.0d0Jacchia-Roberts module with the central body's polar radius.
 
 **Arguments:**
 - `cb_polar_radius` (real(8), in): Polar radius in km (6356.766 for Earth)
 
+#### `jr_load_space_weather(filename, status)`
+Load space weather data from a CSSI Space Weather file.
+
+**Arguments:**
+- `filename` (character, in): Path to CSSI Space Weather file
+- `status` (integer, out): Status code (0=success, non-zero=error)
+
+**Notes:**
+- Must be called after `jr_init()` and before `jacchia_roberts_density()`
+- Loads observed, daily predicted, and monthly predicted data
+- Uses the same algorithm as GMAT's SolarFluxReader for compatibility
+
 #### `jacchia_roberts_density(...)`
-Calculate atmospheric density.
+Calculate atmospheric density at a given position and time.
 
 **Arguments:**
 - `height` (real(8), in): Altitude above reference ellipsoid (km)
@@ -195,7 +158,51 @@ Calculate atmospheric density.
 - `sun_vector(3)` (real(8), in): Unit vector to Sun in TOD/GCI frame
 - `geo_lat` (real(8), in): Geodetic latitude (degrees)
 - `sun_dec` (real(8), in): Sun declination (radians)
-- `geo` (geoparms_type, in): Geomagnetic parameters structure
+- `utc_mjd` (real(8), in): UTC Modified Julian Date
+CSSI Space Weather File Format
+
+The module reads CSSI Space Weather files from CelesTrak in the legacy fixed-width format:
+
+**Format:** `FORMAT(I4,I3,I3,I5,I3,8I3,I4,8I4,I4,F4.1,I2,I4,F6.1,I2,5F6.1)`
+
+**File Structure:**
+- Header with metadata and column descriptions
+- `BEGIN OBSERVED` / `END OBSERVED` - Historical measurements
+- `BEGIN DAILY_PREDICTED` / `END DAILY_PREDICTED` - Near-term forecasts (45 days)
+- `BEGIN MONTHLY_PREDICTED` / `END MONTHLY_PREDICTED` - Long-term predictions
+
+**Data Fields:**
+- Date (year, month, day)
+- Bartels Solar Rotation Number and day number
+- 8 three-hourly Kp indices (multiplied by 10)
+- 8 three-hourly Ap indices
+- Daily average Ap
+- F10.7 solar flux (observed and adjusted)
+- 81-day centered averages
+
+**Download:** Space weather files are available from CelesTrak at:
+https://celestrak.org/SpaceData/
+
+The included `data/SpaceWeather-All-v1.2.txt` file provides coverage from 1957 to 2109
+### Space Weather Module
+
+The `space_weather_module` provides the underlying space weather data functionality:
+
+#### `sw_init(filename, status)`
+Low-level initialization of space weather data (called by `jr_load_space_weather`)
+
+#### `sw_get_flux_data(mjd, flux_data, status)`
+Retrieve space weather data for a specific Modified Julian Date
+
+#### `flux_data_type`
+Structure containing space weather parameters:
+- `mjd` (real(8)): Modified Julian Date
+- `f107_obs` (real(8)): Observed F10.7 solar flux
+- `f107_adj` (real(8)): Adjusted F10.7 solar flux
+- `f107a_obs_ctr` (real(8)): Observed F10.7 81-day centered average
+- `f107a_adj_ctr` (real(8)): Adjusted F10.7 81-day centered average
+- `kp(8)` (real(8)): Kp indices for 8 3-hour periods
+- `ap_avg` (real(8)): Daily average Ap indexters structure
 - `utc_mjd` (real(8), in): UTC Modified Julian Date
 
 **Returns:**
@@ -207,59 +214,42 @@ Calculate atmospheric density.
 Structure containing geomagnetic parameters:
 - `tkp` (real(8)): Geomagnetic Kp index
 - `xtemp` (real(8)): Exospheric temperature (K)
+/test_jacchia_roberts.f90`) demonstrates:
+- Module initialization with Earth's polar radius
+- Loading space weather data from CSSI file
+- Density calculation at multiple altitudes (150, 250, 400, 600, 1000 km)
+- Generation of a density profile from 100-1000 km
 
-## Placeholder Functions
+Run the test with fpm:
+```bash
+fpm test
+```
 
-The following functions are currently implemented as placeholders and should be replaced with actual implementations for production use:
+The test will:
+1. Load 25,545 space weather records from `data/SpaceWeather-All-v1.2.txt`
+2. Calculate densities for Jan 1, 2021 (MJD 59215.5)
+3. Generate `density_profile.dat` with density values at 10 km intervals
 
-### `calculate_geodetics_placeholder`
-Converts Cartesian position to geodetic coordinates. Currently uses a simplified spherical approximation.
+**Expected Output:**
+```
+Loading space weather data...
+Space weather data loaded: 25545 records
+  Date range (MJD):     36112.50 to     86882.50
 
-**TODO:** Implement proper geodetic coordinate transformation accounting for Earth's oblate spheroid.
+Test Scenario:
+  Position magnitude:        7000.00 km
+  UTC MJD:                   59215.jacchia_roberts_module, space_weather_module)
+- **test/** - Test programs and examples
+- **data/** - Space weather data files
+```
 
-### `get_solar_flux_placeholder`
-Retrieves solar flux (F10.7) and geomagnetic (Kp) indices. Currently returns constant nominal values.
+To use this as a dependency in another fpm project:
+```toml
+[dependencies]
+jacchia-roberts = { git = "https://github.com/jacobwilliams/jacchia-roberts-fortran.git" }
+```
 
-**TODO:** Implement reading from solar flux data files (e.g., CSSI Space Weather files) or connect to a space weather data service.
-
-## Model Validity and Limitations
-
-### Valid Range
-- **Altitude:** 100 km to 2500 km
-- Below 100 km: Model returns zero density (not valid)
-- Above 2500 km: Model returns zero density (exosphere)
-
-### Required Inputs
-- Accurate solar flux indices (F10.7, F10.7a)
-- Geomagnetic activity index (Kp)
-- Precise spacecraft position
-- Sun position
-
-### Coordinate Systems
-- Position vectors should be in True-of-Date (TOD) or Geocentric Celestial Inertial (GCI) frame
-- Sun vectors should be in the same frame as position vectors
-
-## Physical Constants
-
-The model uses the following physical constants (as per the original GMAT implementation):
-
-- **RHO_ZERO:** 3.46×10⁻⁹ g/cm³ (low altitude density)
-- **TZERO:** 183 K (temperature at 90 km)
-- **G_ZERO:** 9.80665 m/s² (gravitational acceleration)
-- **GAS_CON:** 8.31432 J/(K·mol) (gas constant)
-- **AVOGADRO:** 6.022045×10²³ (Avogadro's number)
-
-Note: These values are tuned for consistency with the GMAT implementation and may differ slightly from standard references.
-
-## Atmospheric Constituents
-
-The model accounts for six atmospheric species:
-1. Nitrogen (N₂)
-2. Argon (Ar)
-3. Helium (He)
-4. Molecular Oxygen (O₂)
-5. Atomic Oxygen (O)
-6. Hydrogen (H) - only above 500 km
+**Note:** When using as a dependency, you'll need to provide your own CSSI Space Weather data file.
 
 ## Testing
 
@@ -270,12 +260,7 @@ The included test program (`test_jacchia_roberts.f90`) demonstrates:
 
 Run the test with fpm:
 ```bash
-pixi run fpm run test_jacchia_roberts
-```
-
-Or with make:
-```bash
-make test
+fpm test
 ```
 
 This will generate a file `density_profile.dat` with density values at 10 km intervals.
@@ -293,51 +278,6 @@ To use this as a dependency in another fpm project:
 [dependencies]
 jacchia-roberts = { git = "https://github.com/yourusername/jacchia-roberts-fortran.git" }
 ```
-
-## Original Source
-
-This Fortran implementation is ported from:
-- **Project:** GMAT (General Mission Analysis Tool)
-- **Copyright:** 2002-2026 United States Government (NASA)
-- **License:** Apache License 2.0
-- **Original Authors:** Waka A. Waktola, Darrel J. Conway, and GMAT development team
-
-## License
-
-This Fortran implementation maintains the Apache License 2.0 of the original GMAT code.
-
-## Further Development
-
-### Recommended Enhancements
-
-1. **Solar Flux Data Integration:**
-   - Implement reading from CSSI Space Weather files
-   - Add support for Schatten prediction model
-   - Implement automatic flux data interpolation
-
-2. **Geodetic Transformations:**
-   - Implement proper geodetic coordinate calculations
-   - Add support for different reference ellipsoids
-   - Include coordinate frame transformations
-
-3. **Performance Optimizations:**
-   - Vectorize density calculations for multiple points
-   - Cache frequently used calculations
-   - Implement OpenMP parallelization for large-scale calculations
-
-4. **Extended Functionality:**
-   - Add temperature and pressure outputs
-   - Implement scale height calculations
-   - Add partial density outputs for individual species
-
-5. **Validation and Testing:**
-   - Compare against reference data
-   - Add unit tests for all functions
-   - Validate against GMAT implementation
-
-## Contact and Support
-
-For questions, bug reports, or contributions, please refer to the project repository.
 
 ## References
 

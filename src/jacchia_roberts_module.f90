@@ -7,14 +7,11 @@
 !   100 km to 2500 km.
 !
 !### Reference:
-!   Roberts, C. E., Jr., "An Analytic Model for Upper Atmosphere Densities
-!   Based Upon Jacchia's 1970 Models", Celestial Mechanics, Vol. 4,
-!   pp. 368-377, 1971.
-!
-!### Original C++ code:
-!   GMAT: General Mission Analysis Tool
-!   Copyright (c) 2002-2026 United States Government
-!   Licensed under the Apache License, Version 2.0
+!   * Roberts, C. E., Jr., "An Analytic Model for Upper Atmosphere Densities
+!     Based Upon Jacchia's 1970 Models", Celestial Mechanics, Vol. 4,
+!     pp. 368-377, 1971.
+!   * See GMAT: General Mission Analysis Tool files:
+!     `JacchiaRobertsAtmosphere.cpp` and `SolarFluxReader.cpp`.
 
 module jacchia_roberts_module
    use, intrinsic :: iso_fortran_env, only: real64, int32
