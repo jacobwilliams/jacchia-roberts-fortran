@@ -110,8 +110,46 @@ program test_jacchia_roberts
    write(*,'(A)') '------------------------------------------------------'
    write(*,'(A)') ''
 
-   ! Additional test: Density profile from 100 to 1000 km
-   write(*,'(A)') 'Generating density profile (100-1000 km)...'
+   ! test different sun vectors (general, collinear, orthogonal, anti-collinear)
+   write(*,'(A)') 'Testing different sun vector orientations...'
+
+   ! Collinear case (already tested above)
+   write(*,'(A)') '  Collinear case: sun and spacecraft both on x-axis (already tested)'
+
+   ! Orthogonal case: sun on y-axis, spacecraft on x-axis
+   sun_vector(1) = 0.0_dp
+   sun_vector(2) = 1.0_dp
+   sun_vector(3) = 0.0_dp
+   density = atm%density(400.0_dp, position, sun_vector, &
+                           geo_lat, sun_dec, utc_mjd)
+   write(*,'(A)') '  Orthogonal case: sun on y-axis, spacecraft on x-axis'
+   write(*,'(A,F12.2,8X,ES14.6,4X,ES14.6)') '    Altitude: 400.00 km', density, density * 1.0e-3_dp
+
+   ! Anti-collinear case: sun on negative x-axis, spacecraft on positive x-axis
+   sun_vector(1) = -1.0_dp
+   sun_vector(2) = 0.0_dp
+   sun_vector(3) = 0.0_dp
+   density = atm%density(400.0_dp, position, sun_vector, &
+                           geo_lat, sun_dec, utc_mjd)
+   write(*,'(A)') '  Anti-collinear case: sun on negative x-axis, spacecraft on positive x-axis'
+   write(*,'(A,F12.2,8X,ES14.6,4X,ES14.6)') '    Altitude: 400.00 km', density, density * 1.0e-3_dp
+
+   ! General case: sun vector at 45 degrees in x-y plane
+   sun_vector(1) = 1.0_dp / sqrt(2.0_dp)
+   sun_vector(2) = 1.0_dp / sqrt(2.0_dp)
+   sun_vector(3) = 0.0_dp
+   density = atm%density(400.0_dp, position, sun_vector, &
+                           geo_lat, sun_dec, utc_mjd)
+   write(*,'(A)') '  General case: sun vector at 45 degrees in x-y plane'
+   write(*,'(A,F12.2,8X,ES 14.6,4X,ES14.6)') '    Altitude: 400.00 km', density, density * 1.0e-3_dp
+
+
+
+   write(*,'(A)') '------------------------------------------------------'
+   write(*,'(A)') ''
+
+   ! Additional test: Density profile from 90 to 2510 km
+   write(*,'(A)') 'Generating density profile (90-2510 km)...'
    write(*,'(A)') ''
 
    open(unit=10, file='density_profile.dat', status='replace', action='write')

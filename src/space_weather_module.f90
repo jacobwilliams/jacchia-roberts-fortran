@@ -81,15 +81,7 @@ contains
       status = 0
 
       ! Deallocate if already allocated
-      if (allocated(me%mjd)) then
-         deallocate(me%mjd)
-         deallocate(me%f107_obs)
-         deallocate(me%f107_adj)
-         deallocate(me%f107a_obs_ctr)
-         deallocate(me%f107a_adj_ctr)
-         deallocate(me%kp)
-         deallocate(me%ap_avg)
-      end if
+      call me%destroy()
 
       ! Open file
       open(newunit=unit, file=filename, status='old', action='read', iostat=io_stat)
@@ -330,15 +322,13 @@ contains
 
    subroutine sw_cleanup(me)
       class(sw_data_type), intent(inout) :: me
-      if (allocated(me%mjd)) then
-         deallocate(me%mjd)
-         deallocate(me%f107_obs)
-         deallocate(me%f107_adj)
-         deallocate(me%f107a_obs_ctr)
-         deallocate(me%f107a_adj_ctr)
-         deallocate(me%kp)
-         deallocate(me%ap_avg)
-      end if
+      if (allocated(me%mjd))           deallocate(me%mjd)
+      if (allocated(me%f107_obs))      deallocate(me%f107_obs)
+      if (allocated(me%f107_adj))      deallocate(me%f107_adj)
+      if (allocated(me%f107a_obs_ctr)) deallocate(me%f107a_obs_ctr)
+      if (allocated(me%f107a_adj_ctr)) deallocate(me%f107a_adj_ctr)
+      if (allocated(me%kp))            deallocate(me%kp)
+      if (allocated(me%ap_avg))        deallocate(me%ap_avg)
       me%initialized = .false.
       me%n_records = 0
    end subroutine sw_cleanup

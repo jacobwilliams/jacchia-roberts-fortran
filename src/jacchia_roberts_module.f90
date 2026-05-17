@@ -156,7 +156,7 @@ module jacchia_roberts_module
    type,public :: geoparms_type
       !! Geomagnetic parameters
       real(dp) :: tkp    = 0.0_dp  !! Geomagnetic index Kp
-      real(dp) :: xtemp  = 0.0_dp  !! Exospheric temperature
+      real(dp) :: xtemp  = 0.0_dp  !! Exospheric temperature (K)
    end type geoparms_type
 
    type,public :: jacchia_roberts_type
@@ -164,7 +164,7 @@ module jacchia_roberts_module
       private
       ! Module state variables
       real(dp) :: cb_polar_radius  = 0.0_dp   !! Central body polar radius (km)
-      real(dp) :: cb_polar_squared = 0.0_dp   !! Polar radius squared
+      real(dp) :: cb_polar_squared = 0.0_dp   !! Polar radius squared (km^2)
       real(dp) :: root1            = 0.0_dp   !! Auxiliary temperature root
       real(dp) :: root2            = 0.0_dp   !! Auxiliary temperature root
       real(dp) :: x_root           = 0.0_dp   !! Complex root real part
@@ -327,9 +327,9 @@ contains
       real(dp) :: theta, eta, tau, th22, t1, sun_denom, cos_denom
       real(dp) :: c_star(5), aux(4,2)
       real(dp) :: cosAlpha
+      integer(ip) :: i, na
       real(dp), parameter :: error_tolerance = 1.0e-14_dp
       real(dp), parameter :: real_tol = 1.0e-15_dp
-      integer(ip) :: i, na
 
       na = 5
 
@@ -357,8 +357,8 @@ contains
          ! Vectors aligned: hour angle = 0
          hour_angle = 0.0_dp
       else if (cosAlpha <= -1.0_dp + error_tolerance) then
-         ! Vectors opposite: hour angle = ±π
-         ! If cross product is too small (collinear case), default to +π
+         ! Vectors opposite: hour angle = +/- PI
+         ! If cross product is too small (collinear case), default to +PI
          if (cross_denom < real_tol) then
             hour_angle = PI
          else
@@ -373,7 +373,7 @@ contains
             hour_angle = 0.0_dp
          else
             hour_angle = sign(1.0_dp, sun_vector(1) * position(2) - &
-                             sun_vector(2) * position(1)) * acos(cosAlpha)
+                         sun_vector(2) * position(1)) * acos(cosAlpha)
          end if
       end if
 
@@ -760,7 +760,14 @@ contains
 
       ! Compute semiannual variation correction
       f = (5.876e-7_dp * height**2.331_dp + 0.06328_dp) * exp(-0.002868_dp * height)
-      day_58 = (utc_mjd - 6204.5_dp) / 365.2422_dp
+
+      ! Compute years since Jan 1, 1958 midnight (MJD 36204.0)
+      ! Note: The C++ code uses 6204.5 because GMAT uses GSFC MJD (reference epoch
+      ! Jan 5, 1941 noon = MJD 29999.5). In GSFC MJD, Jan 1, 1958 midnight = 6204.5.
+      ! This Fortran implementation uses standard MJD where Jan 1, 1958 midnight = 36204.0.
+      ! Verified: 36204.0 - 29999.5 = 6204.5 ✓
+      day_58 = (utc_mjd - 36204.0_dp) / 365.2422_dp
+
       tausa = day_58 + 0.09544_dp * &
               (0.5_dp * (1.0_dp + sin(2.0_dp * PI * day_58 + 6.035_dp))**1.65_dp - 0.5_dp)
       alpha = sin(4.0_dp * PI * tausa + 4.259_dp)
