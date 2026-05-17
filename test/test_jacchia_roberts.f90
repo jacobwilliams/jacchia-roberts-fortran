@@ -30,7 +30,6 @@ program test_jacchia_roberts
    real(dp) :: position(3)
    real(dp) :: sun_vector(3)
    real(dp) :: geo_lat
-   real(dp) :: sun_dec
    real(dp) :: utc_mjd
    integer(ip) :: sw_status
    type(jacchia_roberts_type) :: atm
@@ -73,9 +72,6 @@ program test_jacchia_roberts
    ! Geodetic latitude (degrees)
    geo_lat = 0.0_dp
 
-   ! Sun declination (radians) - equinox
-   sun_dec = 0.0_dp
-
    ! UTC Modified Julian Date (Jan 1, 2021 12:00 UTC)
    ! This date is in the space weather file
    utc_mjd = 59215.5_dp
@@ -83,7 +79,6 @@ program test_jacchia_roberts
    write(*,'(A)') 'Test Scenario:'
    write(*,'(A,F10.2,A)') '  Position magnitude:     ', sqrt(sum(position**2)), ' km'
    write(*,'(A,F10.4)') '  Geodetic latitude:      ', geo_lat
-   write(*,'(A,F10.4)') '  Sun declination:        ', sun_dec
    write(*,'(A,F12.2)') '  UTC MJD:                ', utc_mjd
    write(*,'(A)') '  (Space weather retrieved from data file)'
    write(*,'(A)') ''
@@ -101,7 +96,7 @@ program test_jacchia_roberts
 
       ! Calculate density
       density = atm%density(height, position, sun_vector, &
-                            geo_lat, sun_dec, utc_mjd)
+                            geo_lat, utc_mjd)
 
       ! Display results
       write(*,'(F12.2,8X,ES14.6,4X,ES14.6)') height, density, density * 1.0e-3_dp
@@ -121,7 +116,7 @@ program test_jacchia_roberts
    sun_vector(2) = 1.0_dp
    sun_vector(3) = 0.0_dp
    density = atm%density(400.0_dp, position, sun_vector, &
-                           geo_lat, sun_dec, utc_mjd)
+                           geo_lat, utc_mjd)
    write(*,'(A)') '  Orthogonal case: sun on y-axis, spacecraft on x-axis'
    write(*,'(A,F12.2,8X,ES14.6,4X,ES14.6)') '    Altitude: 400.00 km', density, density * 1.0e-3_dp
 
@@ -130,7 +125,7 @@ program test_jacchia_roberts
    sun_vector(2) = 0.0_dp
    sun_vector(3) = 0.0_dp
    density = atm%density(400.0_dp, position, sun_vector, &
-                           geo_lat, sun_dec, utc_mjd)
+                           geo_lat, utc_mjd)
    write(*,'(A)') '  Anti-collinear case: sun on negative x-axis, spacecraft on positive x-axis'
    write(*,'(A,F12.2,8X,ES14.6,4X,ES14.6)') '    Altitude: 400.00 km', density, density * 1.0e-3_dp
 
@@ -139,7 +134,7 @@ program test_jacchia_roberts
    sun_vector(2) = 1.0_dp / sqrt(2.0_dp)
    sun_vector(3) = 0.0_dp
    density = atm%density(400.0_dp, position, sun_vector, &
-                           geo_lat, sun_dec, utc_mjd)
+                           geo_lat, utc_mjd)
    write(*,'(A)') '  General case: sun vector at 45 degrees in x-y plane'
    write(*,'(A,F12.2,8X,ES 14.6,4X,ES14.6)') '    Altitude: 400.00 km', density, density * 1.0e-3_dp
 
@@ -158,7 +153,7 @@ program test_jacchia_roberts
    do i = 90, 2510, 5
       height = real(i, dp)
       density = atm%density(height, position, sun_vector, &
-                            geo_lat, sun_dec, utc_mjd)
+                            geo_lat, utc_mjd)
       write(10,'(F12.2,2(2X,ES16.8))') height, density, density * 1.0e-3_dp
    end do
 

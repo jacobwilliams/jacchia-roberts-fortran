@@ -229,16 +229,16 @@ contains
    !   from the loaded space weather file based on the provided MJD.
 
    function jacchia_roberts_density(me,height, position, sun_vector, geo_lat, &
-                                    sun_dec, utc_mjd) result(density)
+                                    utc_mjd) result(density)
       class(jacchia_roberts_type), intent(inout) :: me
       real(dp), intent(in) :: height !! Spacecraft height above reference ellipsoid (km)
       real(dp), intent(in) :: position(3) !! Spacecraft position vector (km, TOD/GCI)
       real(dp), intent(in) :: sun_vector(3) !! Unit vector to Sun (TOD/GCI)
       real(dp), intent(in) :: geo_lat !! Geodetic latitude (degrees)
-      real(dp), intent(in) :: sun_dec !! Sun declination (radians)
       real(dp), intent(in) :: utc_mjd !! UTC Modified Julian Date
       real(dp) :: density !! Atmospheric density (kg/m^3)
 
+      real(dp) :: sun_dec !! Sun declination (radians)
       real(dp) :: temperature, t_500
       real(dp) :: geo_lat_rad
       real(dp) :: raw_density
@@ -252,6 +252,9 @@ contains
          density = 0.0_dp
          return
       end if
+
+      ! sun declination:
+      sun_dec = atan2(sun_vector(2), sqrt(sun_vector(1)*sun_vector(1) + sun_vector(2)*sun_vector(2)))
 
       ! Get space weather data for this date
       call me%sw_data%get_flux_data(utc_mjd, flux_data, sw_status)
@@ -282,18 +285,18 @@ contains
       else if (height < 100.0_dp) then
          ! 90-100 km: use rho_100
          temperature = me%exotherm(position, sun_vector, geo, height, &
-                               sun_dec, geo_lat_rad)
+                                   sun_dec, geo_lat_rad)
          raw_density = me%rho_100(height, temperature)
       else if (height <= 125.0_dp) then
          ! 100-125 km: use rho_125
          temperature = me%exotherm(position, sun_vector, geo, height, &
-                               sun_dec, geo_lat_rad)
+                                   sun_dec, geo_lat_rad)
          raw_density = me%rho_125(height, temperature)
       else if (height <= 2500.0_dp) then
          t_500 = me%exotherm(position, sun_vector, geo, 500.0_dp, &
-                         sun_dec, geo_lat_rad)
+                             sun_dec, geo_lat_rad)
          temperature = me%exotherm(position, sun_vector, geo, height, &
-                               sun_dec, geo_lat_rad)
+                                   sun_dec, geo_lat_rad)
          raw_density = me%rho_high(height, temperature, t_500, sun_dec, geo_lat_rad)
       else
          raw_density = 0.0_dp
