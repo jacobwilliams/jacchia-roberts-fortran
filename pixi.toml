@@ -10,3 +10,4 @@ version = "0.1.0"
 [dependencies]
 gfortran = ">=15.2.0,<15.3"
 fpm = ">=0.13.0,<0.14"
+lcov = ">=1.16,<2"

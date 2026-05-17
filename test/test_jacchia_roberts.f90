@@ -117,7 +117,7 @@ program test_jacchia_roberts
    open(unit=10, file='density_profile.dat', status='replace', action='write')
    write(10,'(A)') '# Altitude (km), Density (kg/m^3), Density (g/cm^3)'
 
-   do i = 100, 1000, 10
+   do i = 90, 2510, 5
       height = real(i, dp)
       density = atm%density(height, position, sun_vector, &
                             geo_lat, sun_dec, utc_mjd)

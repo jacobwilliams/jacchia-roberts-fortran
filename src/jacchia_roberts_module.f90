@@ -178,7 +178,6 @@ module jacchia_roberts_module
       procedure, public :: density     => jacchia_roberts_density
       procedure, public :: initialize  => jr_init
       procedure, public :: destroy     => jr_cleanup
-      procedure :: jr_load_space_weather
       procedure :: exotherm
       procedure :: rho_100
       procedure :: rho_125
@@ -212,19 +211,6 @@ contains
       call me%sw_data%initialize(filename, status)
 
    end subroutine jr_init
-
-   !---------------------------------------------------------------------------
-   !>
-   !   Load space weather data from a CSSI file
-
-   subroutine jr_load_space_weather(me, filename, status)
-      class(jacchia_roberts_type), intent(inout) :: me
-      character(len=*), intent(in) :: filename !! Path to CSSI space weather file
-      integer(ip), intent(out) :: status  !! Output status (0=success, non-zero=error)
-
-      call me%sw_data%initialize(filename, status)
-
-   end subroutine jr_load_space_weather
 
    !---------------------------------------------------------------------------
    !>
