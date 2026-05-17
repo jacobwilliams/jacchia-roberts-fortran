@@ -130,23 +130,42 @@ module jacchia_roberts_utilities
    !---------------------------------------------------------------------------
    !>
    !   Convert calendar date to Modified Julian Date (MJD)
-   pure subroutine date_to_mjd(year, month, day, mjd)
+
+    subroutine date_to_mjd(year, month, day, mjd)
       integer(ip), intent(in) :: year, month, day
       real(dp), intent(out) :: mjd
-      integer(ip) :: a, y, m, jdn
-
-      ! Convert to Julian Day Number using standard algorithm
-      a = (14 - month) / 12
-      y = year + 4800 - a
-      m = month + 12 * a - 3
-
-      jdn = day + (153 * m + 2) / 5 + 365 * y + y / 4 - y / 100 + y / 400 - 32045
 
       ! Convert JDN to MJD at midnight (00:00 UTC)
       ! JDN is at noon, so JDN - 0.5 gives midnight
       ! MJD = JD - 2400000.5 = (JDN - 0.5) - 2400000.5 = JDN - 2400001.0
-      mjd = real(jdn - 2400001, dp)
+      mjd = real(julian_day(year, month, day) - 2400001, dp)
 
    end subroutine date_to_mjd
+
+!*****************************************************************************************
+!> author: Jacob Williams
+!
+!  Returns the Julian day number (i.e., the Julian date at Greenwich noon)
+!  on the specified YEAR, MONTH, and DAY.
+!
+!  Valid for any Gregorian calendar date producing a
+!  Julian date greater than zero.
+!
+!### Reference
+!   * [USNO](https://aa.usno.navy.mil/faq/JD_formula)
+
+    pure integer function julian_day(y,m,d)
+
+    implicit none
+
+    integer(ip),intent(in) :: y   !! year (YYYY)
+    integer(ip),intent(in) :: m   !! month (MM)
+    integer(ip),intent(in) :: d   !! day (DD)
+
+    julian_day = d-32075+1461*(y+4800+(m-14)/12)/4+367*&
+                 (m-2-(m-14)/12*12)/12-3*((y+4900+(m-14)/12)/100)/4
+
+    end function julian_day
+!*****************************************************************************************
 
 end module jacchia_roberts_utilities
