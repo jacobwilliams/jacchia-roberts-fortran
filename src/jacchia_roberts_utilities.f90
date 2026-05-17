@@ -23,9 +23,11 @@ module jacchia_roberts_utilities
       real(dp), intent(inout) :: croots(:,:) !! Initial guesses and output roots (real, imaginary)
       integer(ip), intent(in) :: irl !! Number of roots to solve for
 
-      integer(ip) :: i, ir, n1, n2, j
-      real(dp) :: z(2), zs(2), cb(2), cc(2), dif, denom, temp
+      integer(ip) :: i, ir, n1, n2, j, iter
+      real(dp) :: z(2), zs(2), cb(2), cc(2), cb_old(2), dif, denom, temp
       real(dp), parameter :: conv_tol = 1.0e-14_dp
+      real(dp), parameter :: abs_tol = 1.0e-15_dp
+      integer(ip), parameter :: max_iter = 100
 
       ir = 0
       n1 = na - 1
@@ -35,7 +37,14 @@ module jacchia_roberts_utilities
          z(1) = croots(ir+1,1)
          z(2) = croots(ir+1,2)
 
+         iter = 0
          do
+            iter = iter + 1
+            if (iter > max_iter) then
+               ! Exceeded maximum iterations - exit with current approximation
+               exit
+            end if
+
             cb(1) = a(n1+1)
             cb(2) = 0.0_dp
             cc(1) = a(n1+1)
@@ -43,12 +52,17 @@ module jacchia_roberts_utilities
 
             do i = 0, n2
                j = n2 - i
+               ! Save old cb values before updating
+               cb_old(1) = cb(1)
+               cb_old(2) = cb(2)
+               ! Update cb (polynomial value)
                temp = (z(1) * cb(1) - z(2) * cb(2)) + a(j+1)
                cb(2) = z(1) * cb(2) + z(2) * cb(1)
                cb(1) = temp
+               ! Update cc (derivative) using OLD cb values
                if (j /= 0) then
-                  temp = (z(1) * cc(1) - z(2) * cc(2)) + cb(1)
-                  cc(2) = (z(1) * cc(2) + z(2) * cc(1)) + cb(2)
+                  temp = (z(1) * cc(1) - z(2) * cc(2)) + cb_old(1)
+                  cc(2) = (z(1) * cc(2) + z(2) * cc(1)) + cb_old(2)
                   cc(1) = temp
                end if
             end do
@@ -58,13 +72,26 @@ module jacchia_roberts_utilities
 
             ! Newton's method
             denom = cc(1) * cc(1) + cc(2) * cc(2)
+            if (denom < 1.0e-30_dp) then
+               ! Derivative is zero - cannot continue Newton's method
+               exit
+            end if
             z(1) = z(1) - ((cb(1) * cc(1) + cb(2) * cc(2)) / denom)
             z(2) = z(2) + ((cb(1) * cc(2) - cb(2) * cc(1)) / denom)
 
-            ! Convergence criterion
-            dif = abs((zs(1) - z(1)) / zs(1))
-            if (abs(zs(2)) > 1.0e-15_dp) then
+            ! Convergence criterion with protection against division by zero
+            if (abs(zs(1)) > abs_tol) then
+               dif = abs((zs(1) - z(1)) / zs(1))
+            else
+               ! Use absolute difference when zs(1) is near zero
+               dif = abs(zs(1) - z(1))
+            end if
+
+            if (abs(zs(2)) > abs_tol) then
                dif = dif + abs((zs(2) - z(2)) / zs(2))
+            else
+               ! Use absolute difference when zs(2) is near zero
+               dif = dif + abs(zs(2) - z(2))
             end if
 
             if (dif <= conv_tol) exit
@@ -115,8 +142,10 @@ module jacchia_roberts_utilities
 
       jdn = day + (153 * m + 2) / 5 + 365 * y + y / 4 - y / 100 + y / 400 - 32045
 
-      ! Convert JDN to MJD
-      mjd = real(jdn, dp) - 2400000.5_dp
+      ! Convert JDN to MJD at midnight (00:00 UTC)
+      ! JDN is at noon, so JDN - 0.5 gives midnight
+      ! MJD = JD - 2400000.5 = (JDN - 0.5) - 2400000.5 = JDN - 2400001.0
+      mjd = real(jdn, dp) - 2400001.0_dp
 
    end subroutine date_to_mjd
 
