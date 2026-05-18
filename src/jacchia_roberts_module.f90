@@ -787,7 +787,7 @@ contains
    !---------------------------------------------------------------------------
    !>
    !   Prepare flux data for the current epoch, accounting for measurement timing
-   !   This matches the C++ PrepareKpData function which handles:
+   !   This matches the GMAT `PrepareKpData` function which handles:
    !
    !     1. Kp selection with 6.7 hour lag (Vallado & Finkleman)
    !     2. F10.7 daily value (uses previous day)

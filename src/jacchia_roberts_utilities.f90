@@ -17,7 +17,7 @@ module jacchia_roberts_utilities
    !>
    !   Finds the roots of a polynomial using Newton's method
 
-   subroutine roots(a, na, croots, irl)
+   pure subroutine roots(a, na, croots, irl)
       real(dp), intent(in) :: a(:) !! Array of polynomial coefficients (lowest power first)
       integer(ip), intent(in) :: na !! Number of coefficients
       real(dp), intent(inout) :: croots(:,:) !! Initial guesses and output roots (real, imaginary)
@@ -108,7 +108,7 @@ module jacchia_roberts_utilities
    !>
    !   Reduces the order of a polynomial by division
 
-   subroutine deflate_polynomial(c, n, root, c_new)
+   pure subroutine deflate_polynomial(c, n, root, c_new)
       real(dp), intent(in) :: c(:) !! Polynomial coefficients
       integer(ip), intent(in) :: n !! Order + 1 of polynomial
       real(dp), intent(in) :: root !! A single real root of the polynomial
@@ -131,7 +131,7 @@ module jacchia_roberts_utilities
    !>
    !   Convert calendar date to Modified Julian Date (MJD)
 
-    subroutine date_to_mjd(year, month, day, mjd)
+   pure subroutine date_to_mjd(year, month, day, mjd)
       integer(ip), intent(in) :: year, month, day
       real(dp), intent(out) :: mjd
 
@@ -154,7 +154,7 @@ module jacchia_roberts_utilities
 !### Reference
 !   * [USNO](https://aa.usno.navy.mil/faq/JD_formula)
 
-    pure integer function julian_day(y,m,d)
+   pure integer function julian_day(y,m,d)
 
     implicit none
 
@@ -165,7 +165,7 @@ module jacchia_roberts_utilities
     julian_day = d-32075+1461*(y+4800+(m-14)/12)/4+367*&
                  (m-2-(m-14)/12*12)/12-3*((y+4900+(m-14)/12)/100)/4
 
-    end function julian_day
+   end function julian_day
 !*****************************************************************************************
 
 end module jacchia_roberts_utilities
