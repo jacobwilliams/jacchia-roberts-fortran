@@ -243,6 +243,8 @@ contains
       real(dp) :: t_500 !! Temperature at 500 km (K)
       real(dp) :: geo_lat_rad !! Geodetic latitude in radians
       real(dp) :: raw_density !! Density before unit conversion (g/cm^3)
+      real(dp) :: f107_daily !! Daily F10.7 value (adjusted for measurement time)
+      real(dp) :: f107a_avg !! 81-day average F10.7a (adjusted for measurement time)
       type(geoparms_type) :: geo !! Geomagnetic parameters
       type(flux_data_type) :: flux_data !! Space weather flux data
       integer(ip) :: sw_status !! Status for space weather data retrieval
@@ -260,14 +262,14 @@ contains
          geo%xtemp = 379.0_dp + 3.24_dp * 150.0_dp + 1.3_dp * (150.0_dp - 150.0_dp)
          geo%tkp = 3.0_dp
       else
-         ! Calculate exospheric temperature from F10.7 data
-         ! Formula from GMAT: geo.xtemp = 379.0 + 3.24 * F107a + 1.3 * (F107 - F107a)
-         geo%xtemp = 379.0_dp + 3.24_dp * flux_data%f107a_obs_ctr + &
-                     1.3_dp * (flux_data%f107_obs - flux_data%f107a_obs_ctr)
+         ! Prepare flux data with proper timing adjustments
+         ! This matches C++ PrepareKpData: Kp with 6.7hr lag, F10.7 from previous day,
+         ! F10.7a adjusted for measurement time-of-day
+         call prepare_flux_data(me%sw_data, flux_data, utc_mjd, geo%tkp, f107_daily, f107a_avg)
 
-         ! Use the first Kp value (3-hour period starting at 00:00 UTC)
-         ! For more accuracy, could select Kp based on time of day
-         geo%tkp = flux_data%kp(1)
+         ! Calculate exospheric temperature from adjusted F10.7 data
+         ! Formula from GMAT: geo.xtemp = 379.0 + 3.24 * F107a + 1.3 * (F107 - F107a)
+         geo%xtemp = 379.0_dp + 3.24_dp * f107a_avg + 1.3_dp * (f107_daily - f107a_avg)
       end if
 
       ! Convert geodetic latitude to radians
@@ -781,5 +783,116 @@ contains
       correction = 10.0_dp**(geo_cor + semian_cor + slat_cor)
 
    end function rho_cor
+
+   !---------------------------------------------------------------------------
+   !>
+   !   Prepare flux data for the current epoch, accounting for measurement timing
+   !   This matches the C++ PrepareKpData function which handles:
+   !
+   !     1. Kp selection with 6.7 hour lag (Vallado & Finkleman)
+   !     2. F10.7 daily value (uses previous day)
+   !     3. F10.7a average (adjusted for measurement time-of-day)
+
+   subroutine prepare_flux_data(sw_data, flux_data, utc_mjd, kp_out, f107_out, f107a_out)
+      type(sw_data_type), intent(inout) :: sw_data !! Space weather data manager
+      type(flux_data_type), intent(in) :: flux_data !! Current day's flux data
+      real(dp), intent(in) :: utc_mjd !! Current epoch (MJD)
+      real(dp), intent(out) :: kp_out !! Selected Kp index for current epoch
+      real(dp), intent(out) :: f107_out !! Selected F10.7 daily value for current epoch
+      real(dp), intent(out) :: f107a_out !! Selected F10.7a average for current epoch
+
+      real(dp) :: frac_epoch, frac_epoch_kp, f107_offset
+      integer(ip) :: sub_index, f107_index, sw_status
+      type(flux_data_type) :: flux_data_prev, flux_data_2days_ago
+
+      real(dp), parameter :: F107_REF_EPOCH = 48408.0_dp  !! MJD for 5/31/91
+
+      ! Calculate fractional day from midnight
+      frac_epoch = utc_mjd - flux_data%mjd
+
+      ! Apply 6.7 hour lag for Kp per Vallado & Finkleman
+      frac_epoch_kp = frac_epoch - 6.7_dp / 24.0_dp
+
+      ! Determine which 3-hour period (0-7 for 8 periods per day)
+      sub_index = floor(frac_epoch_kp * 8.0_dp)
+
+      ! Clamp to valid range
+      if (sub_index >= 8) then
+         sub_index = 7
+      end if
+
+      ! F10.7 is measured at 8pm (5pm before 5/31/91)
+      ! We use current row for data from 8am on current day to 8am next day
+      if (utc_mjd < F107_REF_EPOCH) then
+         f107_offset = 5.0_dp / 24.0_dp  ! 5pm = 17:00 UT
+      else
+         f107_offset = 8.0_dp / 24.0_dp  ! 8pm = 20:00 UT
+      end if
+
+      ! Determine f107_index based on time of day
+      if (frac_epoch < f107_offset) then
+         f107_index = -1  ! Use previous day's index
+      else
+         f107_index = 0   ! Use current day's index
+      end if
+
+      ! ===== KP SELECTION =====
+      if (sub_index >= 0) then
+         ! Use Kp from current day (Fortran uses 1-based indexing)
+         kp_out = flux_data%kp(sub_index + 1)
+      else
+         ! Need previous day's data
+         call sw_data%get_flux_data(flux_data%mjd - 1.0_dp, flux_data_prev, sw_status)
+
+         if (sw_status == 0) then
+            ! Use appropriate Kp from previous day
+            ! sub_index is negative, so 8 + sub_index gives the right period
+            kp_out = flux_data_prev%kp(8 + sub_index + 1)
+         else
+            ! If we can't get previous day, use first period of current day
+            kp_out = flux_data%kp(1)
+         end if
+      end if
+
+      ! ===== F10.7 DAILY VALUE (always uses previous day) =====
+      if (f107_index == 0) then
+         ! Current time is after measurement time - use yesterday's F10.7
+         call sw_data%get_flux_data(flux_data%mjd - 1.0_dp, flux_data_prev, sw_status)
+         if (sw_status == 0) then
+            f107_out = flux_data_prev%f107_obs
+         else
+            f107_out = flux_data%f107_obs  ! Fallback to current
+         end if
+      else
+         ! Current time is before measurement time - use 2 days ago F10.7
+         call sw_data%get_flux_data(flux_data%mjd - 2.0_dp, flux_data_2days_ago, sw_status)
+         if (sw_status == 0) then
+            f107_out = flux_data_2days_ago%f107_obs
+         else
+            ! Try 1 day ago as fallback
+            call sw_data%get_flux_data(flux_data%mjd - 1.0_dp, flux_data_prev, sw_status)
+            if (sw_status == 0) then
+               f107_out = flux_data_prev%f107_obs
+            else
+               f107_out = flux_data%f107_obs  ! Last resort
+            end if
+         end if
+      end if
+
+      ! ===== F10.7a AVERAGE (centered 81-day average) =====
+      if (f107_index == 0) then
+         ! Current time is after measurement time - use today's F10.7a
+         f107a_out = flux_data%f107a_obs_ctr
+      else
+         ! Current time is before measurement time - use yesterday's F10.7a
+         call sw_data%get_flux_data(flux_data%mjd - 1.0_dp, flux_data_prev, sw_status)
+         if (sw_status == 0) then
+            f107a_out = flux_data_prev%f107a_obs_ctr
+         else
+            f107a_out = flux_data%f107a_obs_ctr  ! Fallback to current
+         end if
+      end if
+
+   end subroutine prepare_flux_data
 
 end module jacchia_roberts_module
