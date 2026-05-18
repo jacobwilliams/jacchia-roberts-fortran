@@ -252,9 +252,8 @@ contains
       type(flux_data_type) :: flux_data !! Space weather flux data
       integer(ip) :: sw_status !! Status for space weather data retrieval
 
-      ! sun declination:
-      sun_dec = atan2(sun_vector(2), sqrt(sun_vector(1)*sun_vector(1) + &
-                                          sun_vector(2)*sun_vector(2)))
+      ! sun declination: atan2(Z, sqrt(X^2 + Y^2))
+      sun_dec = atan2(sun_vector(3), sqrt(sun_vector(1)**2 + sun_vector(2)**2))
 
       ! Get space weather data for this date
       call me%sw_data%get_flux_data(utc_mjd, flux_data, sw_status)
@@ -772,7 +771,7 @@ contains
       day_58 = (utc_mjd - 36204.0_dp) / 365.2422_dp
 
       tausa = day_58 + 0.09544_dp * &
-              (0.5_dp * (1.0_dp + sin(2.0_dp * PI * day_58 + 6.035_dp))**1.65_dp - 0.5_dp)
+              ((0.5_dp * (1.0_dp + sin(2.0_dp * PI * day_58 + 6.035_dp)))**1.65_dp - 0.5_dp)
       alpha = sin(4.0_dp * PI * tausa + 4.259_dp)
       g = 0.02835_dp + (0.3817_dp + 0.17829_dp * sin(2.0_dp * PI * tausa + 4.137_dp)) * alpha
       semian_cor = f * g
@@ -808,7 +807,7 @@ contains
       integer(ip) :: sub_index, f107_index, sw_status
       type(flux_data_type) :: flux_data_prev, flux_data_2days_ago
 
-      real(dp), parameter :: F107_REF_EPOCH = 48408.0_dp  !! MJD for 5/31/91
+      real(dp), parameter :: F107_REF_EPOCH = 48407.5_dp  !! MJD for 5/31/91 noon (matches C++ GSFC MJD 18408.0)
 
       ! Calculate fractional day from midnight
       frac_epoch = utc_mjd - flux_data%mjd
