@@ -239,15 +239,17 @@ contains
       real(dp) :: density !! Atmospheric density (kg/m^3)
 
       real(dp) :: sun_dec !! Sun declination (radians)
-      real(dp) :: temperature, t_500
-      real(dp) :: geo_lat_rad
-      real(dp) :: raw_density
-      type(geoparms_type) :: geo
-      type(flux_data_type) :: flux_data
-      integer(ip) :: sw_status
+      real(dp) :: temperature !! Local exospheric temperature (K)
+      real(dp) :: t_500 !! Temperature at 500 km (K)
+      real(dp) :: geo_lat_rad !! Geodetic latitude in radians
+      real(dp) :: raw_density !! Density before unit conversion (g/cm^3)
+      type(geoparms_type) :: geo !! Geomagnetic parameters
+      type(flux_data_type) :: flux_data !! Space weather flux data
+      integer(ip) :: sw_status !! Status for space weather data retrieval
 
       ! sun declination:
-      sun_dec = atan2(sun_vector(2), sqrt(sun_vector(1)*sun_vector(1) + sun_vector(2)*sun_vector(2)))
+      sun_dec = atan2(sun_vector(2), sqrt(sun_vector(1)*sun_vector(1) + &
+                                          sun_vector(2)*sun_vector(2)))
 
       ! Get space weather data for this date
       call me%sw_data%get_flux_data(utc_mjd, flux_data, sw_status)
