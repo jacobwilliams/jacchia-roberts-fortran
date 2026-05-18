@@ -246,13 +246,6 @@ contains
       type(flux_data_type) :: flux_data
       integer(ip) :: sw_status
 
-      ! Check altitude validity (C++ supports 90-2500 km internally)
-      if (height < 90.0_dp) then
-         write(*,*) 'ERROR: Jacchia-Roberts model not valid below 90 km'
-         density = 0.0_dp
-         return
-      end if
-
       ! sun declination:
       sun_dec = atan2(sun_vector(2), sqrt(sun_vector(1)*sun_vector(1) + sun_vector(2)*sun_vector(2)))
 
