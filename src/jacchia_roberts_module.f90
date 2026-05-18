@@ -184,6 +184,9 @@ module jacchia_roberts_module
       procedure :: rho_high
    end type jacchia_roberts_type
 
+   ! Public procedures for testing
+   public :: prepare_flux_data
+
 contains
 
    !---------------------------------------------------------------------------
@@ -814,26 +817,22 @@ contains
       frac_epoch_kp = frac_epoch - 6.7_dp / 24.0_dp
 
       ! Determine which 3-hour period (0-7 for 8 periods per day)
-      sub_index = floor(frac_epoch_kp * 8.0_dp)
+      sub_index = min(floor(frac_epoch_kp * 8.0_dp), 7)
 
-      ! Clamp to valid range
-      if (sub_index >= 8) then
-         sub_index = 7
-      end if
-
-      ! F10.7 is measured at 8pm (5pm before 5/31/91)
-      ! We use current row for data from 8am on current day to 8am next day
+      ! F10.7 is measured at 8pm (5pm before 5/31/91), but the data row is
+      ! valid from 8am on the current day to 8am the next day (5am before ref epoch)
+      ! So f107_offset represents the DATA VALIDITY BOUNDARY, not measurement time
       if (utc_mjd < F107_REF_EPOCH) then
-         f107_offset = 5.0_dp / 24.0_dp  ! 5pm = 17:00 UT
+         f107_offset = 5.0_dp / 24.0_dp  ! 5am validity boundary
       else
-         f107_offset = 8.0_dp / 24.0_dp  ! 8pm = 20:00 UT
+         f107_offset = 8.0_dp / 24.0_dp  ! 8am validity boundary
       end if
 
       ! Determine f107_index based on time of day
       if (frac_epoch < f107_offset) then
-         f107_index = -1  ! Use previous day's index
+         f107_index = -1  ! Before validity boundary - use previous day's index
       else
-         f107_index = 0   ! Use current day's index
+         f107_index = 0   ! After validity boundary - use current day's index
       end if
 
       ! ===== KP SELECTION =====
