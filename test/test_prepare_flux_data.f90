@@ -105,7 +105,8 @@ contains
       type(flux_data_type) :: flux_data
       real(dp) :: kp_out, f107_out, f107a_out
       real(dp) :: test_mjd, base_mjd
-      integer(ip) :: sw_status, i
+      logical :: sw_status
+      integer(ip) :: i
 
       total = total + 1
       write(*,*) 'Test 1: Kp selection for various 3-hour periods (0-7)'
@@ -116,7 +117,7 @@ contains
       ! Get flux data for this date
       call sw_data%get_flux_data(base_mjd, flux_data, sw_status)
 
-      if (sw_status /= 0) then
+      if (.not. sw_status) then
          write(*,*) '   FAILED: Could not get flux data for test date'
          return
       end if
@@ -148,7 +149,7 @@ contains
       type(flux_data_type) :: flux_data
       real(dp) :: kp_out, f107_out, f107a_out
       real(dp) :: test_mjd, base_mjd
-      integer(ip) :: sw_status
+      logical :: sw_status
 
       total = total + 1
       write(*,*) 'Test 2: Kp selection with sub_index >= 8 (clamps to 7)'
@@ -156,7 +157,7 @@ contains
       base_mjd = 59229.0_dp
       call sw_data%get_flux_data(base_mjd, flux_data, sw_status)
 
-      if (sw_status /= 0) then
+      if (.not. sw_status) then
          write(*,*) '   FAILED: Could not get flux data'
          return
       end if
@@ -185,7 +186,7 @@ contains
       type(flux_data_type) :: flux_data, flux_prev
       real(dp) :: kp_out, f107_out, f107a_out
       real(dp) :: test_mjd, base_mjd
-      integer(ip) :: sw_status
+      logical :: sw_status
 
       total = total + 1
       write(*,*) 'Test 3: Kp selection with sub_index < 0 (previous day)'
@@ -193,7 +194,7 @@ contains
       base_mjd = 59229.0_dp
       call sw_data%get_flux_data(base_mjd, flux_data, sw_status)
 
-      if (sw_status /= 0) then
+      if (.not. sw_status) then
          write(*,*) '   FAILED: Could not get flux data'
          return
       end if
@@ -207,7 +208,7 @@ contains
       ! Get previous day's data to verify
       call sw_data%get_flux_data(base_mjd - 1.0_dp, flux_prev, sw_status)
 
-      if (sw_status == 0) then
+      if (sw_status) then
          ! Should use appropriate period from previous day
          ! 3am - 6.7hr = -3.7hr = 20.3hr previous day = period 6 (18:00-21:00)
          if (abs(kp_out - flux_prev%kp(7)) > 1.0e-10_dp) then
@@ -231,7 +232,7 @@ contains
       type(flux_data_type) :: flux_data
       real(dp) :: kp_out, f107_out, f107a_out
       real(dp) :: test_mjd, base_mjd
-      integer(ip) :: sw_status
+      logical :: sw_status
 
       total = total + 1
       write(*,*) 'Test 4: F10.7 offset before reference epoch (5pm measurement)'
@@ -240,7 +241,7 @@ contains
       base_mjd = 47892.0_dp
       call sw_data%get_flux_data(base_mjd, flux_data, sw_status)
 
-      if (sw_status /= 0) then
+      if (.not. sw_status) then
          write(*,*) '   FAILED: Could not get flux data for 1990'
          return
       end if
@@ -264,7 +265,7 @@ contains
       type(flux_data_type) :: flux_data
       real(dp) :: kp_out, f107_out, f107a_out
       real(dp) :: test_mjd, base_mjd
-      integer(ip) :: sw_status
+      logical :: sw_status
 
       total = total + 1
       write(*,*) 'Test 5: F10.7 offset after reference epoch (8pm measurement)'
@@ -272,7 +273,7 @@ contains
       base_mjd = 59229.0_dp  ! 2021 - well after 5/31/91
       call sw_data%get_flux_data(base_mjd, flux_data, sw_status)
 
-      if (sw_status /= 0) then
+      if (.not. sw_status) then
          write(*,*) '   FAILED: Could not get flux data'
          return
       end if
@@ -295,7 +296,7 @@ contains
       type(flux_data_type) :: flux_data, flux_prev
       real(dp) :: kp_out, f107_out, f107a_out
       real(dp) :: test_mjd, base_mjd
-      integer(ip) :: sw_status
+      logical :: sw_status
 
       total = total + 1
       write(*,*) 'Test 6: F10.7 daily after measurement time (use yesterday)'
@@ -303,7 +304,7 @@ contains
       base_mjd = 59229.0_dp
       call sw_data%get_flux_data(base_mjd, flux_data, sw_status)
 
-      if (sw_status /= 0) then
+      if (.not. sw_status) then
          write(*,*) '   FAILED: Could not get flux data'
          return
       end if
@@ -317,7 +318,7 @@ contains
       ! Get previous day's data
       call sw_data%get_flux_data(base_mjd - 1.0_dp, flux_prev, sw_status)
 
-      if (sw_status == 0) then
+      if (sw_status) then
          if (abs(f107_out - flux_prev%f107_obs) > 1.0e-10_dp) then
             write(*,*) '   FAILED: Should use previous day F10.7'
             write(*,*) '   Expected:', flux_prev%f107_obs, ' Got:', f107_out
@@ -337,7 +338,7 @@ contains
       type(flux_data_type) :: flux_data, flux_2days
       real(dp) :: kp_out, f107_out, f107a_out
       real(dp) :: test_mjd, base_mjd
-      integer(ip) :: sw_status
+      logical :: sw_status
 
       total = total + 1
       write(*,*) 'Test 7: F10.7 daily before measurement time (use 2 days ago)'
@@ -345,7 +346,7 @@ contains
       base_mjd = 59229.0_dp
       call sw_data%get_flux_data(base_mjd, flux_data, sw_status)
 
-      if (sw_status /= 0) then
+      if (.not. sw_status) then
          write(*,*) '   FAILED: Could not get flux data'
          return
       end if
@@ -359,7 +360,7 @@ contains
       ! Get 2 days ago data
       call sw_data%get_flux_data(base_mjd - 2.0_dp, flux_2days, sw_status)
 
-      if (sw_status == 0) then
+      if (sw_status) then
          if (abs(f107_out - flux_2days%f107_obs) > 1.0e-10_dp) then
             write(*,*) '   FAILED: Should use 2 days ago F10.7'
             write(*,*) '   Expected:', flux_2days%f107_obs, ' Got:', f107_out
@@ -379,7 +380,7 @@ contains
       type(flux_data_type) :: flux_data
       real(dp) :: kp_out, f107_out, f107a_out
       real(dp) :: test_mjd, base_mjd
-      integer(ip) :: sw_status
+      logical :: sw_status
 
       total = total + 1
       write(*,*) 'Test 8: F10.7a after measurement time (use today)'
@@ -387,7 +388,7 @@ contains
       base_mjd = 59229.0_dp
       call sw_data%get_flux_data(base_mjd, flux_data, sw_status)
 
-      if (sw_status /= 0) then
+      if (.not. sw_status) then
          write(*,*) '   FAILED: Could not get flux data'
          return
       end if
@@ -415,7 +416,7 @@ contains
       type(flux_data_type) :: flux_data, flux_prev
       real(dp) :: kp_out, f107_out, f107a_out
       real(dp) :: test_mjd, base_mjd
-      integer(ip) :: sw_status
+      logical :: sw_status
 
       total = total + 1
       write(*,*) 'Test 9: F10.7a before measurement time (use yesterday)'
@@ -423,7 +424,7 @@ contains
       base_mjd = 59229.0_dp
       call sw_data%get_flux_data(base_mjd, flux_data, sw_status)
 
-      if (sw_status /= 0) then
+      if (.not. sw_status) then
          write(*,*) '   FAILED: Could not get flux data'
          return
       end if
@@ -437,7 +438,7 @@ contains
       ! Get previous day's data
       call sw_data%get_flux_data(base_mjd - 1.0_dp, flux_prev, sw_status)
 
-      if (sw_status == 0) then
+      if (sw_status) then
          if (abs(f107a_out - flux_prev%f107a_obs_ctr) > 1.0e-10_dp) then
             write(*,*) '   FAILED: Should use previous day F10.7a'
             write(*,*) '   Expected:', flux_prev%f107a_obs_ctr, ' Got:', f107a_out
@@ -457,7 +458,7 @@ contains
       type(flux_data_type) :: flux_data
       real(dp) :: kp_out, f107_out, f107a_out
       real(dp) :: test_mjd, base_mjd
-      integer(ip) :: sw_status
+      logical :: sw_status
 
       total = total + 1
       write(*,*) 'Test 10: Edge case - exactly at midnight (frac_epoch = 0)'
@@ -465,7 +466,7 @@ contains
       base_mjd = 59229.0_dp
       call sw_data%get_flux_data(base_mjd, flux_data, sw_status)
 
-      if (sw_status /= 0) then
+      if (.not. sw_status) then
          write(*,*) '   FAILED: Could not get flux data'
          return
       end if
@@ -490,7 +491,7 @@ contains
       type(flux_data_type) :: flux_data
       real(dp) :: kp_out, f107_out, f107a_out
       real(dp) :: test_mjd, base_mjd
-      integer(ip) :: sw_status
+      logical :: sw_status
 
       total = total + 1
       write(*,*) 'Test 11: Edge case - near measurement time boundary'
@@ -498,7 +499,7 @@ contains
       base_mjd = 59229.0_dp
       call sw_data%get_flux_data(base_mjd, flux_data, sw_status)
 
-      if (sw_status /= 0) then
+      if (.not. sw_status) then
          write(*,*) '   FAILED: Could not get flux data'
          return
       end if

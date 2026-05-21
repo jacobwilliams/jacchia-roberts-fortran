@@ -249,18 +249,18 @@ contains
       class(sw_data_type), intent(inout) :: me
       real(dp), intent(in) :: mjd !! Modified Julian Date
       type(flux_data_type), intent(out) :: flux_data !! Output flux data structure
-      integer(ip), intent(out) :: status !! Output status (0=success, 1=not initialized, 2=out of range)
+      logical, intent(out) :: status !! Output status (true=success, false=not initialized)
 
       integer(ip) :: idx, i
       integer(ip) :: daily_end_idx
 
-      status = 0
-
       if (.not. me%initialized) then
          write(*,'(A)') 'ERROR: Space weather module not initialized'
-         status = 1
+         status = .false.
          return
       end if
+
+      status = .true.
 
       ! Handle epoch before data starts
       if (mjd < me%historic_start) then

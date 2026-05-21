@@ -248,9 +248,16 @@ contains
       real(dp) :: raw_density !! Density before unit conversion (g/cm^3)
       real(dp) :: f107_daily !! Daily F10.7 value (adjusted for measurement time)
       real(dp) :: f107a_avg !! 81-day average F10.7a (adjusted for measurement time)
+      real(dp) :: tkp !! Kp index
       type(geoparms_type) :: geo !! Geomagnetic parameters
       type(flux_data_type) :: flux_data !! Space weather flux data
-      integer(ip) :: sw_status !! Status for space weather data retrieval
+      logical :: sw_status !! Status for space weather data retrieval
+
+      ! values to use if the space weather file cannot be loaded
+      ! or data cannot be retrieved for the given date:
+      real(dp),parameter :: nominalKp    = 3.0_dp !! Nominal Kp index
+      real(dp),parameter :: nominalF107  = 150.0_dp !! Nominal F10.7 value (solar flux units)
+      real(dp),parameter :: nominalF107a = 150.0_dp !! Nominal F10.7a value (solar flux units)
 
       ! sun declination: atan2(Z, sqrt(X^2 + Y^2))
       sun_dec = atan2(sun_vector(3), sqrt(sun_vector(1)**2 + sun_vector(2)**2))
@@ -258,20 +265,20 @@ contains
       ! Get space weather data for this date
       call me%sw_data%get_flux_data(utc_mjd, flux_data, sw_status)
 
-      if (sw_status /= 0) then
+      if (.not. sw_status) then
          write(*,*) 'WARNING: Using nominal space weather values'
          ! Use nominal values as fallback
-         geo%xtemp = 379.0_dp + 3.24_dp * 150.0_dp + 1.3_dp * (150.0_dp - 150.0_dp)
-         geo%tkp = 3.0_dp
+         geo%xtemp = 379.0_dp + 3.24_dp * nominalF107a + 1.3_dp * (nominalF107 - nominalF107a)
+         geo%tkp = nominalKp
       else
-         ! Prepare flux data with proper timing adjustments
-         ! This matches C++ PrepareKpData: Kp with 6.7hr lag, F10.7 from previous day,
-         ! F10.7a adjusted for measurement time-of-day
-         call prepare_flux_data(me%sw_data, flux_data, utc_mjd, geo%tkp, f107_daily, f107a_avg)
-
+         ! Prepare flux data with proper timing adjustments.
+         ! Kp: 6.7hr lag (matches PrepareKpData). F10.7: previous day (matches PrepareKpData).
+         ! F10.7a: detected day (matches PrepareApData intent; see prepare_flux_data docstring).
+         call prepare_flux_data(me%sw_data, flux_data, utc_mjd, tkp, f107_daily, f107a_avg)
          ! Calculate exospheric temperature from adjusted F10.7 data
-         ! Formula from GMAT: geo.xtemp = 379.0 + 3.24 * F107a + 1.3 * (F107 - F107a)
          geo%xtemp = 379.0_dp + 3.24_dp * f107a_avg + 1.3_dp * (f107_daily - f107a_avg)
+         ! Set Kp index in geomagnetic parameters:
+         geo%tkp = tkp
       end if
 
       ! Convert geodetic latitude to radians
@@ -346,6 +353,13 @@ contains
          return
       end if
 
+      ! Check for degenerate sun vector (sun at coordinate pole, XY magnitude = 0).
+      ! For Earth-Sun geometry this cannot happen (sun declination <= 23.4 deg gives
+      ! sun_denom >= 0.92), but guard against it to avoid NaN from 0/0.
+      if (sun_denom < real_tol) then
+         hour_angle = 0.0_dp
+      else
+
       ! Calculate cosine of angle between vectors
       cosAlpha = (sun_vector(1) * position(1) + sun_vector(2) * position(2)) / &
                  (sun_denom * cos_denom)
@@ -378,6 +392,8 @@ contains
                          sun_vector(2) * position(1)) * acos(cosAlpha)
          end if
       end if
+
+      end if  ! sun_denom guard
 
       ! Compute sun and spacecraft position dependent part of temperature
       theta = 0.5_dp * abs(geo_lat + sun_dec)
@@ -646,7 +662,7 @@ contains
            (me%y_root**2 + (height - me%x_root) * (100.0_dp - me%x_root))) / &
            me%y_root
 
-      ! Compute f3 power
+      ! Compute factor_k (diffusion scale height coefficient)
       factor_k = -1500625.0_dp * G_ZERO * me%cb_polar_squared / &
                  (GAS_CON * CON_C(5) * (me%tx - TZERO))
 
@@ -788,12 +804,13 @@ contains
 
    !---------------------------------------------------------------------------
    !>
-   !   Prepare flux data for the current epoch, accounting for measurement timing
-   !   This matches the GMAT `PrepareKpData` function which handles:
+   !   Prepare flux data for the current epoch, accounting for measurement timing.
+   !   Kp selection matches the GMAT `PrepareKpData` historic-data branch:
    !
-   !     1. Kp selection with 6.7 hour lag (Vallado & Finkleman)
-   !     2. F10.7 daily value (uses previous day)
-   !     3. F10.7a average (adjusted for measurement time-of-day)
+   !     1. Kp: 6.7 hour lag (Vallado & Finkleman)
+   !     2. F10.7 daily: previous day (matches PrepareKpData)
+   !     3. F10.7a average: detected day (matches PrepareApData / PrepareKpData comment
+   !        intent; PrepareKpData's code uses f107index-1 for F10.7a by copy-paste error)
 
    subroutine prepare_flux_data(sw_data, flux_data, utc_mjd, kp_out, f107_out, f107a_out)
       type(sw_data_type), intent(inout) :: sw_data !! Space weather data manager
@@ -804,7 +821,8 @@ contains
       real(dp), intent(out) :: f107a_out !! Selected F10.7a average for current epoch
 
       real(dp) :: frac_epoch, frac_epoch_kp, f107_offset
-      integer(ip) :: sub_index, f107_index, sw_status
+      integer(ip) :: sub_index, f107_index
+      logical :: sw_status
       type(flux_data_type) :: flux_data_prev, flux_data_2days_ago
 
       real(dp), parameter :: F107_REF_EPOCH = 48407.5_dp  !! MJD for 5/31/91 noon (matches C++ GSFC MJD 18408.0)
@@ -842,7 +860,7 @@ contains
          ! Need previous day's data
          call sw_data%get_flux_data(flux_data%mjd - 1.0_dp, flux_data_prev, sw_status)
 
-         if (sw_status == 0) then
+         if (sw_status) then
             ! Use appropriate Kp from previous day
             ! sub_index is negative, so 8 + sub_index gives the right period
             kp_out = flux_data_prev%kp(8 + sub_index + 1)
@@ -856,7 +874,7 @@ contains
       if (f107_index == 0) then
          ! Current time is after measurement time - use yesterday's F10.7
          call sw_data%get_flux_data(flux_data%mjd - 1.0_dp, flux_data_prev, sw_status)
-         if (sw_status == 0) then
+         if (sw_status) then
             f107_out = flux_data_prev%f107_obs
          else
             f107_out = flux_data%f107_obs  ! Fallback to current
@@ -864,12 +882,12 @@ contains
       else
          ! Current time is before measurement time - use 2 days ago F10.7
          call sw_data%get_flux_data(flux_data%mjd - 2.0_dp, flux_data_2days_ago, sw_status)
-         if (sw_status == 0) then
+         if (sw_status) then
             f107_out = flux_data_2days_ago%f107_obs
          else
             ! Try 1 day ago as fallback
             call sw_data%get_flux_data(flux_data%mjd - 1.0_dp, flux_data_prev, sw_status)
-            if (sw_status == 0) then
+            if (sw_status) then
                f107_out = flux_data_prev%f107_obs
             else
                f107_out = flux_data%f107_obs  ! Last resort
@@ -884,7 +902,7 @@ contains
       else
          ! Current time is before measurement time - use yesterday's F10.7a
          call sw_data%get_flux_data(flux_data%mjd - 1.0_dp, flux_data_prev, sw_status)
-         if (sw_status == 0) then
+         if (sw_status) then
             f107a_out = flux_data_prev%f107a_obs_ctr
          else
             f107a_out = flux_data%f107a_obs_ctr  ! Fallback to current
