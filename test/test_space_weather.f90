@@ -18,7 +18,8 @@ program test_space_weather
 
    type(sw_data_type) :: sw_data
    type(flux_data_type) :: flux_data
-   integer(ip) :: status
+   integer(ip) :: init_status
+   logical :: status
    integer :: test_count, pass_count
    real(dp) :: mjd_test
    logical :: test_passed
@@ -35,9 +36,9 @@ program test_space_weather
 
    ! Test 1: Initialize with space weather file
    write(*,'(A)') 'Test 1: Initialize with space weather file'
-   call sw_data%initialize('data/SpaceWeather-All-v1.2.txt', status)
+   call sw_data%initialize('data/SpaceWeather-All-v1.2.txt', init_status)
    test_count = test_count + 1
-   if (status == 0) then
+   if (init_status == 0) then
       write(*,'(A)') '  ✓ Initialization successful'
       pass_count = pass_count + 1
    else
@@ -51,7 +52,7 @@ program test_space_weather
    mjd_test = 59215.5_dp  ! Jan 1, 2021 noon
    call sw_data%get_flux_data(mjd_test, flux_data, status)
    test_count = test_count + 1
-   test_passed = (status == 0 .and. flux_data%f107_obs > 0.0_dp)
+   test_passed = (status .and. flux_data%f107_obs > 0.0_dp)
    if (test_passed) then
       write(*,'(A,F10.2)') '  ✓ Retrieved daily data for MJD ', mjd_test
       write(*,'(A,F8.2)') '    F10.7 obs: ', flux_data%f107_obs
@@ -69,7 +70,7 @@ program test_space_weather
    mjd_test = 60888.5_dp
    call sw_data%get_flux_data(mjd_test, flux_data, status)
    test_count = test_count + 1
-   test_passed = (status == 0 .and. flux_data%f107_obs > 0.0_dp)
+   test_passed = (status .and. flux_data%f107_obs > 0.0_dp)
    if (test_passed) then
       write(*,'(A,F10.2)') '  ✓ Retrieved monthly data for MJD ', mjd_test
       write(*,'(A,F8.2)') '    F10.7 obs: ', flux_data%f107_obs
@@ -85,7 +86,7 @@ program test_space_weather
    mjd_test = 60902.5_dp  ! Aug 15, 2025 noon (between Aug 1 and Sep 1)
    call sw_data%get_flux_data(mjd_test, flux_data, status)
    test_count = test_count + 1
-   test_passed = (status == 0 .and. flux_data%f107_obs > 0.0_dp)
+   test_passed = (status .and. flux_data%f107_obs > 0.0_dp)
    if (test_passed) then
       write(*,'(A,F10.2)') '  ✓ Retrieved interpolated monthly data for MJD ', mjd_test
       write(*,'(A,F8.2)') '    F10.7 obs: ', flux_data%f107_obs
@@ -100,7 +101,7 @@ program test_space_weather
    mjd_test = 61376.5_dp  ! Dec 1, 2026 noon
    call sw_data%get_flux_data(mjd_test, flux_data, status)
    test_count = test_count + 1
-   test_passed = (status == 0 .and. flux_data%f107_obs > 0.0_dp)
+   test_passed = (status .and. flux_data%f107_obs > 0.0_dp)
    if (test_passed) then
       write(*,'(A,F10.2)') '  ✓ Retrieved data near end of monthly section for MJD ', mjd_test
       write(*,'(A,F8.2)') '    F10.7 obs: ', flux_data%f107_obs
@@ -115,8 +116,7 @@ program test_space_weather
    mjd_test = 30000.0_dp  ! Way before file starts (1957)
    call sw_data%get_flux_data(mjd_test, flux_data, status)
    test_count = test_count + 1
-   test_passed = (status == 0)
-   if (test_passed) then
+   if (status) then
       write(*,'(A,F10.2)') '  ✓ Retrieved first record for MJD ', mjd_test
       pass_count = pass_count + 1
    else
@@ -129,8 +129,7 @@ program test_space_weather
    mjd_test = 90000.0_dp  ! Way after file ends
    call sw_data%get_flux_data(mjd_test, flux_data, status)
    test_count = test_count + 1
-   test_passed = (status == 0)
-   if (test_passed) then
+   if (status) then
       write(*,'(A,F10.2)') '  ✓ Retrieved last record for MJD ', mjd_test
       pass_count = pass_count + 1
    else

@@ -34,6 +34,15 @@ module jacchia_roberts_module
    real(dp), parameter :: AVOGADRO = 6.022045e23_dp !! Avogadro's number
 
    !---------------------------------------------------------------------------
+   ! Values to use if the space weather file cannot be loaded
+   ! or data cannot be retrieved for the given date
+   !---------------------------------------------------------------------------
+
+   real(dp),parameter :: nominalKp    = 3.0_dp   !! Nominal Kp index
+   real(dp),parameter :: nominalF107  = 150.0_dp !! Nominal F10.7 value (solar flux units)
+   real(dp),parameter :: nominalF107a = 150.0_dp !! Nominal F10.7a value (solar flux units)
+
+   !---------------------------------------------------------------------------
    ! Model constants
    !---------------------------------------------------------------------------
 
@@ -252,12 +261,6 @@ contains
       type(geoparms_type) :: geo !! Geomagnetic parameters
       type(flux_data_type) :: flux_data !! Space weather flux data
       logical :: sw_status !! Status for space weather data retrieval
-
-      ! values to use if the space weather file cannot be loaded
-      ! or data cannot be retrieved for the given date:
-      real(dp),parameter :: nominalKp    = 3.0_dp !! Nominal Kp index
-      real(dp),parameter :: nominalF107  = 150.0_dp !! Nominal F10.7 value (solar flux units)
-      real(dp),parameter :: nominalF107a = 150.0_dp !! Nominal F10.7a value (solar flux units)
 
       ! sun declination: atan2(Z, sqrt(X^2 + Y^2))
       sun_dec = atan2(sun_vector(3), sqrt(sun_vector(1)**2 + sun_vector(2)**2))
