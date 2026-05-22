@@ -28,10 +28,58 @@ fpm test
 fpm build --profile release
 ```
 
+By default, the library is built with double precision (`real64`) real values. Explicitly specifying the real kind can be done using the following processor flags:
+
+Preprocessor flag | Kind  | Number of bytes
+----------------- | ----- | ---------------
+`REAL32`  | `real(kind=real32)`  | 4
+`REAL64`  | `real(kind=real64)`  | 8
+`REAL128` | `real(kind=real128)` | 16
+
+For example, to build a single precision version of the library, use:
+
+```
+fpm build --profile release --flag "-DREAL32"
+```
+
 To use this as a dependency in another fpm project:
 ```toml
 [dependencies]
 jacchia-roberts = { git = "https://github.com/jacobwilliams/jacchia-roberts-fortran.git" }
+```
+
+## Example
+
+The following example program shows how to use the model:
+
+```fortran
+program example
+
+use jacchia_roberts_module, only: jacchia_roberts_type
+use jacchia_roberts_kinds,  only: ip, dp
+
+implicit none
+
+type(jacchia_roberts_type) :: jr
+integer(ip) :: status
+real(dp) :: density
+
+! example inputs:
+real(dp),parameter :: rad_earth = 6356.766_dp !! Earth polar radius (km)
+character(len=*),parameter :: sw_file = 'data/SpaceWeather-All-v1.2.txt'
+real(dp),parameter :: utc_mjd = 59215.5_dp ! MJD: Jan 1, 2021 12:00 UTC
+real(dp),parameter :: alt_km = 200.0_dp ! geodetic altitude (km)
+real(dp),parameter :: lat = 20.0_dp ! geodetic latitude (deg)
+real(dp),dimension(3),parameter :: r = [7000.0_dp, 0.0_dp, 0.0_dp] ! spacecraft position vector (km)
+real(dp),dimension(3),parameter :: sun = [1.0_dp, 0.0_dp, 0.0_dp] ! sun direction unit vector
+
+! initialize the model:
+call jr%initialize(rad_earth, sw_file, status)
+
+! compute the density:
+density = jr%density(alt_km, r, sun_vector, lat, utc_mjd)
+
+end program example
 ```
 
 ## Documentation
