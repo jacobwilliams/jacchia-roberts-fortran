@@ -1,6 +1,10 @@
-# Jacchia-Roberts Atmosphere Model
-
 A modern Fortran implementation of the Jacchia-Roberts atmospheric density model.
+
+## Status
+
+[![Language](https://img.shields.io/badge/-Fortran-734f96?logo=fortran&logoColor=white)](https://github.com/topics/fortran)
+[![CI Status](https://github.com/jacobwilliams/jacchia-roberts-fortran/actions/workflows/CI.yml/badge.svg)](https://github.com/jacobwilliams/jacchia-roberts-fortran/actions)
+[![GitHub release](https://img.shields.io/github/release/jacobwilliams/jacchia-roberts-fortran.svg?style=plastic)](https://github.com/jacobwilliams/jacchia-roberts-fortran/releases/latest)
 
 ## Overview
 
