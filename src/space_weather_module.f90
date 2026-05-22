@@ -1,16 +1,15 @@
 !------------------------------------------------------------------------------
 !>
-!   Read and interpolate CSSI Space Weather data files (legacy text format).
+!  Read and interpolate CSSI Space Weather data files (legacy text format).
 !
-!   Compatible with CSSI Space Weather files from https://celestrak.org/SpaceData/
+!  Compatible with [CSSI Space Weather files](https://celestrak.org/SpaceData/).
 !
-!   The CSSI Space Weather format contains:
-!    * F10.7 solar flux (observed and adjusted)
-!    * F10.7a 81-day centered average
-!    * Geomagnetic Kp indices (8 values per day, 3-hour periods)
-!    * Ap indices (geomagnetic activity)
+!  The CSSI Space Weather format contains:
 !
-!   Format: `FORMAT(I4,I3,I3,I5,I3,8I3,I4,8I4,I4,F4.1,I2,I4,F6.1,I2,5F6.1)`
+!  * F10.7 solar flux (observed and adjusted)
+!  * F10.7a 81-day centered average
+!  * Geomagnetic Kp indices (8 values per day, 3-hour periods)
+!  * Ap indices (geomagnetic activity)
 !
 !### Reference:
 !   * [CSSI Space Weather Data Format Specification](http://celestrak.com/SpaceData/SpaceWx-format.asp)
@@ -35,20 +34,20 @@ module space_weather_module
    type,public :: sw_data_type
       !! Space weather data management type
       private
-      integer(ip) :: n_records = 0
-      real(dp), allocatable :: mjd(:)
-      real(dp), allocatable :: f107_obs(:)
-      real(dp), allocatable :: f107_adj(:)
-      real(dp), allocatable :: f107a_obs_ctr(:)
-      real(dp), allocatable :: f107a_adj_ctr(:)
-      real(dp), allocatable :: kp(:,:)  !! (8, n_records)
-      real(dp), allocatable :: ap_avg(:)
-      logical :: initialized = .false.
-      real(dp) :: historic_start = -1.0_dp     !! First epoch in data
-      real(dp) :: historic_end = -1.0_dp       !! Last daily epoch + 1
-      real(dp) :: historic_daily_end = -1.0_dp !! Last contiguous daily data epoch
-      logical :: warn_epoch_before = .true.
-      logical :: warn_epoch_after = .true.
+      integer(ip) :: n_records = 0              !! Number of valid records loaded
+      real(dp), allocatable :: mjd(:)           !! Modified Julian Dates for each record
+      real(dp), allocatable :: f107_obs(:)      !! Observed F10.7 solar flux for each record
+      real(dp), allocatable :: f107_adj(:)      !! Adjusted F10.7 solar flux for each record
+      real(dp), allocatable :: f107a_obs_ctr(:) !! Observed F10.7 81-day centered average for each record
+      real(dp), allocatable :: f107a_adj_ctr(:) !! Adjusted F10.7 81-day centered average for each record
+      real(dp), allocatable :: kp(:,:)          !! Kp indices for 8 3-hour periods (8, n_records)
+      real(dp), allocatable :: ap_avg(:)        !! Average Ap for each record
+      logical :: initialized = .false.          !! Flag to indicate if data has been loaded
+      real(dp) :: historic_start = -1.0_dp      !! First epoch in data
+      real(dp) :: historic_end = -1.0_dp        !! Last daily epoch + 1
+      real(dp) :: historic_daily_end = -1.0_dp  !! Last contiguous daily data epoch
+      logical :: warn_epoch_before = .true.     !! Flag to warn if requested epoch is before data start
+      logical :: warn_epoch_after = .true.      !! Flag to warn if requested epoch is after data end
       contains
       private
       procedure,public :: initialize    => sw_init
@@ -77,6 +76,8 @@ contains
       real(dp) :: mjd_val
       integer(ip) :: n_lines
       logical :: in_data_section
+
+      character(len=*),parameter :: fmt = '(I4,I3,I3,I5,I3,8I3,I4,8I4,I4,F4.1,I2,I4,F6.1,I2,5F6.1)' !! Format string for reading data lines
 
       status = 0
 
@@ -179,8 +180,7 @@ contains
          ! Parse data lines using fixed-width format
          if (in_data_section .and. len_trim(line) >= 130) then
             ! Column positions per CelesTrak documentation
-            read(line, '(I4,I3,I3,I5,I3,8I3,I4,8I4,I4,F4.1,I2,I4,F6.1,I2,5F6.1)', &
-                 iostat=io_stat) &
+            read(line, fmt, iostat=io_stat) &
                  year, month, day, bsrn, nd, &
                  kp_int(1), kp_int(2), kp_int(3), kp_int(4), &
                  kp_int(5), kp_int(6), kp_int(7), kp_int(8), kp_sum, &

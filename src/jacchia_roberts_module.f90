@@ -865,10 +865,14 @@ contains
       real(dp), intent(out) :: f107_out !! Selected F10.7 daily value for current epoch
       real(dp), intent(out) :: f107a_out !! Selected F10.7a average for current epoch
 
-      real(dp) :: frac_epoch, frac_epoch_kp, f107_offset
-      integer(ip) :: sub_index, f107_index
-      logical :: sw_status
-      type(flux_data_type) :: flux_data_prev, flux_data_2days_ago
+      real(dp) :: frac_epoch !! Fractional day from midnight of flux_data%mjd
+      real(dp) :: frac_epoch_kp !! Fractional day for Kp selection (accounts for 6.7 hour lag)
+      real(dp) :: f107_offset !! Time of day offset for F10.7 validity boundary
+      integer(ip) :: sub_index !! Index for 3-hour Kp period (0-7 for 8 periods per day)
+      integer(ip) :: f107_index !! Index for F10.7 selection (0 for current day, -1 for previous day)
+      logical :: sw_status !! Status flag for SW data retrieval
+      type(flux_data_type) :: flux_data_prev !! Previous day's flux data (for Kp and F10.7 fallback)
+      type(flux_data_type) :: flux_data_2days_ago !! Flux data from 2 days ago (for F10.7 fallback)
 
       real(dp), parameter :: F107_REF_EPOCH = 48407.5_dp  !! MJD for 5/31/91 noon (matches C++ GSFC MJD 18408.0)
 
