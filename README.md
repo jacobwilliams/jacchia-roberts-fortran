@@ -91,5 +91,5 @@ The latest API documentation can be found [here](https://jacobwilliams.github.io
 1. Roberts, C. E., Jr., "[An Analytic Model for Upper Atmosphere Densities Based Upon Jacchia's 1970 Models](https://ui.adsabs.harvard.edu/scan/manifest/1971CeMec...4..368R)", *Celestial Mechanics*, Vol. 4, pp. 368-377, 1971.
 2. Jacchia, L. G., "[New Static Models of the Thermosphere and Exosphere with Empirical Temperature Profiles](https://articles.adsabs.harvard.edu/pdf/1970SAOSR.313.....J)", *Smithsonian Astrophysical Observatory Special Report No. 313*, 1970.
 3. Vallado, D. A., "Fundamentals of Astrodynamics and Applications", 4th Edition, Microcosm Press, 2013.
-4. [GMAT](https://github.com/nasa/GMAT)
-5. [CelesTrak](https://celestrak.org/SpaceData/)
+4. [GMAT](https://github.com/nasa/GMAT) -- The fortran code is based on the C++ code from here
+5. [CelesTrak](https://celestrak.org/SpaceData/) -- Source of space weather files.
