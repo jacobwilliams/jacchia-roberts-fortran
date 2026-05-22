@@ -468,10 +468,21 @@ contains
    !   Find the two real roots and the complex conjugate root pair of the
    !   degree-4 temperature-profile polynomial c_star(z).
    !
-   !   Algorithm: simultaneous Newton-Raphson (INPE/Kuga 1985).  Temperature-
-   !   dependent initial guesses keep root1 > 125 km and root2 < 100 km for
-   !   all physical temperatures, avoiding log(negative) in rho_125.  The
-   !   complex pair is recovered analytically via Vieta's formulas.
+   !### Algorithm:
+   !  Simultaneous Newton-Raphson (INPE/Kuga 1985).  Temperature-
+   !  dependent initial guesses keep root1 > 125 km and root2 < 100 km for
+   !  all physical temperatures, avoiding log(negative) in [[rho_125]].  The
+   !  complex pair is recovered analytically via Vieta's formulas.
+   !
+   !### Reference
+   !  * Kuga, h.k. "Reformulacao computacional do modelo de jacchia-roberts para a densidade atmosferica".
+   !    inpe, sao jose dos campos, 1985. a ser publicado
+   !
+   !### See also
+   !  * [[roots]] - original routine that was used.
+   !
+   !@note This replaces the original C++ code's, which was found to be unstable
+   !      for some input temperatures (e.g. 300 K).
 
    subroutine find_cstar_roots(c_star, tx, root1, root2, x_root, y_root)
       real(dp), intent(in)  :: c_star(5) !! Quartic polynomial coefficients `c_star(1)..c_star(5)`

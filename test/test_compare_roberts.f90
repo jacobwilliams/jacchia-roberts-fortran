@@ -33,14 +33,15 @@ program test_compare_roberts
    real(dp), parameter :: PI           = acos(-1.0_dp)
    real(dp), parameter :: EARTH_RADIUS = 6356.766_dp    !! Earth polar radius (km)
    real(dp), parameter :: MJD_1950     = 33282.0_dp     !! Standard MJD - MJD-1950 offset
+   real(dp), parameter :: km2m         = 1000.0_dp      !! km to m conversion factor
 
    ! Space weather file (relative to fpm run directory)
    character(len=*), parameter :: SW_FILE = 'data/SpaceWeather-All-v1.2.txt'
 
    ! Test epoch: same as rober_test default
    !   Rjud = 22476  (MJD-1950)  =>  std MJD = 55758  (~2011-08-08)
-   real(dp),  parameter :: Rjud = 22476.0d0   !! MJD-1950
-   real(dp),  parameter :: Dafr = 43200.0d0   !! Noon UT (seconds) — avoids midnight singularity
+   real(dp),  parameter :: Rjud = 22476.0_dp !! MJD-1950
+   real(dp),  parameter :: Dafr = 43200.0_dp !! Noon UT (seconds) — avoids midnight singularity
 
    ! Altitudes (km) to evaluate
    integer, parameter :: N_ALT = 15
@@ -67,7 +68,7 @@ program test_compare_roberts
 
    ! ---- Also collect results for the static comparison using rsdamo directly ----
    !      (hardcoded SF to isolate algorithm from data source)
-   real(dp), parameter :: SF_FIXED(3) = [150.0d0, 150.0d0, 3.0d0]  !! F10.7, F10.7a, Kp
+   real(dp), parameter :: SF_FIXED(3) = [150.0_dp, 150.0_dp, 3.0_dp]  !! F10.7, F10.7a, Kp
    real(dp) :: Te_stat(2), Ad_stat(6), Wmol_stat, Rhod_stat
 
    !--------------------------------------------------------------------------
@@ -94,11 +95,11 @@ program test_compare_roberts
    !   dec=0); sun also at RA=0, dec=0 (overhead at local noon, equator).
    !--------------------------------------------------------------------------
 
-   Su(1)      = 0.0d0           ! sun RA  = 0
-   Su(2)      = 0.0d0           ! sun dec = 0
-   Sa(1)      = 0.0d0           ! satellite RA  = 0
-   Sa(2)      = 0.0d0           ! satellite geocentric lat = 0 (equator)
-   Gsti       = 0.0d0           ! Greenwich sidereal time (not used by rsdamo)
+   Su(1) = 0.0_dp  ! sun RA  = 0
+   Su(2) = 0.0_dp  ! sun dec = 0
+   Sa(1) = 0.0_dp  ! satellite RA  = 0
+   Sa(2) = 0.0_dp  ! satellite geocentric lat = 0 (equator)
+   Gsti  = 0.0_dp  ! Greenwich sidereal time (not used by rsdamo)
 
    sun_vector = [1.0_dp, 0.0_dp, 0.0_dp]   ! unit vector to sun (RA=0)
    geo_lat    = 0.0_dp                       ! geodetic latitude (degrees)
@@ -122,7 +123,7 @@ program test_compare_roberts
 
    do i = 1, N_ALT
       alt_km   = ALTITUDES(i)
-      Sa(3)    = alt_km * 1.0d3      ! metres for old model
+      Sa(3)    = alt_km * km2m      ! metres for old model
       position = [(EARTH_RADIUS + alt_km), 0.0_dp, 0.0_dp]   ! km for new model
 
       ! Old model via rdymos_cssi (uses same prepare_flux_data timing)
@@ -181,7 +182,7 @@ program test_compare_roberts
 
    do i = 1, N_ALT
       alt_km   = ALTITUDES(i)
-      Sa(3)    = alt_km * 1.0d3
+      Sa(3)    = alt_km * km2m
 
       ! rsdamo requires Rjud in MJD-1950; rsdamo internally does amjd = Rjud+33282+Dafr/86400
       call rsdamo(Sa, Su, SF_FIXED, Rjud, Dafr, Gsti, Te_stat, Ad_stat, Wmol_stat, Rhod_stat)
@@ -198,7 +199,7 @@ program test_compare_roberts
 
    ! Print species densities at 300 km for inspection
    alt_km = 300.0_dp
-   Sa(3)  = alt_km * 1.0d3
+   Sa(3)  = alt_km * km2m
    call rsdamo(Sa, Su, SF_FIXED, Rjud, Dafr, Gsti, Te_stat, Ad_stat, Wmol_stat, Rhod_stat)
    write(*,'(2X,A,F7.2,A)') 'At alt = ', alt_km, ' km:'
    write(*,'(4X,A,6F9.4)') 'log10 n: ', real(Ad_stat(1:6), dp)

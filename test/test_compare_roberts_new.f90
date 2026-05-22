@@ -37,6 +37,7 @@ program test_compare_roberts_new
    real(dp), parameter :: EARTH_RADIUS = 6356.766_dp    !! Earth polar radius (km)
    real(dp), parameter :: MJD_1950     = 33282.0_dp     !! Standard MJD − MJD-1950 offset
    character(len=*), parameter :: SW_FILE = 'data/SpaceWeather-All-v1.2.txt'
+   real(dp), parameter :: km2m         = 1000.0_dp      !! km to m conversion factor
 
    !--- Reference epoch for Tables 1 & 2 ---
    real(dp),  parameter :: Rjud_ref = 22476.0_dp  !! MJD-1950 (~2011-08-08)
@@ -158,7 +159,7 @@ program test_compare_roberts_new
 
    do i = 1, N_ALT
       alt_km   = ALTITUDES(i)
-      Sa(3)    = alt_km * 1.0e3_dp
+      Sa(3)    = alt_km * km2m
       position = [(EARTH_RADIUS + alt_km), 0.0_dp, 0.0_dp]
 
       call rdymos_cssi(Sa, Su, Rjud_ref, Dafr, Gsti, Te_old, Ad_old, Wmol_old, Rhod_old, old_status)
@@ -204,7 +205,7 @@ program test_compare_roberts_new
 
    do i = 1, N_ALT
       alt_km = ALTITUDES(i)
-      Sa(3)  = alt_km * 1.0e3_dp
+      Sa(3)  = alt_km * km2m
       call rsdamo(Sa, Su, SF_FIXED, Rjud_ref, Dafr, Gsti, Te_stat, Ad_stat, Wmol_stat, Rhod_stat)
       write(*,'(2X,F7.1,2X,F11.2,2X,F14.6,2X,F10.4,2X,ES15.6)') &
          alt_km, real(Te_stat(1), dp), log10(real(Rhod_stat, dp)), &
@@ -217,7 +218,7 @@ program test_compare_roberts_new
    write(*,'(A)') ''
 
    alt_km = 300.0_dp
-   Sa(3)  = alt_km * 1.0d3
+   Sa(3)  = alt_km * km2m
    call rsdamo(Sa, Su, SF_FIXED, Rjud_ref, Dafr, Gsti, Te_stat, Ad_stat, Wmol_stat, Rhod_stat)
    write(*,'(2X,A,F7.2,A)') 'At alt = ', alt_km, ' km:'
    write(*,'(4X,A,6F9.4)') 'log10 n: ', real(Ad_stat(1:6), dp)
@@ -257,7 +258,7 @@ program test_compare_roberts_new
       utc_mjd_local = real(Rjud_local, dp) + MJD_1950 + real(Dafr, dp) / 86400.0_dp
       do j = 1, N_KEY
          alt_km   = KEY_ALTS(j)
-         Sa(3)    = alt_km * 1.0e3_dp
+         Sa(3)    = alt_km * km2m
          position = [(EARTH_RADIUS + alt_km), 0.0_dp, 0.0_dp]
          call rdymos_cssi(Sa, Su, Rjud_local, Dafr, Gsti, &
                           Te_old, Ad_old, Wmol_old, Rhod_old, old_status)
@@ -295,7 +296,7 @@ program test_compare_roberts_new
       sun_vector = [cos(dec_rad), 0.0_dp, sin(dec_rad)]
       do j = 1, N_KEY
          alt_km   = KEY_ALTS(j)
-         Sa(3)    = alt_km * 1.0d3
+         Sa(3)    = alt_km * km2m
          position = [(EARTH_RADIUS + alt_km), 0.0_dp, 0.0_dp]
          call rdymos_cssi(Sa, Su, Rjud_local, Dafr, Gsti, &
                           Te_old, Ad_old, Wmol_old, Rhod_old, old_status)
@@ -335,7 +336,7 @@ program test_compare_roberts_new
       geo_lat = GEO_LAT_DEG(k)
       do j = 1, N_KEY
          alt_km   = KEY_ALTS(j)
-         Sa(3)    = alt_km * 1.0d3
+         Sa(3)    = alt_km * km2m
          ! satellite at RA=0, geocentric lat = lat_rad
          position = [(EARTH_RADIUS + alt_km)*cos(lat_rad), 0.0_dp, &
                      (EARTH_RADIUS + alt_km)*sin(lat_rad)]
@@ -377,7 +378,7 @@ program test_compare_roberts_new
       sat_ra = real(SAT_RA_RAD(k), dp)
       do j = 1, N_KEY
          alt_km   = KEY_ALTS(j)
-         Sa(3)    = alt_km * 1.0e3_dp
+         Sa(3)    = alt_km * km2m
          ! equatorial position at satellite RA
          position = [(EARTH_RADIUS + alt_km)*cos(sat_ra), &
                      (EARTH_RADIUS + alt_km)*sin(sat_ra), 0.0_dp]

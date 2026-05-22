@@ -14,23 +14,27 @@ module inpe_roberts_module
    !> Standard MJD = MJD-1950 + 33282  (JD-2400000.5 = (JD-2433282.5) + 33282)
    real(dp), parameter :: MJD_1950_OFFSET = 33282.0_dp
 
+   real(dp),parameter :: avog = 6.02217e+26_dp
+   real(dp),dimension(6),parameter :: wm = [4.0026_dp  , &
+                                            31.9988_dp , &
+                                            28.0134_dp , &
+                                            39.948_dp  , &
+                                            15.9994_dp , &
+                                            1.00797_dp]
+
+   ! Global state (ok, since we are only using this for testing/validation)
    type(sw_data_type), save :: sw_global
    logical,            save :: sw_initialized = .false.
+
+   private
 
    public :: soflud_init
    public :: soflud
    public :: rdymos_cssi
+   public :: rsdamo
 
    contains
 
-!     LIBRARY DENSITY
-!
-!----
-!
-!     The library DENSITY includes several routines to
-!     compute the high atmospheric properties, using the
-!     Robert's version of the Jacchia 1970 model.
-!
 !----
 !
 SUBROUTINE rdymos(Sa,Su,Rjud,Dafr,Gsti,Te,Ad,Wmol,Rhod)
@@ -86,11 +90,6 @@ SUBROUTINE rdymos(Sa,Su,Rjud,Dafr,Gsti,Te,Ad,Wmol,Rhod)
 !     AR    ARGON
 !     O     ATOMIC OXYGEN
 !     H     ATOMIC HYDROGEN
-!
-! SUBCALLS:
-!
-!     SOFLUD
-!     RSDAMO
 !
 ! REFERENCES:
 !
@@ -330,7 +329,7 @@ SUBROUTINE rsdamo(Sa,Su,Sf,Rjud,Dafr,Gsti,Te,Ad,Wmol,Rhod)
 !------
 !
 
-   amjd = Rjud + 33282. + Dafr/86400.
+   amjd = Rjud + 33282.0_dp + Dafr/86400.0_dp
 
    CALL dyjrmo(amjd,Su,Sa,Sf,Te,al,Wmol,Rhod)
 
@@ -416,21 +415,17 @@ SUBROUTINE rsmade(Altu,Sf,Te,Ad,Wmol,Rhod)
 !
    IMPLICIT NONE
 
-   real(dp) Ad , al , Altu , anac , anut , avog , fbar , flux , heig , Rhod , Sf , Te , thaf , tz , weig , wm , Wmol
-   INTEGER ic
-
-   DIMENSION Sf(3) , Te(2) , Ad(6)
-   DIMENSION wm(6) , al(6)
+   real(dp) :: Ad(6) , al(6) , Altu , anac , anut , fbar , flux , &
+            heig , Rhod , Sf(3) , Te(2) , thaf , tz , weig , Wmol
+   INTEGER :: ic
 !
 !------
 !
-   DATA avog/6.02217D+26/
-   DATA wm/4.0026 , 31.9988 , 28.0134 , 39.948 , 15.9994 , 1.00797/
 
    flux = Sf(1)
    fbar = Sf(2)
-   thaf = 379.0 + 3.24*fbar + 1.3*(flux-fbar)
-   heig = Altu/1.D3
+   thaf = 379.0_dp + 3.24_dp*fbar + 1.3_dp*(flux-fbar)
+   heig = Altu/1.0e3_dp
 
    CALL stjrmo(thaf,heig,tz,al)
 
@@ -524,16 +519,12 @@ SUBROUTINE rmowei(Tinf,Heig,Ad,Wmol,Rhod)
 !
    IMPLICIT NONE
 
-   real(dp) Ad , al , anac , anut , avog , Heig , Rhod , Tinf , tz , weig , wm , Wmol
-   INTEGER ic
+   real(dp) :: Ad(6) , al(6) , anac , anut , Heig , Rhod , Tinf , tz , weig , Wmol
+   INTEGER :: ic
 
-   DIMENSION Ad(6)
-   DIMENSION al(6) , wm(6)
 !
 !------
 !
-   DATA avog/6.02217e+26_dp/
-   DATA wm/4.0026_dp , 31.9988_dp , 28.0134_dp , 39.948_dp , 15.9994_dp , 1.00797_dp/
 
    CALL stjrmo(Tinf,Heig,tz,al)
 
@@ -1373,58 +1364,55 @@ SUBROUTINE semian(Tyfr,Altu,Alco)
 END SUBROUTINE semian
 
 
-!> @file soflud_module.f90
-!>
-!> Replacement for the SOFLUD solar flux library, backed by the new
-!> Fortran `space_weather_module` (reads CSSI/Celestrak format files).
-!>
-!> The original SOFLUD is part of an INPE atmospheric model library by
-!> Valdemir Carrara; its source is not available here.
-!>
-!> ## Usage
-!>
-!>     call soflud_init(filename, status)     ! once, to load the CSSI file
-!>     call soflud(rjud_1950, dafr, sd, outr) ! then call as before
-!>
-!> ## sd array layout (this implementation)
-!>
-!>  - `sd(1..8)` = Kp for 8 3-hour periods (periods 1..8 = 0–3 h, 3–6 h, …, 21–24 h)
-!>  - `sd(6)`    = 0.0  (time-reference constant; see rdymos note below)
-!>  - `sd(7)`    = daily average Ap index (for rsmods Ap→Kp conversion)
-!>  - `sd(9)`    = F10.7 daily observed solar flux
-!>  - `sd(11)`   = F10.7 81-day centred average
-!>
-!> ## Compatibility notes
-!>
-!> **rsmods path** — uses `sd(7)` (Ap), `sd(9)` (F10.7), `sd(11)` (F10.7a).
-!> All three are populated correctly; rsmods works perfectly.
-!>
-!> **rdymos path** — has two issues that preclude direct use:
-!>
-!>  1. *Uninitialized variable bug*: `rdymos` contains `rjfl = rjfl - 1.`
-!>     but `rjfl` is never initialised from `Rjud`. The line should read
-!>     `rjfl = Rjud - 1.`. Without this fix, `rdymos` produces garbage dates.
-!>
-!>  2. *Kp period conflict*: `rdymos` selects Kp via
-!>     `nd = int((Dafr/3600 - sd(6) + 12 - 6.696) / 3)` then `sf(3) = sd(nd)`.
-!>     With `sd(6) = 0`, `nd` maps UT 0–3 h → 1, 3–6 h → 2, …, 21–24 h → 8.
-!>     However:
-!>     - `nd = 6` at UT 15–18 h → `sd(6) = 0.0` (wrong; Kp treated as 0)
-!>     - `nd = 7` at UT 18–21 h → `sd(7) = Ap` (wrong unit)
-!>     For all other UT hours (18 of 24) the correct Kp period is returned.
-!>
-!> **Recommended alternative for rdymos**: use `rdymos_cssi` (below), which
-!> calls `dyjrmo` directly with F10.7 and Kp obtained from `prepare_flux_data`.
-!> This avoids both issues and matches the timing logic of the new Fortran model.
+!  Replacement for the SOFLUD solar flux library, backed by the new
+!  Fortran `space_weather_module` (reads CSSI/Celestrak format files).
+!
+!  The original SOFLUD is part of an INPE atmospheric model library by
+!  Valdemir Carrara; its source is not available here.
+!
+!  ## Usage
+!
+!      call soflud_init(filename, status)     ! once, to load the CSSI file
+!      call soflud(rjud_1950, dafr, sd, outr) ! then call as before
+!
+!  ## sd array layout (this implementation)
+!
+!   - `sd(1..8)` = Kp for 8 3-hour periods (periods 1..8 = 0–3 h, 3–6 h, …, 21–24 h)
+!   - `sd(6)`    = 0.0  (time-reference constant; see rdymos note below)
+!   - `sd(7)`    = daily average Ap index (for rsmods Ap→Kp conversion)
+!   - `sd(9)`    = F10.7 daily observed solar flux
+!   - `sd(11)`   = F10.7 81-day centred average
+!
+!  ## Compatibility notes
+!
+!  **rsmods path** — uses `sd(7)` (Ap), `sd(9)` (F10.7), `sd(11)` (F10.7a).
+!  All three are populated correctly; rsmods works perfectly.
+!
+!  **rdymos path** — has two issues that preclude direct use:
+!
+!   1. *Uninitialized variable bug*: `rdymos` contains `rjfl = rjfl - 1.`
+!      but `rjfl` is never initialised from `Rjud`. The line should read
+!      `rjfl = Rjud - 1.`. Without this fix, `rdymos` produces garbage dates.
+!
+!   2. *Kp period conflict*: `rdymos` selects Kp via
+!      `nd = int((Dafr/3600 - sd(6) + 12 - 6.696) / 3)` then `sf(3) = sd(nd)`.
+!      With `sd(6) = 0`, `nd` maps UT 0–3 h → 1, 3–6 h → 2, …, 21–24 h → 8.
+!      However:
+!      - `nd = 6` at UT 15–18 h → `sd(6) = 0.0` (wrong; Kp treated as 0)
+!      - `nd = 7` at UT 18–21 h → `sd(7) = Ap` (wrong unit)
+!      For all other UT hours (18 of 24) the correct Kp period is returned.
+!
+!  **Recommended alternative for rdymos**: use `rdymos_cssi` (below), which
+!  calls `dyjrmo` directly with F10.7 and Kp obtained from `prepare_flux_data`.
+!  This avoids both issues and matches the timing logic of the new Fortran model.
 
-
-   !---------------------------------------------------------------------------
-   !> Initialise the soflud wrapper by loading a CSSI space weather file.
-   !>
-   !> Must be called once before any call to `soflud` or `rdymos_cssi`.
-   !>
-   !> @param[in]  filename  Path to the CSSI space weather file
-   !> @param[out] status    0 = success, non-zero = error
+!---------------------------------------------------------------------------
+!> Initialise the soflud wrapper by loading a CSSI space weather file.
+!>
+!> Must be called once before any call to `soflud` or `rdymos_cssi`.
+!>
+!> @param[in]  filename  Path to the CSSI space weather file
+!> @param[out] status    0 = success, non-zero = error
 
    subroutine soflud_init(filename, status)
       character(len=*), intent(in)  :: filename
@@ -1436,16 +1424,17 @@ END SUBROUTINE semian
    end subroutine soflud_init
 
 !---------------------------------------------------------------------------
-!> Drop-in replacement for the missing SOFLUD library subroutine.
 !>
-!> Retrieves solar flux and geomagnetic data from the CSSI space weather
-!> file loaded by `soflud_init`.
+!  Drop-in replacement for the missing SOFLUD library subroutine.
+!
+!  Retrieves solar flux and geomagnetic data from the CSSI space weather
+!  file loaded by `soflud_init`.
 
    subroutine soflud(rjud_1950, dafr, sd, outr)
       real(dp), intent(in)  :: rjud_1950 !! Modified Julian Date referenced to 1950.0
-                                        !! (JD − 2433282.5).  Standard MJD = rjud_1950 + 33282.
-      real(dp), intent(in)  :: dafr   !! Time of day in seconds (not used for data lookup;
-                                        !! retained for interface compatibility).
+                                         !! (JD − 2433282.5).  Standard MJD = rjud_1950 + 33282.
+      real(dp), intent(in)  :: dafr !! Time of day in seconds (not used for data lookup;
+                                    !! retained for interface compatibility).
       real(dp), intent(out) :: sd(15) !! 15-element output array (see module header).
       real(dp), intent(out) :: outr !! Status: 0.0 = success, non-zero = error code.
 
@@ -1492,39 +1481,35 @@ END SUBROUTINE semian
    end subroutine soflud
 
    !---------------------------------------------------------------------------
-   !> Drop-in replacement for `rdymos` in `roberts.f90`, using the new
-   !> `space_weather_module` instead of the unavailable SOFLUD library.
    !>
-   !> Fixes two bugs in the original `rdymos`:
-   !>  1. Uninitialised `rjfl` (should be `rjfl = Rjud - 1.`)
-   !>  2. Unreliable Kp period selection via `sd(nd)` (see module header)
-   !>
-   !> F10.7 and Kp are obtained through `prepare_flux_data`, applying the
-   !> same timing as the new model (6.7 h Kp lag, previous-day F10.7,
-   !> detected-day F10.7a).  The actual computation is delegated to `rsdamo`
-   !> (in roberts.f90), which calls `dyjrmo` and reorders the output densities.
-   !>
-   !> This subroutine has the **same interface as `rdymos`** and can be used
-   !> as a direct replacement in any code that calls `rdymos`.
-   !>
-   !> @param[in]  Sa     Sa(1)=RA (rad), Sa(2)=geocentric lat (rad), Sa(3)=alt (m)
-   !> @param[in]  Su     Su(1)=sun RA (rad), Su(2)=sun dec (rad)
-   !> @param[in]  Rjud   Modified Julian Date referred to 1950.0 (JD − 2433282.5)
-   !> @param[in]  Dafr   Time of day UT in seconds (0–86400)
-   !> @param[in]  Gsti   Greenwich Sidereal Time in radians (not used; compatibility only)
-   !> @param[out] Te     Te(1)=T∞ (K), Te(2)=local T (K)
-   !> @param[out] Ad     log₁₀ number densities (m⁻³):
-   !>                    Ad(1)=He, Ad(2)=O₂, Ad(3)=N₂, Ad(4)=Ar, Ad(5)=O, Ad(6)=H
-   !> @param[out] Wmol   Mean molecular weight (kg/kgmol)
-   !> @param[out] Rhod   Mass density (kg/m³)
-   !> @param[out] status 0 = success, non-zero = space weather lookup error
+   !  Drop-in replacement for `rdymos` in `roberts.f90`, using the new
+   !  `space_weather_module` instead of the unavailable SOFLUD library.
+   !
+   !  Fixes two bugs in the original `rdymos`:
+   !   1. Uninitialised `rjfl` (should be `rjfl = Rjud - 1.`)
+   !   2. Unreliable Kp period selection via `sd(nd)` (see module header)
+   !
+   !  F10.7 and Kp are obtained through `prepare_flux_data`, applying the
+   !  same timing as the new model (6.7 h Kp lag, previous-day F10.7,
+   !  detected-day F10.7a).  The actual computation is delegated to `rsdamo`
+   !  (in roberts.f90), which calls `dyjrmo` and reorders the output densities.
+   !
+   !  This subroutine has the **same interface as `rdymos`** and can be used
+   !  as a direct replacement in any code that calls `rdymos`.
 
    subroutine rdymos_cssi(Sa, Su, Rjud, Dafr, Gsti, Te, Ad, Wmol, Rhod, status)
 
-      real(dp), intent(in)  :: Sa(3), Su(2)
-      real(dp), intent(in)  :: Rjud, Dafr, Gsti
-      real(dp), intent(out) :: Te(2), Ad(6), Wmol, Rhod
-      integer, intent(out) :: status
+      real(dp), intent(in)  :: Sa(3) !! Sa(1)=RA (rad), Sa(2)=geocentric lat (rad), Sa(3)=alt (m)
+      real(dp), intent(in)  :: Su(2) !! Su(1)=sun RA (rad), Su(2)=sun dec (rad)
+      real(dp), intent(in)  :: Rjud !! Modified Julian Date referred to 1950.0 (JD − 2433282.5)
+      real(dp), intent(in)  :: Dafr !! Time of day UT in seconds (0–86400)
+      real(dp), intent(in)  :: Gsti !! Greenwich Sidereal Time in radians (not used; compatibility only)
+      real(dp), intent(out) :: Te(2) !! Te(1)=T∞ (K), Te(2)=local T (K)
+      real(dp), intent(in)  :: Ad(6) !! log10 number densities (m^-3):
+                                     !! Ad(1)=He, Ad(2)=O₂, Ad(3)=N₂, Ad(4)=Ar, Ad(5)=O, Ad(6)=H
+      real(dp), intent(in)  :: Wmol !! Mean molecular weight (kg/kgmol)
+      real(dp), intent(in)  :: Rhod !! Mass density (kg/m^3)
+      integer, intent(out) :: status !! 0 = success, non-zero = space weather lookup error
 
       type(flux_data_type) :: flux_data
       real(dp) :: utc_mjd, kp, f107, f107a
