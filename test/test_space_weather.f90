@@ -42,8 +42,7 @@ program test_space_weather
       write(*,'(A)') '  ✓ Initialization successful'
       pass_count = pass_count + 1
    else
-      write(*,'(A)') '  ✗ Initialization failed'
-      stop 1
+      error stop '  ✗ Initialization failed'
    end if
    write(*,'(A)') ''
 
@@ -152,10 +151,8 @@ program test_space_weather
 
    if (pass_count == test_count) then
       write(*,'(A)') 'All tests PASSED!'
-      stop 0
    else
-      write(*,'(A)') 'Some tests FAILED!'
-      stop 1
+      error stop 'Some tests FAILED!'
    end if
 
 end program test_space_weather

@@ -46,10 +46,8 @@ program test_jacchia_roberts_utilities
 
    if (n_failed == 0) then
       print *, 'All tests PASSED!'
-      stop 0
    else
-      print *, 'Some tests FAILED!'
-      stop 1
+      error stop 'Some tests FAILED!'
    end if
 
 contains

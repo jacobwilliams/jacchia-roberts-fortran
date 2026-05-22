@@ -79,8 +79,7 @@ program test_compare_roberts
 
    call soflud_init(SW_FILE, old_status)
    if (old_status /= 0) then
-      write(*,'(A)') 'ERROR: could not initialize old-model space weather data.'
-      error stop 1
+      error stop 'ERROR: could not initialize old-model space weather data.'
    end if
 
    call jr%initialize(EARTH_RADIUS, SW_FILE, sw_init_status)

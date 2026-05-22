@@ -29,15 +29,13 @@ program test_prepare_flux_data
    ! Initialize the space weather data
    call sw_data%initialize('data/SpaceWeather-All-v1.2.txt', status)
    if (status /= 0) then
-      write(*,*) 'ERROR: Failed to initialize space weather data'
-      stop 1
+      error stop 'ERROR: Failed to initialize space weather data'
    end if
 
    ! Initialize the model
    call jrmodel%initialize(EARTH_POLAR_RADIUS, 'data/SpaceWeather-All-v1.2.txt', status)
    if (status /= 0) then
-      write(*,*) 'ERROR: Failed to initialize model'
-      stop 1
+      error stop 'ERROR: Failed to initialize model'
    end if
 
    ! Test 1: Kp selection - various 3-hour periods (sub_index 0-7)
@@ -86,8 +84,7 @@ program test_prepare_flux_data
 
    all_passed = (passed_tests == total_tests)
    if (.not. all_passed) then
-      write(*,*) 'SOME TESTS FAILED!'
-      stop 1
+      error stop 'SOME TESTS FAILED!'
    else
       write(*,*) 'ALL TESTS PASSED!'
    end if
