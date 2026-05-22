@@ -692,10 +692,10 @@ contains
    function rho_high(me, height, temperature, t_500, sun_dec, geo_lat) result(density)
       class(jacchia_roberts_type), intent(inout) :: me
       real(dp), intent(in) :: height !! Spacecraft altitude (km)
-      real(dp), intent(in) :: temperature !! Exospheric temperature (K)
-      real(dp), intent(in) :: t_500 !! Temperature at 500 km (K)
-      real(dp), intent(in) :: sun_dec !! Sun declination (radians)
-      real(dp), intent(in) :: geo_lat !! Geodetic latitude (radians)
+      real(dp), intent(in) :: temperature !! Exospheric temperature at spacecraft altitude (K)
+      real(dp), intent(in) :: t_500 !! Exospheric temperature at altitude of 500 km (K)
+      real(dp), intent(in) :: sun_dec !! Declination of the sun in TOD coordinates (radians)
+      real(dp), intent(in) :: geo_lat !! Geodetic latitude of spacecraft (radians)
       real(dp) :: density
 
       real(dp) :: f, log_di, gamma, exp1, r
@@ -765,7 +765,7 @@ contains
    pure function rho_cor(height, utc_mjd, geo_lat, geo) result(correction)
       real(dp), intent(in) :: height !! Spacecraft altitude (km)
       real(dp), intent(in) :: utc_mjd !! UTC Modified Julian Date
-      real(dp), intent(in) :: geo_lat !! Geodetic latitude (radians)
+      real(dp), intent(in) :: geo_lat !! Geodetic latitude of spacecraft (radians)
       type(geoparms_type), intent(in) :: geo !! Geomagnetic parameters
       real(dp) :: correction !! Correction factor (multiplicative)
 
