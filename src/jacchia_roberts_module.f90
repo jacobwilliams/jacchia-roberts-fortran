@@ -20,8 +20,8 @@ module jacchia_roberts_module
    private
 
    ! Mathematical constants
-   real(dp), parameter :: PI = acos(-1.0_dp)
-   real(dp), parameter :: RAD_PER_DEG = PI / 180.0_dp
+   real(dp), parameter :: PI = acos(-1.0_dp) !! Pi constant
+   real(dp), parameter :: RAD_PER_DEG = PI / 180.0_dp !! degree to radian conversion factor
 
    !---------------------------------------------------------------------------
    ! Physical constants
@@ -346,6 +346,10 @@ contains
       real(dp), parameter :: d37 = 37.0_dp * RAD_PER_DEG  !! 37 degrees in radians
       real(dp), parameter :: d6  = 6.0_dp  * RAD_PER_DEG  !! 6 degrees in radians
       real(dp), parameter :: d43 = 43.0_dp * RAD_PER_DEG  !! 43 degrees in radians
+      real(dp), parameter :: a    = 371.6678_dp !! Constant for temperature calculation
+      real(dp), parameter :: b    = 0.0518806_dp !! Constant for temperature calculation
+      real(dp), parameter :: c    = -294.3505_dp !! Constant for temperature calculation
+      real(dp), parameter :: kbar = -0.00216222_dp !! Constant for temperature calculation
 
       ! Compute hour angle of the sun
       sun_denom = sqrt(sun_vector(1)**2 + sun_vector(2)**2)
@@ -422,8 +426,7 @@ contains
          me%t_infinity = t1 + 28.0_dp * geo%tkp + 0.03_dp * expkp
       end if
 
-      me%tx = 371.6678_dp + 0.0518806_dp * me%t_infinity - &
-                    294.3505_dp * exp(-0.00216222_dp * me%t_infinity)
+      me%tx = a + b * me%t_infinity + c * exp(kbar * me%t_infinity)
 
       ! Compute temperature based on altitude regime
       if (height < 125.0_dp) then
@@ -746,6 +749,8 @@ contains
       real(dp) :: di, polar125
       integer(ip) :: i, j
 
+      real(dp), parameter :: SIN_PI_OVER_4_CUBED = sin(0.25_dp * PI)**3
+
       density = 0.0_dp
       polar125 = me%cb_polar_radius + 125.0_dp
 
@@ -780,8 +785,8 @@ contains
                f = 1.0_dp
             else
                f = 4.9914_dp * abs(sun_dec) * &
-                   (sin(0.25_dp * PI - 0.5_dp * geo_lat * sun_dec / abs(sun_dec))**3 - &
-                    0.35355_dp) / PI
+                  (sin(0.25_dp * PI - 0.5_dp * geo_lat * sun_dec / abs(sun_dec))**3 - &
+                  SIN_PI_OVER_4_CUBED) / PI
                f = 10.0_dp**f
             end if
          end if

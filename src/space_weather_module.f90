@@ -1,6 +1,6 @@
 !------------------------------------------------------------------------------
 !>
-!  Read and interpolate CSSI Space Weather data files (legacy text format).
+!  Read and lookup CSSI Space Weather data files (legacy text format).
 !
 !  Compatible with [CSSI Space Weather files](https://celestrak.org/SpaceData/).
 !
@@ -243,7 +243,7 @@ contains
    !---------------------------------------------------------------------------
    !>
    !   Get space weather data for a given Modified Julian Date.
-   !   Uses direct indexing for daily data, no interpolation
+   !   Uses direct indexing for daily data and record selection for monthly data
 
    subroutine sw_get_flux_data(me, mjd, flux_data, status)
       class(sw_data_type), intent(inout) :: me
@@ -329,6 +329,8 @@ contains
       if (allocated(me%ap_avg))        deallocate(me%ap_avg)
       me%initialized = .false.
       me%n_records = 0
+      me%warn_epoch_before = .true.
+      me%warn_epoch_after = .true.
    end subroutine sw_cleanup
 
    !---------------------------------------------------------------------------
