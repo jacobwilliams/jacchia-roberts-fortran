@@ -16,6 +16,8 @@ module jacchia_roberts_utilities
    !---------------------------------------------------------------------------
    !>
    !   Finds the roots of a polynomial using Newton's method
+   !
+   !@note This routine is no longer used.
 
    pure subroutine roots(a, na, croots, irl)
       real(dp), intent(in) :: a(:) !! Array of polynomial coefficients (lowest power first)
@@ -107,6 +109,8 @@ module jacchia_roberts_utilities
    !---------------------------------------------------------------------------
    !>
    !   Reduces the order of a polynomial by division
+   !
+   !@note This routine is no longer used.
 
    pure subroutine deflate_polynomial(c, n, root, c_new)
       real(dp), intent(in) :: c(:) !! Polynomial coefficients
