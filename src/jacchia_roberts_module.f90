@@ -340,8 +340,12 @@ contains
       real(dp) :: c_star(5)
       real(dp) :: cosAlpha
       integer(ip) :: i
+
       real(dp), parameter :: error_tolerance = 1.0e-14_dp
       real(dp), parameter :: real_tol = 1.0e-15_dp
+      real(dp), parameter :: d37 = 37.0_dp * RAD_PER_DEG  !! 37 degrees in radians
+      real(dp), parameter :: d6  = 6.0_dp  * RAD_PER_DEG  !! 6 degrees in radians
+      real(dp), parameter :: d43 = 43.0_dp * RAD_PER_DEG  !! 43 degrees in radians
 
       ! Compute hour angle of the sun
       sun_denom = sqrt(sun_vector(1)**2 + sun_vector(2)**2)
@@ -399,9 +403,7 @@ contains
       ! Compute sun and spacecraft position dependent part of temperature
       theta = 0.5_dp * abs(geo_lat + sun_dec)
       eta = 0.5_dp * abs(geo_lat - sun_dec)
-      tau = hour_angle - 0.64577182325_dp + 0.10471975512_dp * &
-            sin(hour_angle + 0.75049157836_dp)
-
+      tau = hour_angle - d37 + d6 * sin(hour_angle + d43)
       if (tau < -PI) then
          tau = tau + 2.0_dp * PI
       else if (tau > PI) then
