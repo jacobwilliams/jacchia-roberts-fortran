@@ -34,6 +34,10 @@ To use this as a dependency in another fpm project:
 jacchia-roberts = { git = "https://github.com/jacobwilliams/jacchia-roberts-fortran.git" }
 ```
 
+## Documentation
+
+The latest API documentation can be found [here](https://jacobwilliams.github.io/jacchia-roberts-fortran/). This was generated from the source code using [FORD](https://github.com/Fortran-FOSS-Programmers/ford).
+
 ## References
 
 1. Roberts, C. E., Jr., "An Analytic Model for Upper Atmosphere Densities Based Upon Jacchia's 1970 Models", *Celestial Mechanics*, Vol. 4, pp. 368-377, 1971.
