@@ -338,8 +338,7 @@ contains
       real(dp) :: expkp, hour_angle, cross_denom
       real(dp) :: theta, eta, tau, th22, t1, sun_denom, cos_denom
       real(dp) :: c_star(5)
-      real(dp) :: cosAlpha, temp_norm
-      real(dp) :: pz1, pz2, dpz1, dpz2, r1n, r2n, x2y2
+      real(dp) :: cosAlpha
       integer(ip) :: i
       real(dp), parameter :: error_tolerance = 1.0e-14_dp
       real(dp), parameter :: real_tol = 1.0e-15_dp
@@ -459,39 +458,64 @@ contains
             c_star(i) = CON_C(i)
          end do
 
-         ! Find two real roots via Newton-Raphson (INPE/Kuga 1985 approach).
-         ! Temperature-dependent initial guesses guarantee root1 > 125 km and
-         ! root2 < 100 km for all physical temperatures, so the log arguments
-         ! (z-r1)/(100-r1) in rho_125 always have matching signs.
-         ! Using fixed initial guesses (125, 200) can converge to a spurious
-         ! root inside [100,125] at low temperatures, producing log(negative).
-         temp_norm = (me%tx - 300.0_dp) / 200.0_dp
-         me%root1 = 167.77_dp - 3.35_dp * temp_norm   ! large root, ~125-170 km
-         me%root2 = 57.34_dp  + 7.95_dp * temp_norm   ! small root, ~55-65 km
-
-         do i = 1, 7
-            pz1  = c_star(1) + me%root1*(c_star(2) + me%root1*(c_star(3) + me%root1*(c_star(4) + me%root1*c_star(5))))
-            dpz1 = c_star(2) + me%root1*(2.0_dp*c_star(3) + me%root1*(3.0_dp*c_star(4) + me%root1*4.0_dp*c_star(5)))
-            pz2  = c_star(1) + me%root2*(c_star(2) + me%root2*(c_star(3) + me%root2*(c_star(4) + me%root2*c_star(5))))
-            dpz2 = c_star(2) + me%root2*(2.0_dp*c_star(3) + me%root2*(3.0_dp*c_star(4) + me%root2*4.0_dp*c_star(5)))
-            r1n = me%root1 - pz1 / dpz1
-            r2n = me%root2 - pz2 / dpz2
-            if (abs(r1n - me%root1) < 1.0e-7_dp .and. abs(r2n - me%root2) < 1.0e-7_dp) exit
-            me%root1 = r1n
-            me%root2 = r2n
-         end do
-         me%root1 = r1n
-         me%root2 = r2n
-
-         ! Compute complex conjugate roots analytically via Vieta's formulas.
-         ! Sum of all 4 roots = -c_star(4)/c_star(5) = 340.5/0.8 = 425.625
-         me%x_root = 0.5_dp * (425.625_dp - me%root1 - me%root2)
-         ! Product of all 4 roots = c_star(1)/c_star(5); complex pair gives x^2+y^2
-         x2y2 = c_star(1) / (c_star(5) * me%root1 * me%root2)
-         me%y_root = sqrt(abs(x2y2 - me%x_root**2))
+         call find_cstar_roots(c_star, me%tx, me%root1, me%root2, me%x_root, me%y_root)
       end if
 
    end function exotherm
+
+   !---------------------------------------------------------------------------
+   !>
+   !   Find the two real roots and the complex conjugate root pair of the
+   !   degree-4 temperature-profile polynomial c_star(z).
+   !
+   !   Algorithm: simultaneous Newton-Raphson (INPE/Kuga 1985).  Temperature-
+   !   dependent initial guesses keep root1 > 125 km and root2 < 100 km for
+   !   all physical temperatures, avoiding log(negative) in rho_125.  The
+   !   complex pair is recovered analytically via Vieta's formulas.
+
+   subroutine find_cstar_roots(c_star, tx, root1, root2, x_root, y_root)
+      real(dp), intent(in)  :: c_star(5) !! Quartic polynomial coefficients `c_star(1)..c_star(5)`
+      real(dp), intent(in)  :: tx        !! Temperature at 125 km (K), used for initial guesses
+      real(dp), intent(out) :: root1     !! Larger real root (> 125 km)
+      real(dp), intent(out) :: root2     !! Smaller real root (< 100 km)
+      real(dp), intent(out) :: x_root    !! Real part of complex conjugate root pair
+      real(dp), intent(out) :: y_root    !! Imaginary part of complex conjugate root pair
+
+      real(dp) :: temp_norm, pz1, pz2, dpz1, dpz2, r1n, r2n, x2y2
+      integer(ip) :: i !! counter
+
+      integer,parameter ::  MAX_ITER = 10 !! 7 in the original code
+      real(dp),parameter :: CONVERGENCE_TOL = 1.0e-8_dp !! 1e-7 in the original code
+
+      ! Temperature-dependent initial guesses (valid for all physical T_inf):
+      !   root1 ~ 125-170 km (large real root)
+      !   root2 ~  55- 65 km (small real root)
+      temp_norm = (tx - 300.0_dp) / 200.0_dp
+      root1 = 167.77_dp - 3.35_dp * temp_norm
+      root2 =  57.34_dp + 7.95_dp * temp_norm
+
+      do i = 1, MAX_ITER
+         pz1  = c_star(1) + root1*(c_star(2) + root1*(c_star(3) + root1*(c_star(4) + root1*c_star(5))))
+         dpz1 = c_star(2) + root1*(2.0_dp*c_star(3) + root1*(3.0_dp*c_star(4) + root1*4.0_dp*c_star(5)))
+         pz2  = c_star(1) + root2*(c_star(2) + root2*(c_star(3) + root2*(c_star(4) + root2*c_star(5))))
+         dpz2 = c_star(2) + root2*(2.0_dp*c_star(3) + root2*(3.0_dp*c_star(4) + root2*4.0_dp*c_star(5)))
+         r1n = root1 - pz1 / dpz1
+         r2n = root2 - pz2 / dpz2
+         if (abs(r1n - root1) < CONVERGENCE_TOL .and. abs(r2n - root2) < CONVERGENCE_TOL) exit
+         root1 = r1n
+         root2 = r2n
+      end do
+      root1 = r1n
+      root2 = r2n
+
+      ! Complex conjugate pair via Vieta's formulas:
+      !   sum  of all 4 roots = -c_star(4)/c_star(5) = 340.5/0.8 = 425.625
+      !   prod of all 4 roots =  c_star(1)/c_star(5)
+      x_root = 0.5_dp * (425.625_dp - root1 - root2)
+      x2y2   = c_star(1) / (c_star(5) * root1 * root2)
+      y_root = sqrt(abs(x2y2 - x_root**2))
+
+   end subroutine find_cstar_roots
 
    !---------------------------------------------------------------------------
    !>
