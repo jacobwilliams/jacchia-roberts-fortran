@@ -15,7 +15,7 @@
 module jacchia_roberts_module
    use jacchia_roberts_kinds, only: ip, dp
    use space_weather_module, only: sw_data_type, flux_data_type
-   use jacchia_roberts_utilities, only: roots, deflate_polynomial
+   ! jacchia_roberts_utilities no longer needed here (root-finding is inlined)
    implicit none
    private
 
@@ -337,13 +337,12 @@ contains
 
       real(dp) :: expkp, hour_angle, cross_denom
       real(dp) :: theta, eta, tau, th22, t1, sun_denom, cos_denom
-      real(dp) :: c_star(5), aux(4,2)
-      real(dp) :: cosAlpha
-      integer(ip) :: i, na
+      real(dp) :: c_star(5)
+      real(dp) :: cosAlpha, temp_norm
+      real(dp) :: pz1, pz2, dpz1, dpz2, r1n, r2n, x2y2
+      integer(ip) :: i
       real(dp), parameter :: error_tolerance = 1.0e-14_dp
       real(dp), parameter :: real_tol = 1.0e-15_dp
-
-      na = 5
 
       ! Compute hour angle of the sun
       sun_denom = sqrt(sun_vector(1)**2 + sun_vector(2)**2)
@@ -460,28 +459,36 @@ contains
             c_star(i) = CON_C(i)
          end do
 
-         ! Get 1st real root
-         aux(1,1) = 125.0_dp
-         aux(1,2) = 0.0_dp
-         call roots(c_star, na, aux, 1)
-         me%root1 = aux(1,1)
+         ! Find two real roots via Newton-Raphson (INPE/Kuga 1985 approach).
+         ! Temperature-dependent initial guesses guarantee root1 > 125 km and
+         ! root2 < 100 km for all physical temperatures, so the log arguments
+         ! (z-r1)/(100-r1) in rho_125 always have matching signs.
+         ! Using fixed initial guesses (125, 200) can converge to a spurious
+         ! root inside [100,125] at low temperatures, producing log(negative).
+         temp_norm = (me%tx - 300.0_dp) / 200.0_dp
+         me%root1 = 167.77_dp - 3.35_dp * temp_norm   ! large root, ~125-170 km
+         me%root2 = 57.34_dp  + 7.95_dp * temp_norm   ! small root, ~55-65 km
 
-         call deflate_polynomial(c_star, na, me%root1, c_star)
+         do i = 1, 7
+            pz1  = c_star(1) + me%root1*(c_star(2) + me%root1*(c_star(3) + me%root1*(c_star(4) + me%root1*c_star(5))))
+            dpz1 = c_star(2) + me%root1*(2.0_dp*c_star(3) + me%root1*(3.0_dp*c_star(4) + me%root1*4.0_dp*c_star(5)))
+            pz2  = c_star(1) + me%root2*(c_star(2) + me%root2*(c_star(3) + me%root2*(c_star(4) + me%root2*c_star(5))))
+            dpz2 = c_star(2) + me%root2*(2.0_dp*c_star(3) + me%root2*(3.0_dp*c_star(4) + me%root2*4.0_dp*c_star(5)))
+            r1n = me%root1 - pz1 / dpz1
+            r2n = me%root2 - pz2 / dpz2
+            if (abs(r1n - me%root1) < 1.0e-7_dp .and. abs(r2n - me%root2) < 1.0e-7_dp) exit
+            me%root1 = r1n
+            me%root2 = r2n
+         end do
+         me%root1 = r1n
+         me%root2 = r2n
 
-         ! Get 2nd real root
-         aux(1,1) = 200.0_dp
-         aux(1,2) = 0.0_dp
-         call roots(c_star, na-1, aux, 1)
-         me%root2 = aux(1,1)
-
-         call deflate_polynomial(c_star, na-1, me%root2, c_star)
-
-         ! Get remaining complex roots
-         aux(1,1) = 10.0_dp
-         aux(1,2) = 125.0_dp
-         call roots(c_star, na-2, aux, 1)
-         me%x_root = aux(1,1)
-         me%y_root = abs(aux(1,2))
+         ! Compute complex conjugate roots analytically via Vieta's formulas.
+         ! Sum of all 4 roots = -c_star(4)/c_star(5) = 340.5/0.8 = 425.625
+         me%x_root = 0.5_dp * (425.625_dp - me%root1 - me%root2)
+         ! Product of all 4 roots = c_star(1)/c_star(5); complex pair gives x^2+y^2
+         x2y2 = c_star(1) / (c_star(5) * me%root1 * me%root2)
+         me%y_root = sqrt(abs(x2y2 - me%x_root**2))
       end if
 
    end function exotherm
