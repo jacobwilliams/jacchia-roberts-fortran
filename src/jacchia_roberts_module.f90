@@ -11,11 +11,11 @@
 !     pp. 368-377, 1971.
 !   * See GMAT: General Mission Analysis Tool files:
 !     `JacchiaRobertsAtmosphere.cpp` and `SolarFluxReader.cpp`.
+!   * See also: https://github.com/jacobwilliams/INPE-atmosphere-models
 
 module jacchia_roberts_module
    use jacchia_roberts_kinds, only: ip, dp
    use space_weather_module, only: sw_data_type, flux_data_type
-   ! jacchia_roberts_utilities no longer needed here (root-finding is inlined)
    implicit none
    private
 
@@ -484,8 +484,8 @@ contains
       real(dp) :: temp_norm, pz1, pz2, dpz1, dpz2, r1n, r2n, x2y2
       integer(ip) :: i !! counter
 
-      integer,parameter ::  MAX_ITER = 10 !! 7 in the original code
-      real(dp),parameter :: CONVERGENCE_TOL = 1.0e-8_dp !! 1e-7 in the original code
+      integer,parameter ::  MAX_ITER = 100 !! 7 in the original code
+      real(dp),parameter :: CONVERGENCE_TOL = 1.0e-14_dp !! 1e-7 in the original code
 
       ! Temperature-dependent initial guesses (valid for all physical T_inf):
       !   root1 ~ 125-170 km (large real root)

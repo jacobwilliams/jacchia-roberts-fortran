@@ -210,7 +210,7 @@ SUBROUTINE rsmods(Altu,Rjud,Dafr,Te,Al,Wmol,Rhod)
 !
    IMPLICIT NONE
 
-   real(dp) Al , Altu , Dafr , log , sqrt , outr , Rhod , &
+   real(dp) Al , Altu , Dafr , outr , Rhod , &
             Rjud , sd , sf , Te , vari , Wmol
    INTEGER int
    DIMENSION Te(2) , Al(6)
@@ -440,11 +440,11 @@ SUBROUTINE rsmade(Altu,Sf,Te,Ad,Wmol,Rhod)
    Ad(4) = al(2)
    Ad(5) = al(5)
    Ad(6) = al(6)
-   anut = 0.
-   weig = 0.
+   anut = 0.0_dp
+   weig = 0.0_dp
 
    DO ic = 1 , 6
-      anac = 10.**Ad(ic)
+      anac = 10.0_dp**Ad(ic)
       weig = weig + wm(ic)*anac
       anut = anut + anac
    ENDDO
@@ -532,8 +532,8 @@ SUBROUTINE rmowei(Tinf,Heig,Ad,Wmol,Rhod)
 !
 !------
 !
-   DATA avog/6.02217D+26/
-   DATA wm/4.0026 , 31.9988 , 28.0134 , 39.948 , 15.9994 , 1.00797/
+   DATA avog/6.02217e+26_dp/
+   DATA wm/4.0026_dp , 31.9988_dp , 28.0134_dp , 39.948_dp , 15.9994_dp , 1.00797_dp/
 
    CALL stjrmo(Tinf,Heig,tz,al)
 
@@ -543,11 +543,11 @@ SUBROUTINE rmowei(Tinf,Heig,Ad,Wmol,Rhod)
    Ad(4) = al(2)
    Ad(5) = al(5)
    Ad(6) = al(6)
-   anut = 0.
-   weig = 0.
+   anut = 0.0_dp
+   weig = 0.0_dp
 
    DO ic = 1 , 6
-      anac = 10.**Ad(ic)
+      anac = 10.0_dp**Ad(ic)
       weig = weig + wm(ic)*anac
       anut = anut + anac
    ENDDO
@@ -615,7 +615,7 @@ SUBROUTINE dyjrmo(Djm,Sun,Sat,Geo,Temp,Dn,Amw,Dens)
 
    real(dp) abs , Amw , capphi , cons25 , cos , d1 , d2 , d3 , d4 , d5 , d6 , Dens , df , Djm , dlhe , dlr , dlr20 , dlrgm , dlrsa , &
         & dlrsl
-   real(dp) Dn , dtg , dtg18 , dtg20 , eta , exp , expkp , f , fdfz , fs , fsm , gdft , Geo , h , pid4 , piv2 , piv4 , pk , s , Sat
+   real(dp) Dn , dtg , dtg18 , dtg20 , eta , expkp , f , fdfz , fs , fsm , gdft , Geo , h , pid4 , piv2 , piv4 , pk , s , Sat
    real(dp) sat1 , sat2 , sat3 , sign , sin , sumn , sumnm , Sun , sun1 , sun2 , tanh , tau , Temp , theta , tinf , tsubc , tsubl ,  &
         & tz
    INTEGER mod
@@ -926,9 +926,9 @@ SUBROUTINE stjr02(Tinf,Sat3,Tz,Dn)
 !
    IMPLICIT NONE
 
-   real(dp) abs , am100 , atan , aux , aux1 , aux2 , c0a , cx , d1 , d2 , d3 , d4 , d5 , de100 , deavog , dife , log , Dn , dpz1 ,  &
+   real(dp) abs , am100 , atan , aux , aux1 , aux2 , c0a , cx , d1 , d2 , d3 , d4 , d5 , de100 , deavog , dife , Dn , dpz1 ,  &
         & dpz2
-   real(dp) dzx , exp , f3 , f4 , gsubx , h2 , h3 , h4 , prod , pz1 , pz2 , q1 , q2 , q3 , q4 , q5 , q6 , r , r1 , r1n
+   real(dp) dzx , f3 , f4 , gsubx , h2 , h3 , h4 , prod , pz1 , pz2 , q1 , q2 , q3 , q4 , q5 , q6 , r , r1 , r1n
    real(dp) r2 , r2n , ra , ras , Sat3 , sksf , sksf34 , soma , sqrt , t100 , t100tz , temp , Tinf , tsubx , txmt0 , Tz , ur1 ,      &
         & ur1h2 , ur2 , ur2h3
    real(dp) vra , wr1 , wr2 , x , x2y2 , y , z
