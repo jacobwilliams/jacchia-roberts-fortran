@@ -1116,7 +1116,7 @@ SUBROUTINE stjr03(Tinf,Sat3,Tz,Dn)
 
    real(dp) a1 , a1a2a , a2 , al , aux , aux1 , aux2 , d1 , d2 , d3 , d4 , d5 , d6 , Dn , exp , h500 , r , ra , ras , Sat3
    real(dp) tetx , Tinf , tsubx , txmt0 , Tz , tz500 , z
-   INTEGER Icount , log10
+   INTEGER Icount
    COMMON /ncall / Icount
    DIMENSION Dn(6)
 !
