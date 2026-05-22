@@ -50,7 +50,7 @@ program test_compare_roberts_new
       300.0_dp, 400.0_dp, 500.0_dp, 600.0_dp, &
       800.0_dp, 1000.0_dp, 1200.0_dp, 1500.0_dp, 2000.0_dp ]
 
-   !--- Key altitudes for compact sensitivity tables (Tables 3–6) ---
+   !--- Key altitudes for compact sensitivity tables (Tables 3-6) ---
    integer,  parameter :: N_KEY = 5
    real(dp), parameter :: KEY_ALTS(N_KEY) = &
       [90.0_dp, 110.0_dp, 200.0_dp, 300.0_dp, 1000.0_dp]
@@ -116,14 +116,14 @@ program test_compare_roberts_new
    real(dp)  :: Te_stat(2), Ad_stat(6), Wmol_stat, Rhod_stat
 
    !--------------------------------------------------------------------------
-   ! Initialise both models
+   ! Initialize both models
    !--------------------------------------------------------------------------
 
    utc_mjd = real(Rjud_ref, dp) + MJD_1950 + real(Dafr, dp) / 86400.0_dp
 
    call soflud_init(SW_FILE, old_status)
    if (old_status /= 0) then
-      write(*,'(A)') 'ERROR: could not initialise old-model space weather data.'
+      write(*,'(A)') 'ERROR: could not initialize old-model space weather data.'
       error stop 1
    end if
 
@@ -225,7 +225,7 @@ program test_compare_roberts_new
    write(*,'(4X,A,6(3X,A))') 'Species: ', '    He', '    O2', '    N2', '    Ar', '     O', '     H'
 
    !==========================================================================
-   ! Sensitivity tables (Tables 3–6)
+   ! Sensitivity tables (Tables 3-6)
    !
    ! One parameter is varied per table; the others are held at the reference:
    !   epoch  = Rjud_ref (~2011)

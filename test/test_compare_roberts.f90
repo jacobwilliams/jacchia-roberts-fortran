@@ -72,14 +72,14 @@ program test_compare_roberts
    real(dp) :: Te_stat(2), Ad_stat(6), Wmol_stat, Rhod_stat
 
    !--------------------------------------------------------------------------
-   ! Initialise both models
+   ! Initialize both models
    !--------------------------------------------------------------------------
 
    utc_mjd = real(Rjud, dp) + MJD_1950 + real(Dafr, dp) / 86400.0_dp
 
    call soflud_init(SW_FILE, old_status)
    if (old_status /= 0) then
-      write(*,'(A)') 'ERROR: could not initialise old-model space weather data.'
+      write(*,'(A)') 'ERROR: could not initialize old-model space weather data.'
       error stop 1
    end if
 
@@ -129,7 +129,7 @@ program test_compare_roberts
       ! Old model via rdymos_cssi (uses same prepare_flux_data timing)
       call rdymos_cssi(Sa, Su, Rjud, Dafr, Gsti, Te_old, Ad_old, Wmol_old, Rhod_old, old_status)
       if (old_status /= 0) then
-         write(*,'(2X,F7.1,A)') alt_km, '  [old model lookup failed – skipping]'
+         write(*,'(2X,F7.1,A)') alt_km, '  [old model lookup failed - skipping]'
          cycle
       end if
 
