@@ -65,8 +65,8 @@ integer(ip) :: status
 real(dp) :: density
 
 ! example inputs:
-real(dp),parameter :: rad_earth = 6356.766_dp !! Earth polar radius (km)
-character(len=*),parameter :: sw_file = 'data/SpaceWeather-All-v1.2.txt'
+real(dp),parameter :: rad_earth = 6356.766_dp ! Earth polar radius (km)
+character(len=*),parameter :: sw_file = 'data/SpaceWeather-All-v1.2.txt' ! space weather file to load
 real(dp),parameter :: utc_mjd = 59215.5_dp ! MJD: Jan 1, 2021 12:00 UTC
 real(dp),parameter :: alt_km = 200.0_dp ! geodetic altitude (km)
 real(dp),parameter :: lat = 20.0_dp ! geodetic latitude (deg)
