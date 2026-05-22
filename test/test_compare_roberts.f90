@@ -39,8 +39,8 @@ program test_compare_roberts
 
    ! Test epoch: same as rober_test default
    !   Rjud = 22476  (MJD-1950)  =>  std MJD = 55758  (~2011-08-08)
-   real(8),  parameter :: Rjud = 22476.0d0   !! MJD-1950
-   real(8),  parameter :: Dafr = 43200.0d0   !! Noon UT (seconds) — avoids midnight singularity
+   real(dp),  parameter :: Rjud = 22476.0d0   !! MJD-1950
+   real(dp),  parameter :: Dafr = 43200.0d0   !! Noon UT (seconds) — avoids midnight singularity
 
    ! Altitudes (km) to evaluate
    integer, parameter :: N_ALT = 15
@@ -50,8 +50,8 @@ program test_compare_roberts
       800.0_dp, 1000.0_dp, 1200.0_dp, 1500.0_dp, 2000.0_dp ]
 
    ! ---- Old-model I/O ----
-   real(8)  :: Sa(3), Su(2), Gsti
-   real(8)  :: Te_old(2), Ad_old(6), Wmol_old, Rhod_old
+   real(dp)  :: Sa(3), Su(2), Gsti
+   real(dp)  :: Te_old(2), Ad_old(6), Wmol_old, Rhod_old
    integer  :: old_status
 
    ! ---- New-model ----
@@ -67,8 +67,8 @@ program test_compare_roberts
 
    ! ---- Also collect results for the static comparison using rsdamo directly ----
    !      (hardcoded SF to isolate algorithm from data source)
-   real(8), parameter :: SF_FIXED(3) = [150.0d0, 150.0d0, 3.0d0]  !! F10.7, F10.7a, Kp
-   real(8) :: Te_stat(2), Ad_stat(6), Wmol_stat, Rhod_stat
+   real(dp), parameter :: SF_FIXED(3) = [150.0d0, 150.0d0, 3.0d0]  !! F10.7, F10.7a, Kp
+   real(dp) :: Te_stat(2), Ad_stat(6), Wmol_stat, Rhod_stat
 
    !--------------------------------------------------------------------------
    ! Initialise both models
