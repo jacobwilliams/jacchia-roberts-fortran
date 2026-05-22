@@ -39,8 +39,8 @@ program test_compare_roberts_new
    character(len=*), parameter :: SW_FILE = 'data/SpaceWeather-All-v1.2.txt'
 
    !--- Reference epoch for Tables 1 & 2 ---
-   real(8),  parameter :: Rjud_ref = 22476.0d0  !! MJD-1950 (~2011-08-08)
-   real(8),  parameter :: Dafr     = 43200.0d0  !! Noon UT (seconds)
+   real(dp),  parameter :: Rjud_ref = 22476.0_dp  !! MJD-1950 (~2011-08-08)
+   real(dp),  parameter :: Dafr     = 43200.0_dp  !! Noon UT (seconds)
 
    !--- Full altitude array for Table 1 ---
    integer,  parameter :: N_ALT = 15
@@ -58,8 +58,8 @@ program test_compare_roberts_new
 
    ! Table 3: Epochs (MJD-1950) — solar min, moderate, solar max
    integer,  parameter :: N_EPOCHS = 3
-   real(8),  parameter :: TEST_RJUD(N_EPOCHS) = &
-      [16800.0d0, 22476.0d0, 23618.0d0]
+   real(dp),  parameter :: TEST_RJUD(N_EPOCHS) = &
+      [16800.0_dp, 22476.0_dp, 23618.0_dp]
    character(len=22), parameter :: EPOCH_DESC(N_EPOCHS) = [ character(len=22) :: &
       '~1996 solar min       ', &
       '~2011 moderate        ', &
@@ -83,8 +83,8 @@ program test_compare_roberts_new
 
    ! Table 6: Local times — satellite RA relative to sun at RA=0 (hour angle)
    integer,  parameter :: N_TIMES = 4
-   real(8),  parameter :: SAT_RA_RAD(N_TIMES) = &
-      [0.0d0, 1.5707963268d0, 3.1415926536d0, -1.5707963268d0]
+   real(dp),  parameter :: SAT_RA_RAD(N_TIMES) = &
+      [0.0_dp, 1.5707963268_dp, 3.1415926536_dp, -1.5707963268_dp]
    character(len=22), parameter :: TIME_DESC(N_TIMES) = [ character(len=22) :: &
       'noon      h=   0 deg  ', &
       'evening   h=  +90 deg ', &
@@ -92,8 +92,8 @@ program test_compare_roberts_new
       'dawn      h=  -90 deg ']
 
    !--- Old model I/O ---
-   real(8)  :: Sa(3), Su(2), Gsti
-   real(8)  :: Te_old(2), Ad_old(6), Wmol_old, Rhod_old
+   real(dp)  :: Sa(3), Su(2), Gsti
+   real(dp)  :: Te_old(2), Ad_old(6), Wmol_old, Rhod_old
    integer  :: old_status
 
    !--- New model ---
@@ -107,12 +107,12 @@ program test_compare_roberts_new
    real(dp) :: alt_km, rhod_old_dp, log_old, log_new, pct_diff
    character(len=6) :: flag
    real(dp) :: pct_arr(N_KEY)
-   real(8)  :: Rjud_local
+   real(dp)  :: Rjud_local
    real(dp) :: utc_mjd_local, dec_rad, lat_rad, sat_ra
 
    !--- Static rsdamo baseline (Table 2) ---
-   real(8),  parameter :: SF_FIXED(3) = [150.0d0, 150.0d0, 3.0d0]
-   real(8)  :: Te_stat(2), Ad_stat(6), Wmol_stat, Rhod_stat
+   real(dp),  parameter :: SF_FIXED(3) = [150.0_dp, 150.0_dp, 3.0_dp]
+   real(dp)  :: Te_stat(2), Ad_stat(6), Wmol_stat, Rhod_stat
 
    !--------------------------------------------------------------------------
    ! Initialise both models
@@ -131,11 +131,11 @@ program test_compare_roberts_new
       write(*,'(A)') 'WARNING: new model space weather load failed; using nominal values.'
    end if
 
-   Gsti = 0.0d0  ! not used by rsdamo/rdymos_cssi but required by signature
+   Gsti = 0.0_dp  ! not used by rsdamo/rdymos_cssi but required by signature
 
    !--- Reference geometry: equatorial, noon, sun at equinox ---
-   Su(1) = 0.0d0;  Su(2) = 0.0d0   ! sun RA=0, dec=0
-   Sa(1) = 0.0d0;  Sa(2) = 0.0d0   ! satellite RA=0, geocentric lat=0
+   Su(1) = 0.0_dp;  Su(2) = 0.0_dp   ! sun RA=0, dec=0
+   Sa(1) = 0.0_dp;  Sa(2) = 0.0_dp   ! satellite RA=0, geocentric lat=0
    sun_vector = [1.0_dp, 0.0_dp, 0.0_dp]
    geo_lat    = 0.0_dp
 
@@ -158,7 +158,7 @@ program test_compare_roberts_new
 
    do i = 1, N_ALT
       alt_km   = ALTITUDES(i)
-      Sa(3)    = alt_km * 1.0d3
+      Sa(3)    = alt_km * 1.0_dp
       position = [(EARTH_RADIUS + alt_km), 0.0_dp, 0.0_dp]
 
       call rdymos_cssi(Sa, Su, Rjud_ref, Dafr, Gsti, Te_old, Ad_old, Wmol_old, Rhod_old, old_status)
@@ -247,8 +247,8 @@ program test_compare_roberts_new
    write(*,'(A)') '  Epoch                      90km   110km   200km   300km  1000km'
    write(*,'(A)') '  ----------------------   ------  ------  ------  ------  ------'
 
-   Su(1) = 0.0d0;  Su(2) = 0.0d0
-   Sa(1) = 0.0d0;  Sa(2) = 0.0d0
+   Su(1) = 0.0_dp;  Su(2) = 0.0_dp
+   Sa(1) = 0.0_dp;  Sa(2) = 0.0_dp
    sun_vector = [1.0_dp, 0.0_dp, 0.0_dp]
    geo_lat    = 0.0_dp
 
@@ -284,7 +284,7 @@ program test_compare_roberts_new
    write(*,'(A)') '  Sun declination (deg)      90km   110km   200km   300km  1000km'
    write(*,'(A)') '  ----------------------   ------  ------  ------  ------  ------'
 
-   Sa(1) = 0.0d0;  Sa(2) = 0.0d0
+   Sa(1) = 0.0_dp;  Sa(2) = 0.0_dp
    Rjud_local    = Rjud_ref
    utc_mjd_local = utc_mjd
    geo_lat       = 0.0_dp
@@ -308,7 +308,7 @@ program test_compare_roberts_new
       end do
       write(*,'(2X,A22,5F8.2)') SUN_DESC(k), (pct_arr(j), j=1,N_KEY)
    end do
-   Su(2) = 0.0d0;  sun_vector = [1.0_dp, 0.0_dp, 0.0_dp]   ! restore equinox
+   Su(2) = 0.0_dp;  sun_vector = [1.0_dp, 0.0_dp, 0.0_dp]   ! restore equinox
 
    !==========================================================================
    ! Table 5 : Geographic-latitude sensitivity
@@ -324,8 +324,8 @@ program test_compare_roberts_new
    write(*,'(A)') '  Geographic latitude        90km   110km   200km   300km  1000km'
    write(*,'(A)') '  ----------------------   ------  ------  ------  ------  ------'
 
-   Su(1) = 0.0d0;  Su(2) = 0.0d0
-   Sa(1) = 0.0d0
+   Su(1) = 0.0_dp;  Su(2) = 0.0_dp
+   Sa(1) = 0.0_dp
    Rjud_local    = Rjud_ref
    utc_mjd_local = utc_mjd
 
@@ -350,7 +350,7 @@ program test_compare_roberts_new
       end do
       write(*,'(2X,A22,5F8.2)') LAT_DESC(k), (pct_arr(j), j=1,N_KEY)
    end do
-   Sa(2) = 0.0d0;  geo_lat = 0.0_dp   ! restore equatorial
+   Sa(2) = 0.0_dp;  geo_lat = 0.0_dp   ! restore equatorial
 
    !==========================================================================
    ! Table 6 : Local-time (hour-angle) sensitivity
@@ -366,8 +366,8 @@ program test_compare_roberts_new
    write(*,'(A)') '  Local time                 90km   110km   200km   300km  1000km'
    write(*,'(A)') '  ----------------------   ------  ------  ------  ------  ------'
 
-   Su(1) = 0.0d0;  Su(2) = 0.0d0
-   Sa(2) = 0.0d0
+   Su(1) = 0.0_dp;  Su(2) = 0.0_dp
+   Sa(2) = 0.0_dp
    Rjud_local    = Rjud_ref
    utc_mjd_local = utc_mjd
    geo_lat       = 0.0_dp
@@ -377,7 +377,7 @@ program test_compare_roberts_new
       sat_ra = real(SAT_RA_RAD(k), dp)
       do j = 1, N_KEY
          alt_km   = KEY_ALTS(j)
-         Sa(3)    = alt_km * 1.0d3
+         Sa(3)    = alt_km * 1.0e3_dp
          ! equatorial position at satellite RA
          position = [(EARTH_RADIUS + alt_km)*cos(sat_ra), &
                      (EARTH_RADIUS + alt_km)*sin(sat_ra), 0.0_dp]

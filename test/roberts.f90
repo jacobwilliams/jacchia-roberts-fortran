@@ -114,7 +114,7 @@ SUBROUTINE rdymos(Sa,Su,Rjud,Dafr,Gsti,Te,Ad,Wmol,Rhod)
 !
    IMPLICIT NONE
 
-   REAL*8 Ad , dafl , Dafr , Gsti , outr , Rhod , rjfl , Rjud , Sa , sd , sf , Su , tauo , Te , Wmol
+   real(dp) Ad , dafl , Dafr , Gsti , outr , Rhod , rjfl , Rjud , Sa , sd , sf , Su , tauo , Te , Wmol
    INTEGER int , nd
    DIMENSION Sa(3) , Su(2) , Te(2) , Ad(6)
    DIMENSION sf(3) , sd(15)
@@ -122,12 +122,14 @@ SUBROUTINE rdymos(Sa,Su,Rjud,Dafr,Gsti,Te,Ad,Wmol,Rhod)
 !------
 !
 
-   rjfl = rjfl - 1.
-   IF ( Dafr<61344. ) THEN
-      rjfl = rjfl - 1.
-      dafl = Dafr + 25056.
+   rjfl = 0.0_dp  ! this was uninitiated in the original code
+
+   rjfl = rjfl - 1.0_dp
+   IF ( Dafr<61344.0_dp ) THEN
+      rjfl = rjfl - 1.0_dp
+      dafl = Dafr + 25056.0_dp
    ELSE
-      dafl = Dafr - 61344.
+      dafl = Dafr - 61344.0_dp
    ENDIF
 
    CALL soflud(rjfl,dafl,sd,outr)
@@ -137,8 +139,8 @@ SUBROUTINE rdymos(Sa,Su,Rjud,Dafr,Gsti,Te,Ad,Wmol,Rhod)
       STOP
    ENDIF
 
-   tauo = 6.696
-   nd = (Dafr/3600.-sd(6)+12.-tauo)/3.
+   tauo = 6.696_dp
+   nd = (Dafr/3600.0_dp-sd(6)+12.0_dp-tauo)/3.0_dp
    sf(1) = sd(9)
    sf(2) = sd(11)
    sf(3) = sd(nd)
@@ -208,7 +210,8 @@ SUBROUTINE rsmods(Altu,Rjud,Dafr,Te,Al,Wmol,Rhod)
 !
    IMPLICIT NONE
 
-   REAL*8 Al , Altu , Dafr , dlog , dsqrt , outr , Rhod , Rjud , sd , sf , Te , vari , Wmol
+   real(dp) Al , Altu , Dafr , log , sqrt , outr , Rhod , &
+            Rjud , sd , sf , Te , vari , Wmol
    INTEGER int
    DIMENSION Te(2) , Al(6)
    DIMENSION sf(3) , sd(15)
@@ -217,15 +220,15 @@ SUBROUTINE rsmods(Altu,Rjud,Dafr,Te,Al,Wmol,Rhod)
 !
    CALL soflud(Rjud,Dafr,sd,outr)
 
-   IF ( outr/=0. ) THEN
+   IF ( outr/=0.0_dp ) THEN
       WRITE (6,*) ' ERROR IN ROUTINE ISMODS: OUTR = ' , int(outr)
       STOP
    ENDIF
 
    sf(1) = sd(9)
    sf(2) = sd(11)
-   vari = .154*sd(7)
-   sf(3) = 1.89*dlog(vari+dsqrt(vari*vari+1.D0))
+   vari = 0.154_dp*sd(7)
+   sf(3) = 1.89_dp*log(vari+sqrt(vari*vari+1.0_dp))
 
    CALL rsmade(Altu,sf,Te,Al,Wmol,Rhod)
 
@@ -318,7 +321,7 @@ SUBROUTINE rsdamo(Sa,Su,Sf,Rjud,Dafr,Gsti,Te,Ad,Wmol,Rhod)
 !
    IMPLICIT NONE
 
-   REAL*8 Ad , al , amjd , Dafr , Gsti , Rhod , Rjud , Sa , Sf , Su , Te , Wmol
+   real(dp) Ad , al , amjd , Dafr , Gsti , Rhod , Rjud , Sa , Sf , Su , Te , Wmol
 
    DIMENSION Sa(3) , Su(2) , Sf(3) , Te(2) , Ad(6)
    DIMENSION al(6)
@@ -413,7 +416,7 @@ SUBROUTINE rsmade(Altu,Sf,Te,Ad,Wmol,Rhod)
 !
    IMPLICIT NONE
 
-   REAL*8 Ad , al , Altu , anac , anut , avog , fbar , flux , heig , Rhod , Sf , Te , thaf , tz , weig , wm , Wmol
+   real(dp) Ad , al , Altu , anac , anut , avog , fbar , flux , heig , Rhod , Sf , Te , thaf , tz , weig , wm , Wmol
    INTEGER ic
 
    DIMENSION Sf(3) , Te(2) , Ad(6)
@@ -521,7 +524,7 @@ SUBROUTINE rmowei(Tinf,Heig,Ad,Wmol,Rhod)
 !
    IMPLICIT NONE
 
-   REAL*8 Ad , al , anac , anut , avog , Heig , Rhod , Tinf , tz , weig , wm , Wmol
+   real(dp) Ad , al , anac , anut , avog , Heig , Rhod , Tinf , tz , weig , wm , Wmol
    INTEGER ic
 
    DIMENSION Ad(6)
@@ -610,15 +613,15 @@ SUBROUTINE dyjrmo(Djm,Sun,Sat,Geo,Temp,Dn,Amw,Dens)
 !
    IMPLICIT NONE
 
-   REAL*8 abs , Amw , capphi , cons25 , cos , d1 , d2 , d3 , d4 , d5 , d6 , Dens , df , Djm , dlhe , dlr , dlr20 , dlrgm , dlrsa , &
+   real(dp) abs , Amw , capphi , cons25 , cos , d1 , d2 , d3 , d4 , d5 , d6 , Dens , df , Djm , dlhe , dlr , dlr20 , dlrgm , dlrsa , &
         & dlrsl
-   REAL*8 Dn , dtg , dtg18 , dtg20 , eta , exp , expkp , f , fdfz , fs , fsm , gdft , Geo , h , pid4 , piv2 , piv4 , pk , s , Sat
-   REAL*8 sat1 , sat2 , sat3 , sign , sin , sumn , sumnm , Sun , sun1 , sun2 , tanh , tau , Temp , theta , tinf , tsubc , tsubl ,  &
+   real(dp) Dn , dtg , dtg18 , dtg20 , eta , exp , expkp , f , fdfz , fs , fsm , gdft , Geo , h , pid4 , piv2 , piv4 , pk , s , Sat
+   real(dp) sat1 , sat2 , sat3 , sign , sin , sumn , sumnm , Sun , sun1 , sun2 , tanh , tau , Temp , theta , tinf , tsubc , tsubl ,  &
         & tz
    INTEGER mod
    DIMENSION Sun(2) , Sat(3) , Geo(3) , Temp(2) , Dn(6)
 !-----
-   DATA piv2 , piv4 , pid4 , cons25/6.2831853D0 , 12.566371D0 , 0.78539816D0 , 0.35355339D0/
+   DATA piv2 , piv4 , pid4 , cons25/6.2831853_dp , 12.566371_dp , 0.78539816_dp , 0.35355339_dp/
 !
 !      PIV2 = 2 * PI
 !      PIV4 = 4 * PI
@@ -629,7 +632,7 @@ SUBROUTINE dyjrmo(Djm,Sun,Sat,Geo,Temp,Dn,Amw,Dens)
    sun2 = Sun(2)
    sat1 = Sat(1)
    sat2 = Sat(2)
-   sat3 = Sat(3)/1000.
+   sat3 = Sat(3)/1000.0_dp
    fs = Geo(1)
    fsm = Geo(2)
    pk = Geo(3)
@@ -639,44 +642,44 @@ SUBROUTINE dyjrmo(Djm,Sun,Sat,Geo,Temp,Dn,Amw,Dens)
 !       GEOMAGNETIC ACTIVITY INDEX KP = 0
 !       EQUATION 14J
 !
-   tsubc = 379. + 3.24*fsm + 1.3*(fs-fsm)
+   tsubc = 379.0_dp + 3.24_dp*fsm + 1.3_dp*(fs-fsm)
 !
 !       EQUATION 15J
 !
-   eta = 0.5*abs(sat2-sun2)
-   theta = 0.5*abs(sat2+sun2)
+   eta = 0.5_dp*abs(sat2-sun2)
+   theta = 0.5_dp*abs(sat2+sun2)
 !
 !       EQUATION 16J
 !
    h = sat1 - sun1
-   tau = h - 0.64577182 + 0.10471976*sin(h+0.75049158)
+   tau = h - 0.64577182_dp + 0.10471976_dp*sin(h+0.75049158_dp)
 !
 !       EXOSPHERIC TEMPERATURE TSUBL WITHOUT CORRECTION
 !       FOR GEOMAGNETIC ACTIVITY
 !       EQUATION 17J
 !
-   s = sin(theta)**2.2
-   df = s + (cos(eta)**2.2D0-s)*abs(cos(0.5*tau))**3
-   tsubl = tsubc*(1.+0.3*df)
+   s = sin(theta)**2.2_dp
+   df = s + (cos(eta)**2.2_dp-s)*abs(cos(0.5*tau))**3
+   tsubl = tsubc*(1.0_dp+0.3_dp*df)
 !
 !       EQUATION 18J
 !
    expkp = exp(pk)
-   dtg18 = 28.*pk + 0.03*expkp
+   dtg18 = 28.0_dp*pk + 0.03_dp*expkp
 !
 !       EQUATION 20J
 !
-   dtg20 = 14.*pk + 0.02*expkp
-   dlr20 = 0.012*pk + 1.2D-05*expkp
+   dtg20 = 14.0_dp*pk + 0.02_dp*expkp
+   dlr20 = 0.012_dp*pk + 1.2e-05_dp*expkp
 !
 !       THE FOLLOWING STATEMENTS EFFECT A CONTINUOUS
 !       TRANSITION FROM EQ. 20J AT HEIGHTS WELL BELOW
 !       350 KM TO EQ. 18J AT HEIGHTS WELL ABOVE
 !       350 KM .
 !
-   f = 0.5*(tanh(0.04*(sat3-350.))+1.)
-   dlrgm = dlr20*(1.-f)
-   dtg = dtg20*(1.-f) + dtg18*f
+   f = 0.5_dp*(tanh(0.04_dp*(sat3-350.0_dp))+1.0_dp)
+   dlrgm = dlr20*(1.0_dp-f)
+   dtg = dtg20*(1.0_dp-f) + dtg18*f
 !
 !       EXOSPHERIC TEMPERATURE
 !
@@ -689,13 +692,13 @@ SUBROUTINE dyjrmo(Djm,Sun,Sat,Geo,Temp,Dn,Amw,Dens)
 !
 !   EQ. 23J   PHASE OF THE SEMI-ANNUAL VARIATION
 !
-   capphi = mod((Djm-36204.)/365.2422,1.D0)
+   capphi = mod((Djm-36204.0_dp)/365.2422_dp,1.0_dp)
 !
 !   EQ. 22J
 !
-   tau = capphi + 0.09544*((0.5+0.5*sin(piv2*capphi+6.035))**1.650-0.5)
-   gdft = 0.02835 + 0.3817*(1.+0.4671*sin(piv2*tau+4.137))*sin(piv4*tau+4.259)
-   fdfz = (5.876D-07*sat3**2.331D0+0.06328)*exp(-2.868D-03*sat3)
+   tau = capphi + 0.09544_dp*((0.5_dp+0.5_dp*sin(piv2*capphi+6.035_dp))**1.650_dp-0.5_dp)
+   gdft = 0.02835_dp + 0.3817_dp*(1.0_dp+0.4671_dp*sin(piv2*tau+4.137_dp))*sin(piv4*tau+4.259_dp)
+   fdfz = (5.876e-07_dp*sat3**2.331_dp+0.06328_dp)*exp(-2.868e-03_dp*sat3)
 !
 !   EQ. 21J  SEMI-ANNUAL VARIATION
 !
@@ -704,7 +707,7 @@ SUBROUTINE dyjrmo(Djm,Sun,Sat,Geo,Temp,Dn,Amw,Dens)
 !   EQ. 24J  SEASONAL-LATITUDINAL VARIATION OF THE
 !            LOWER THERMOSPHERE
 !
-   dlrsl = 0.014*(sat3-90.)*exp(-0.0013*(sat3-90.)**2)*sign(1.D0,sat2)*sin(piv2*capphi+1.72)*sin(sat2)**2
+   dlrsl = 0.014_dp*(sat3-90.0_dp)*exp(-0.0013_dp*(sat3-90.0_dp)**2)*sign(1.0_dp,sat2)*sin(piv2*capphi+1.72_dp)*sin(sat2)**2
 !
 !   SUM THE CORRECTIONS AND APPLY TO THE
 !   NUMBER DENSITIES
@@ -720,21 +723,21 @@ SUBROUTINE dyjrmo(Djm,Sun,Sat,Geo,Temp,Dn,Amw,Dens)
 !   EQ. 25J  SEASONAL-LATITUDINAL VARIATION
 !            OF HELIUM
 !
-   dlhe = 0.65*abs(sun2/0.4091609)*(sin(pid4-0.5*sat2*sign(1.D0,sun2))**3-cons25)
+   dlhe = 0.65_dp*abs(sun2/0.4091609_dp)*(sin(pid4-0.5_dp*sat2*sign(1.0_dp,sun2))**3-cons25)
    Dn(3) = Dn(3) + dlhe
 !
 !  COMPUTE DENSITY AND MEAN MOLECULAR WEIGHT
 !
-   d1 = 10.**Dn(1)
-   d2 = 10.**Dn(2)
-   d3 = 10.**Dn(3)
-   d4 = 10.**Dn(4)
-   d5 = 10.**Dn(5)
-   d6 = 10.**Dn(6)
+   d1 = 10.0_dp**Dn(1)
+   d2 = 10.0_dp**Dn(2)
+   d3 = 10.0_dp**Dn(3)
+   d4 = 10.0_dp**Dn(4)
+   d5 = 10.0_dp**Dn(5)
+   d6 = 10.0_dp**Dn(6)
    sumn = d1 + d2 + d3 + d4 + d5 + d6
-   sumnm = 28.0134*d1 + 39.9480*d2 + 4.0026*d3 + 31.9988*d4 + 15.9994*d5 + 1.00797*d6
+   sumnm = 28.0134_dp*d1 + 39.9480_dp*d2 + 4.0026_dp*d3 + 31.9988_dp*d4 + 15.9994_dp*d5 + 1.00797_dp*d6
    Amw = sumnm/sumn
-   Dens = sumnm/6.02257D+26
+   Dens = sumnm/6.02257e+26_dp
    Temp(1) = tinf
    Temp(2) = tz
 !
@@ -765,18 +768,18 @@ SUBROUTINE stjrmo(Tinf,Sat3,Tz,Dn)
 !
    IMPLICIT NONE
 
-   REAL*8 Dn , Sat3 , Tinf , Tz
+   real(dp) Dn , Sat3 , Tinf , Tz
    DIMENSION Dn(6)
-!-----
-   IF ( Sat3>125. ) THEN
+
+   IF ( Sat3>125.0_dp ) THEN
 !
       CALL stjr03(Tinf,Sat3,Tz,Dn)
       RETURN
-   ELSEIF ( Sat3>100. ) THEN
+   ELSEIF ( Sat3>100.0_dp ) THEN
 !
       CALL stjr02(Tinf,Sat3,Tz,Dn)
       RETURN
-   ELSEIF ( Sat3<90. ) THEN
+   ELSEIF ( Sat3<90.0_dp ) THEN
 !
       PRINT 99001
 99001 FORMAT (1X,'ATENCA0 : MENSAGEM DA ROTINA DE ',/,1X,'*******   CALCULO DA DENSIDADE AT-',/,1X,'          MOSFERICA.',//,3X,   &
@@ -819,10 +822,10 @@ SUBROUTINE stjr01(Tinf,Sat3,Tl2,Al10n)
 !
    IMPLICIT NONE
 
-   REAL*8 ain , al , Al10n , am1 , am2 , an , anm , dens , dfloat , dz , dzx , exp , fact1 , fact2 , gx , gz , ra , Sat3 , sum1 ,  &
+   real(dp) ain , al , Al10n , am1 , am2 , an , anm , dens , dz , dzx , exp , fact1 , fact2 , gx , gz , ra , Sat3 , sum1 ,  &
         & sum2
-   REAL*8 Tinf , tl1 , Tl2 , tx , wt , z , zd , zend , zr
-   INTEGER i , int , j , log , log10 , n
+   real(dp) Tinf , tl1 , Tl2 , tx , wt , z , zd , zend , zr
+   INTEGER i , int , j , n
    DIMENSION wt(5) , Al10n(6)
 !
 !-----
@@ -831,58 +834,58 @@ SUBROUTINE stjr01(Tinf,Sat3,Tl2,Al10n)
 !   WT = WEIGHTS FOR THE NEWTON-COTES
 !        FIVE POINT QUADRATURE FORMULAE
 !
-   DATA ra , wt/6356.766 , 0.31111111 , 1.4222222 , 0.53333333 , 1.4222222 , 0.31111111/
+   DATA ra , wt/6356.766_dp , 0.31111111_dp , 1.4222222_dp , 0.53333333_dp , 1.4222222_dp , 0.31111111_dp/
 !
-   tx = 371.668 + 0.0518806*Tinf - 294.3503*exp(-0.00216222*Tinf)
-   gx = 0.054285714*(tx-183.)
-   al = log(Sat3/90.)
-   n = int(al/0.050) + 1
-   zr = exp(al/dfloat(n))
-   am1 = 28.82678
-   tl1 = 183.
-   zend = 90.
-   sum2 = 0.
-   ain = am1*9.534750028/tl1
+   tx = 371.668_dp + 0.0518806_dp*Tinf - 294.3503_dp*exp(-0.00216222_dp*Tinf)
+   gx = 0.054285714_dp*(tx-183.0_dp)
+   al = log(Sat3/90.0_dp)
+   n = int(al/0.050_dp) + 1
+   zr = exp(al/real(n,dp))
+   am1 = 28.82678_dp
+   tl1 = 183.0_dp
+   zend = 90.0_dp
+   sum2 = 0.0_dp
+   ain = am1*9.534750028_dp/tl1
 !
    DO i = 1 , n
       z = zend
       zend = zr*z
-      dz = 0.25*(zend-z)
-      sum1 = 0.31111111*ain
+      dz = 0.25_dp*(zend-z)
+      sum1 = 0.31111111_dp*ain
       DO j = 2 , 5
          z = z + dz
 !
 !       MOLECULAR WEIGHT FOR Z BETWEEN 90 KM AND
 !       100 KM . ACCORDING TO JACCHIA 1971,EQ.1J
 !
-         zd = z - 90.
-         am2 = 28.82678 - 7.40066D-02*zd +                                                                                         &
-             & zd*(-1.19407D-02*zd+zd*(4.51103D-04*zd+zd*(-8.21895D-06*zd+zd*(1.07561D-05*zd-6.97444D-07*zd*zd))))
+         zd = z - 90.0_dp
+         am2 = 28.82678_dp - 7.40066e-02_dp*zd +                                                                                         &
+               zd*(-1.19407e-02_dp*zd+zd*(4.51103e-04_dp*zd+zd*(-8.21895e-06_dp*zd+zd*(1.07561e-05_dp*zd-6.97444e-07_dp*zd*zd))))
 !
 !       TEMPERATURE FOR Z BETWEEN 90 AND 100 KM
 !       EQ. 5R
 !
-         dzx = z - 125.
-         Tl2 = tx + ((-9.8204695D-06*dzx-7.3039742D-04)*dzx*dzx+1.)*dzx*gx
-         gz = 9.80665*(ra/(ra+z))**2
+         dzx = z - 125.0_dp
+         Tl2 = tx + ((-9.8204695e-06_dp*dzx-7.3039742e-04_dp)*dzx*dzx+1.0_dp)*dzx*gx
+         gz = 9.80665_dp*(ra/(ra+z))**2
          ain = am2*gz/Tl2
          sum1 = sum1 + wt(j)*ain
       ENDDO
       sum2 = sum2 + dz*sum1
    ENDDO
 !
-   fact1 = 0.12027444181
-   dens = 3.46D-06*am2*tl1*exp(-fact1*sum2)/am1/Tl2
-   anm = 6.02257D+26*dens
+   fact1 = 0.12027444181_dp
+   dens = 3.46e-06_dp*am2*tl1*exp(-fact1*sum2)/am1/Tl2
+   anm = 6.02257e+26_dp*dens
    an = anm/am2
-   fact2 = anm/28.960
+   fact2 = anm/28.960_dp
 !
-   Al10n(1) = log10(0.78110*fact2)
-   Al10n(2) = log10(9.3432D-03*fact2)
-   Al10n(3) = log10(6.1471D-06*fact2)
-   Al10n(4) = log10(1.20955*fact2-an)
-   Al10n(5) = log10(2.*(an-fact2))
-   Al10n(6) = Al10n(5) - 15.
+   Al10n(1) = log10(0.78110_dp*fact2)
+   Al10n(2) = log10(9.3432e-03_dp*fact2)
+   Al10n(3) = log10(6.1471e-06_dp*fact2)
+   Al10n(4) = log10(1.20955_dp*fact2-an)
+   Al10n(5) = log10(2.0_dp*(an-fact2))
+   Al10n(6) = Al10n(5) - 15.0_dp
 !
 END SUBROUTINE stjr01
 
@@ -923,13 +926,13 @@ SUBROUTINE stjr02(Tinf,Sat3,Tz,Dn)
 !
    IMPLICIT NONE
 
-   REAL*8 abs , am100 , atan , aux , aux1 , aux2 , c0a , cx , d1 , d2 , d3 , d4 , d5 , de100 , deavog , dife , dlog , Dn , dpz1 ,  &
+   real(dp) abs , am100 , atan , aux , aux1 , aux2 , c0a , cx , d1 , d2 , d3 , d4 , d5 , de100 , deavog , dife , log , Dn , dpz1 ,  &
         & dpz2
-   REAL*8 dzx , exp , f3 , f4 , gsubx , h2 , h3 , h4 , prod , pz1 , pz2 , q1 , q2 , q3 , q4 , q5 , q6 , r , r1 , r1n
-   REAL*8 r2 , r2n , ra , ras , Sat3 , sksf , sksf34 , soma , sqrt , t100 , t100tz , temp , Tinf , tsubx , txmt0 , Tz , ur1 ,      &
+   real(dp) dzx , exp , f3 , f4 , gsubx , h2 , h3 , h4 , prod , pz1 , pz2 , q1 , q2 , q3 , q4 , q5 , q6 , r , r1 , r1n
+   real(dp) r2 , r2n , ra , ras , Sat3 , sksf , sksf34 , soma , sqrt , t100 , t100tz , temp , Tinf , tsubx , txmt0 , Tz , ur1 ,      &
         & ur1h2 , ur2 , ur2h3
-   REAL*8 vra , wr1 , wr2 , x , x2y2 , y , z
-   INTEGER i , log , log10
+   real(dp) vra , wr1 , wr2 , x , x2y2 , y , z
+   INTEGER i
    DIMENSION Dn(6)
 !
 !-----
@@ -937,28 +940,28 @@ SUBROUTINE stjr02(Tinf,Sat3,Tz,Dn)
 !       RA... POLAR EARTH RADIUS    (KM)
 !       RAS.. RA**2                 (KM**2)
 !
-   DATA r/8.31432D0/
-   DATA ra , ras/6356.766D0 , 4.04084739788D+07/
+   DATA r/8.31432_dp/
+   DATA ra , ras/6356.766_dp , 4.04084739788e+07_dp/
 !
 !       DENSITY ANALYTICALLY CALCULATED
 !
 !         EQ. 9J = EQ. 2R
 !
-   tsubx = 371.6678 + 0.0518806*Tinf - 294.3503*exp(-0.00216222*Tinf)
+   tsubx = 371.6678_dp + 0.0518806_dp*Tinf - 294.3503_dp*exp(-0.00216222_dp*Tinf)
 !
 !       EQ. 11J
 !
-   txmt0 = tsubx - 183.
-   gsubx = 0.054285714*txmt0
+   txmt0 = tsubx - 183.0_dp
+   gsubx = 0.054285714_dp*txmt0
 !
 !       VALUE OF SMALL K <= SK  AND SMALL F <= SF
 !
-   sksf = 9.80665/(r*txmt0)*1500625.*ras/0.8
+   sksf = 9.80665_dp/(r*txmt0)*1500625.0_dp*ras/0.8_dp
 !
 !       VALUE OF  C0* <= C0A FOR COMPOSING THE
 !       FOURTH DEGREE POLYNOMIAL
 !
-   c0a = -87783750. + 274614375./txmt0
+   c0a = -87783750.0_dp + 274614375.0_dp/txmt0
 !
 !       NEWTON-RAPHSON PROCEDURE FOR OBTAINING
 !       THE TWO REAL ROOTS OF THE QUARTIC
@@ -966,21 +969,21 @@ SUBROUTINE stjr02(Tinf,Sat3,Tz,Dn)
 !
 !               INITIAL GUESSES
 !
-   temp = (tsubx-300.)/200.
-   r1 = 167.77 - 3.35*temp
-   r2 = 57.34 + 7.95*temp
+   temp = (tsubx-300.0_dp)/200.0_dp
+   r1 = 167.77_dp - 3.35_dp*temp
+   r2 = 57.34_dp + 7.95_dp*temp
 !
-   SPAG_Loop_1_1: DO i = 1 , 7
-      pz1 = c0a + 3542400.*r1 + r1*(r1*(-52687.5+340.5*r1-0.8*r1*r1))
-      pz2 = c0a + 3542400.*r2 + r2*(r2*(-52687.5+340.5*r2-0.8*r2*r2))
-      dpz1 = 3542400. - 105375.*r1 + r1*(1021.5*r1-3.2*r1*r1)
-      dpz2 = 3542400. - 105375.*r2 + r2*(1021.5*r2-3.2*r2*r2)
+   DO i = 1 , 7
+      pz1 = c0a + 3542400.0_dp*r1 + r1*(r1*(-52687.5_dp+340.5_dp*r1-0.8_dp*r1*r1))
+      pz2 = c0a + 3542400.0_dp*r2 + r2*(r2*(-52687.5_dp+340.5_dp*r2-0.8_dp*r2*r2))
+      dpz1 = 3542400.0_dp - 105375.0_dp*r1 + r1*(1021.5_dp*r1-3.2_dp*r1*r1)
+      dpz2 = 3542400.0_dp - 105375.0_dp*r2 + r2*(1021.5_dp*r2-3.2_dp*r2*r2)
       r1n = r1 - pz1/dpz1
       r2n = r2 - pz2/dpz2
-      IF ( abs(r1n-r1)<1.D-07 .AND. abs(r2n-r2)<1.D-07 ) EXIT SPAG_Loop_1_1
+      IF ( abs(r1n-r1)<1.0e-07_dp .AND. abs(r2n-r2)<1.0e-07_dp ) EXIT
       r1 = r1n
       r2 = r2n
-   ENDDO SPAG_Loop_1_1
+   ENDDO
    r1 = r1n
    r2 = r2n
 !
@@ -989,8 +992,8 @@ SUBROUTINE stjr02(Tinf,Sat3,Tz,Dn)
    soma = r1 + r2
    prod = r1*r2
    dife = r1 - r2
-   x = -0.5*(soma-425.625)
-   x2y2 = -c0a/(0.8*prod)
+   x = -0.5*(soma-425.625_dp)
+   x2y2 = -c0a/(0.8_dp*prod)
 !
 !       CALCULATE U(R1),U(R2),W(R1),W(R2),CX(CAPITAL X),
 !                 AND V(-RA)
@@ -999,18 +1002,18 @@ SUBROUTINE stjr02(Tinf,Sat3,Tz,Dn)
 !
    h2 = r1 + ra
    h3 = r2 + ra
-   h4 = ras + 2.*x*ra + x2y2
+   h4 = ras + 2.0_dp*x*ra + x2y2
 !
-   ur1h2 = h2*(r1*r1-2.*x*r1+x2y2)*dife
-   ur2h3 = h3*(r2*r2-2.*x*r2+x2y2)*dife
+   ur1h2 = h2*(r1*r1-2.0_dp*x*r1+x2y2)*dife
+   ur2h3 = h3*(r2*r2-2.0_dp*x*r2+x2y2)*dife
    wr1 = ra + x2y2/r1
    wr2 = ra + x2y2/r2
    vra = h4*h2*h3
    cx = -h4 - h4
 !
-   de100 = (((((0.7026942D-32*Tinf*Tinf-0.7734110D-28*Tinf)*Tinf+0.3727894D-24*Tinf)*Tinf-0.1021474D-20*Tinf)                      &
-         & *Tinf+0.1711735D-17*Tinf)*Tinf-0.1833490D-14*Tinf+0.1985549D-10)
-   t100 = tsubx - 0.94585589*txmt0
+   de100 = (((((0.7026942e-32_dp*Tinf*Tinf-0.7734110e-28_dp*Tinf)*Tinf+0.3727894e-24_dp*Tinf)*Tinf-0.1021474e-20_dp*Tinf) &
+           *Tinf+0.1711735e-17_dp*Tinf)*Tinf-0.1833490e-14_dp*Tinf+0.1985549e-10_dp)
+   t100 = tsubx - 0.94585589_dp*txmt0
    z = Sat3
 !
 !      NUMBER OF PARTICLES PER M**3 AT 100 KM
@@ -1022,13 +1025,13 @@ SUBROUTINE stjr02(Tinf,Sat3,Tz,Dn)
 !         D4 ... O2 DIATOMYC OXYGEN
 !         D5 ... O  MONOATOMYC OXYGEN
 !
-   am100 = 27.6396281382
-   deavog = de100*6.02257D+29
-   d1 = 0.78110*deavog
-   d2 = 0.0093432*deavog
-   d3 = 6.1471D-06*deavog
-   d4 = (1.20955-28.96/am100)*deavog
-   d5 = 2.*(28.96-am100)/am100*deavog
+   am100 = 27.6396281382_dp
+   deavog = de100*6.02257e+29_dp
+   d1 = 0.78110_dp*deavog
+   d2 = 0.0093432_dp*deavog
+   d3 = 6.1471e-06_dp*deavog
+   d4 = (1.20955_dp-28.96_dp/am100)*deavog
+   d5 = 2.*(28.96_dp-am100)/am100*deavog
 !
 !      Q(I) PARAMETERS
 !
@@ -1037,24 +1040,27 @@ SUBROUTINE stjr02(Tinf,Sat3,Tz,Dn)
    q2 = 1/ur1
    q3 = -1/ur2
    q5 = 1/vra
-   q4 = (1./(prod*ra)+(ra-x2y2/ra)/vra+wr1/ur1h2-wr2/ur2h3)/cx
-   q6 = -q5 - 2.*(x+ra)*q4 + 1./ur2h3 - 1./ur1h2
+   q4 = (1.0_dp/(prod*ra)+(ra-x2y2/ra)/vra+wr1/ur1h2-wr2/ur2h3)/cx
+   q6 = -q5 - 2.0_dp*(x+ra)*q4 + 1.0_dp/ur2h3 - 1.0_dp/ur1h2
    q1 = -q4 - q4 - q3 - q2
 !
 !       TEMPERATURE FOR Z BETWEEN 100 AND 125 KM
 !       EQ. 5R
 !
-   dzx = z - 125.
-   Tz = tsubx + ((-9.8204695D-06*dzx-7.3039742D-04)*dzx*dzx+1.)*dzx*gsubx
+   dzx = z - 125.0_dp
+   Tz = tsubx + ((-9.8204695e-06_dp*dzx-7.3039742e-04_dp)*dzx*dzx+1.0_dp)*dzx*gsubx
 !
-   aux = z - 100.
+   aux = z - 100.0_dp
    y = sqrt(x2y2-x*x)
    aux1 = z + ra
-   aux2 = ra + 100.
+   aux2 = ra + 100.0_dp
 !
-   f3 = dlog(aux1/aux2)*q1 + log((z-r1)/(100.-r1))*q2 + log((z-r2)/(100.-r2))*q3 + log((z*z-2.*x*z+x2y2)/(10000.-200.*x+x2y2))*q4
+   f3 = log(aux1/aux2)*q1 + &
+        log((z-r1)/(100.0_dp-r1))*q2 + &
+        log((z-r2)/(100.0_dp-r2))*q3 + &
+        log((z*z-2.0_dp*x*z+x2y2)/(10000.0_dp-200.0_dp*x+x2y2))*q4
 !
-   f4 = q5*aux/(aux1*aux2) + q6/y*atan(y*aux/(x2y2+100.*z-(100.+z)*x))
+   f4 = q5*aux/(aux1*aux2) + q6/y*atan(y*aux/(x2y2+100.0_dp*z-(100.0_dp+z)*x))
 !
 !      DENSITY NUMBERS D(I) : N2,AR,HE,O2,O,H
 !      EQ. 20R
@@ -1062,11 +1068,11 @@ SUBROUTINE stjr02(Tinf,Sat3,Tz,Dn)
    t100tz = t100/Tz
    sksf34 = sksf*(f3+f4)
 !
-   Dn(1) = log10(d1*t100tz*exp(28.0134*sksf34))
-   Dn(2) = log10(d2*t100tz*exp(39.9480*sksf34))
-   Dn(3) = log10(d3*t100tz**0.62*exp(4.0026*sksf34))
-   Dn(4) = log10(d4*t100tz*exp(31.9988*sksf34))
-   Dn(5) = log10(d5*t100tz*exp(15.9994*sksf34))
+   Dn(1) = log10(d1*t100tz*exp(28.0134_dp*sksf34))
+   Dn(2) = log10(d2*t100tz*exp(39.9480_dp*sksf34))
+   Dn(3) = log10(d3*t100tz**0.62*exp(4.0026_dp*sksf34))
+   Dn(4) = log10(d4*t100tz*exp(31.9988_dp*sksf34))
+   Dn(5) = log10(d5*t100tz*exp(15.9994_dp*sksf34))
 !
 END SUBROUTINE stjr02
 
@@ -1108,8 +1114,8 @@ SUBROUTINE stjr03(Tinf,Sat3,Tz,Dn)
 !
    IMPLICIT NONE
 
-   REAL*8 a1 , a1a2a , a2 , al , aux , aux1 , aux2 , d1 , d2 , d3 , d4 , d5 , d6 , Dn , exp , h500 , r , ra , ras , Sat3
-   REAL*8 tetx , Tinf , tsubx , txmt0 , Tz , tz500 , z
+   real(dp) a1 , a1a2a , a2 , al , aux , aux1 , aux2 , d1 , d2 , d3 , d4 , d5 , d6 , Dn , exp , h500 , r , ra , ras , Sat3
+   real(dp) tetx , Tinf , tsubx , txmt0 , Tz , tz500 , z
    INTEGER Icount , log10
    COMMON /ncall / Icount
    DIMENSION Dn(6)
@@ -1120,38 +1126,38 @@ SUBROUTINE stjr03(Tinf,Sat3,Tz,Dn)
 !       RA...POLAR EARTH RADIUS     (KM)
 !       RAS..RA**2                  (KM**2)
 !
-   DATA r/8.31432D0/
-   DATA ra , ras/6356.766D0 , 4.04084739788D+07/
+   DATA r/8.31432_dp/
+   DATA ra , ras/6356.766_dp , 4.04084739788e+07_dp/
    Icount = Icount + 1
 !
 !       DENSITY ANALYTICALLY CALCULATED
 !
 !         EQ. 9J = EQ. 2R
 !
-   tsubx = 371.6678 + 0.0518806*Tinf - 294.3503*exp(-0.00216222*Tinf)
+   tsubx = 371.6678_dp + 0.0518806_dp*Tinf - 294.3503_dp*exp(-0.00216222_dp*Tinf)
 !
-   d1 = ((((-0.2296182D-19*Tinf*Tinf+0.1969715D-15*Tinf)*Tinf-0.7139785D-12*Tinf)*Tinf+0.1420228D-08*Tinf)*Tinf-0.1677341D-05*Tinf)&
-      & *Tinf + 0.1186783D-02*Tinf + 0.1093155D+02
-   d2 = ((((-0.4837461D-19*Tinf*Tinf+0.4127600D-15*Tinf)*Tinf-0.1481702D-11*Tinf)*Tinf+0.2909714D-08*Tinf)*Tinf-0.3391366D-05*Tinf)&
-      & *Tinf + 0.2382822D-02*Tinf + 0.8049405D+01
-   d3 = (((-0.1270838D-16*Tinf*Tinf+0.9451989D-13*Tinf)*Tinf-0.2894886D-09*Tinf)*Tinf+0.4694319D-06*Tinf)                          &
+   d1 = ((((-0.2296182e-19_dp*Tinf*Tinf+0.1969715e-15_dp*Tinf)*Tinf-0.7139785e-12_dp*Tinf)*Tinf+0.1420228e-08_dp*Tinf)*Tinf-0.1677341e-05_dp*Tinf)&
+      & *Tinf + 0.1186783e-02_dp*Tinf + 0.1093155e+02_dp
+   d2 = ((((-0.4837461e-19_dp*Tinf*Tinf+0.4127600e-15_dp*Tinf)*Tinf-0.1481702e-11_dp*Tinf)*Tinf+0.2909714e-08_dp*Tinf)*Tinf-0.3391366e-05_dp*Tinf)&
+      & *Tinf + 0.2382822e-02_dp*Tinf + 0.8049405e+01_dp
+   d3 = (((-0.1270838e-16_dp*Tinf*Tinf+0.9451989e-13_dp*Tinf)*Tinf-0.2894886e-09_dp*Tinf)*Tinf+0.4694319e-06_dp*Tinf) &
       & *Tinf - 0.4383486D-03*Tinf + 0.7646886D+01
-   d4 = ((((-0.3131808D-19*Tinf*Tinf+0.2698450D-15*Tinf)*Tinf-0.9782183D-12*Tinf)*Tinf+0.1938454D-08*Tinf)*Tinf-0.2274761D-05*Tinf)&
-      & *Tinf + 0.1600311D-02*Tinf + 0.9924237D+01
-   d5 = (((0.5116298D-17*Tinf*Tinf-0.3490739D-13*Tinf)*Tinf+0.9239354D-10*Tinf)*Tinf-0.1165003D-06*Tinf)                           &
-      & *Tinf + 0.6118742D-04*Tinf + 0.1097083D+02
+   d4 = ((((-0.3131808e-19_dp*Tinf*Tinf+0.2698450e-15_dp*Tinf)*Tinf-0.9782183e-12_dp*Tinf)*Tinf+0.1938454e-08_dp*Tinf)*Tinf-0.2274761e-05_dp*Tinf)&
+      & *Tinf + 0.1600311e-02_dp*Tinf + 0.9924237e+01_dp
+   d5 = (((0.5116298e-17_dp*Tinf*Tinf-0.3490739e-13_dp*Tinf)*Tinf+0.9239354e-10_dp*Tinf)*Tinf-0.1165003e-06_dp*Tinf) &
+      & *Tinf + 0.6118742e-04_dp*Tinf + 0.1097083e+02_dp
    z = Sat3
-   al = ((0.2462708D-09*Tinf*Tinf-0.1252487D-05*Tinf)*Tinf+0.1579202D-02*Tinf)*Tinf + 0.2341230D+01*Tinf + 0.1031445D+05
+   al = ((0.2462708e-09_dp*Tinf*Tinf-0.1252487e-05_dp*Tinf)*Tinf+0.1579202e-02_dp*Tinf)*Tinf + 0.2341230e+01_dp*Tinf + 0.1031445e+05_dp
 !
 !      TEMPERATURE PROFILE EQ. 23R
 !
-   txmt0 = tsubx - 183.
+   txmt0 = tsubx - 183.0_dp
    tetx = Tinf - tsubx
-   Tz = tetx*exp(-txmt0/tetx*(z-125.)/35.*al/(z+ra))
+   Tz = tetx*exp(-txmt0/tetx*(z-125.0_dp)/35.0_dp*al/(z+ra))
 !
 !      PARAMETERS G(I) : N2,AR,HE,O2,O EQ. 25'R
 !
-   aux = 9.80665*ras/(r*al*Tinf)*tetx/txmt0*35./6481.766
+   aux = 9.80665_dp*ras/(r*al*Tinf)*tetx/txmt0*35.0_dp/6481.766_dp
 !
    aux1 = tsubx/(Tinf-Tz)
    aux2 = Tz/tetx
@@ -1161,36 +1167,36 @@ SUBROUTINE stjr03(Tinf,Sat3,Tz,Dn)
 !
 !        DENSITY NUMBERS D(I) EQ.25R
 !
-   d1 = d1 + a1 + 28.0134*a1a2a
-   d2 = d2 + a1 + 39.9480*a1a2a
-   d3 = d3 + 0.62*a1 + 4.0026*a1a2a
-   d4 = d4 + a1 + 31.9988*a1a2a
-   d5 = d5 + a1 + 15.9994*a1a2a
+   d1 = d1 + a1 + 28.0134_dp*a1a2a
+   d2 = d2 + a1 + 39.9480_dp*a1a2a
+   d3 = d3 + 0.62_dp*a1 + 4.0026_dp*a1a2a
+   d4 = d4 + a1 + 31.9988_dp*a1a2a
+   d5 = d5 + a1 + 15.9994_dp*a1a2a
 !
 !       CALCULATE TZ(500) EQ.23R
 !       T(Z) ALREADY CALCULATED
 !
-   tz500 = Tinf - tetx*exp(-txmt0/tetx*(375./35.*al/(500.+ra)))
+   tz500 = Tinf - tetx*exp(-txmt0/tetx*(375.0_dp/35.0_dp*al/(500.0_dp+ra)))
 !
 !       INCLUSION OF HYDROGEN
 !
 !       DENSITY NUMBER FROM EQS. 26R,27R
 !
    aux1 = log10(Tinf)
-   h500 = 73.13 - (39.4-5.5*aux1)*aux1
+   h500 = 73.13_dp - (39.4_dp-5.5_dp*aux1)*aux1
    a1 = log10(tz500/(Tinf-Tz))
    a2 = log10(Tz/(Tinf-tz500))
-   d6 = h500 + a1 + 1.00797*aux*(a1+a2)
+   d6 = h500 + a1 + 1.00797_dp*aux*(a1+a2)
 !
 !        LOAD ALOG10 OF DENSITY NUMBERS
 !        IN M**-3
 !
-   Dn(1) = d1 + 6.
-   Dn(2) = d2 + 6.
-   Dn(3) = d3 + 6.
-   Dn(4) = d4 + 6.
-   Dn(5) = d5 + 6.
-   Dn(6) = d6 + 6.
+   Dn(1) = d1 + 6.0_dp
+   Dn(2) = d2 + 6.0_dp
+   Dn(3) = d3 + 6.0_dp
+   Dn(4) = d4 + 6.0_dp
+   Dn(5) = d5 + 6.0_dp
+   Dn(6) = d6 + 6.0_dp
    Tz = Tinf - Tz
 !
 END SUBROUTINE stjr03
@@ -1224,27 +1230,27 @@ FUNCTION temlo(Altu,C)
 !
    IMPLICIT NONE
 
-   REAL*8 Altu , auxi , C , datan , higo , higx , temlo , to , zo , zx
+   real(dp) Altu , auxi , C , higo , higx , temlo , to , zo , zx
 
    DIMENSION C(7)
 !
 !------
 !
-   DATA zx/125.D0/
-   DATA zo/90.0D0/
-   DATA to/188.D0/
+   DATA zx/125.0_dp/
+   DATA zo/90.0_dp/
+   DATA to/188.0_dp/
 
    higx = Altu - zx
    higo = Altu - zo
    temlo = to
 
-   IF ( higo==0.D0 ) RETURN
+   IF ( higo==0.0_dp ) RETURN
 
-   IF ( higx>0.D0 ) THEN
-      temlo = C(7) + C(4)*datan(C(5)*higx+C(6)*higx*higx*higx)
+   IF ( higx>0.0_dp ) THEN
+      temlo = C(7) + C(4)*atan(C(5)*higx+C(6)*higx*higx*higx)
    ELSE
       auxi = higx/higo
-      temlo = C(7) + C(1)*datan(C(2)*higx+C(3)*higx*auxi*auxi)
+      temlo = C(7) + C(1)*atan(C(2)*higx+C(3)*higx*auxi*auxi)
    ENDIF
 
 END FUNCTION temlo
@@ -1292,24 +1298,21 @@ SUBROUTINE sealat(Tyfr,Sudc,Rlat,Altu,Al)
 !
    IMPLICIT NONE
 
-   REAL*8 Al , Altu , cr , delz , dexp , dsign , dsin , dslm , dslt , esse , pcap , pitw , Rlat , sila , Sudc , Tyfr
+   real(dp) Al(6) , Altu , cr(6) , delz , dslm , dslt , esse , pcap , pitw , Rlat , sila , Sudc , Tyfr
    INTEGER i
-
-   DIMENSION Al(6)
-   DIMENSION cr(6)
 !
 !------
 !
-   DATA pitw/6.28318530718D0/
+   DATA pitw/6.28318530718_dp/
 
-   DATA cr/ - 0.79D0 , 0.D0 , 0.D0 , 0.D0 , -.16D0 , 0.D0/
+   DATA cr/ - 0.79_dp , 0_dp , 0_dp , 0_dp , -.16_dp , 0_dp/
 
-   sila = dsin(Rlat)
-   dslt = Sudc*sila/0.409157536545D0
-   delz = Altu - 91.D0
-   esse = 0.014D0*delz*dexp(-0.0013D0*delz*delz)
-   pcap = dsin(pitw*Tyfr+1.72D0)
-   dslm = dsign(sila*sila*esse*pcap,Rlat)
+   sila = sin(Rlat)
+   dslt = Sudc*sila/0.409157536545_dp
+   delz = Altu - 91.0_dp
+   esse = 0.014_dp*delz*exp(-0.0013_dp*delz*delz)
+   pcap = sin(pitw*Tyfr+1.72_dp)
+   dslm = sign(sila*sila*esse*pcap,Rlat)
 
    DO i = 1 , 6
       Al(i) = dslt*cr(i) + dslm
@@ -1353,57 +1356,21 @@ SUBROUTINE semian(Tyfr,Altu,Alco)
 !
    IMPLICIT NONE
 
-   REAL*8 Alco , Altu , auxi , dexp , dsin , foft , goft , pitw , tauc , Tyfr
+   real(dp) Alco , Altu , auxi , foft , goft , pitw , tauc , Tyfr
 !
 !------
 !
-   DATA pitw/6.28318530718D0/
+   DATA pitw/6.28318530718_dp/
 
-   auxi = 0.04D0*Altu*Altu/1.D+04 + 0.05D0
-   foft = auxi*dexp(-0.25D-02*Altu)
-   auxi = (0.5D0+0.5D0*dsin(pitw*Tyfr+6.04D0))**1.65D0
-   tauc = 0.0954D0*(auxi-0.5D0) + Tyfr
-   auxi = dsin(2.D0*pitw*tauc+4.26D0)*(1.D0+0.467D0*dsin(pitw*tauc+4.14D0))
-   goft = auxi*0.382D0 + 0.0284D0
+   auxi = 0.04_dp*Altu*Altu/1.0e+04_dp + 0.05_dp
+   foft = auxi*exp(-0.25e-02_dp*Altu)
+   auxi = (0.5_dp+0.5_dp*sin(pitw*Tyfr+6.04_dp))**1.65_dp
+   tauc = 0.0954_dp*(auxi-0.5_dp) + Tyfr
+   auxi = sin(2.0_dp*pitw*tauc+4.26_dp)*(1.0_dp+0.467_dp*sin(pitw*tauc+4.14_dp))
+   goft = auxi*0.382_dp + 0.0284_dp
    Alco = foft*goft
 
 END SUBROUTINE semian
-
-! FUNCTION datanh(X)
-! !
-! !------
-! !
-! ! PURPOSE:
-! !
-! !     THE DATANH FUNCTION CALCULATES THE HYPERBOLIC  TANGENT
-! !     ARC OF AN ARGUMENT X, IN DOUBLE PRECISION.
-! !
-! ! INPUTS:
-! !       X        HYPERBOLIC TANGENT VALUE (-1<X<1).
-! !
-! ! OUTPUTS:
-! !       DATANH   HYPERBOLIC TANGENT ARC.
-! !
-! ! AUTHOR:    VALDEMIR CARRARA  APR/87    V 1.0
-! !
-!    IMPLICIT NONE
-
-!    REAL*8 argu , dabs , datanh , X
-!    INTEGER log
-! !
-! !------
-! !
-!    IF ( dabs(X)>1.D0 ) THEN
-!       WRITE (*,*) 'INVALID HYPERBOLIC TANGENT ARC ARGUMENT'
-!       STOP
-!    ENDIF
-
-!    argu = (1.D0+X)/(1.D0-X)
-
-!    datanh = log(argu)/2.D0
-
-! END FUNCTION datanh
-
 
 
 !> @file soflud_module.f90
@@ -1475,52 +1442,52 @@ END SUBROUTINE semian
 !> file loaded by `soflud_init`.
 
    subroutine soflud(rjud_1950, dafr, sd, outr)
-      real(8), intent(in)  :: rjud_1950 !! Modified Julian Date referenced to 1950.0
+      real(dp), intent(in)  :: rjud_1950 !! Modified Julian Date referenced to 1950.0
                                         !! (JD − 2433282.5).  Standard MJD = rjud_1950 + 33282.
-      real(8), intent(in)  :: dafr   !! Time of day in seconds (not used for data lookup;
+      real(dp), intent(in)  :: dafr   !! Time of day in seconds (not used for data lookup;
                                         !! retained for interface compatibility).
-      real(8), intent(out) :: sd(15) !! 15-element output array (see module header).
-      real(8), intent(out) :: outr !! Status: 0.0 = success, non-zero = error code.
+      real(dp), intent(out) :: sd(15) !! 15-element output array (see module header).
+      real(dp), intent(out) :: outr !! Status: 0.0 = success, non-zero = error code.
 
       real(dp) :: mjd
       type(flux_data_type) :: flux_data
       logical :: status
 
-      sd   = 0.0d0
-      outr = 0.0d0
+      sd   = 0.0_dp
+      outr = 0.0_dp
 
       if (.not. sw_initialized) then
          write(*,'(A)') 'ERROR (soflud): not initialised — call soflud_init first.'
-         outr = 1.0d0
+         outr = 1.0_dp
          return
       end if
 
       ! Convert MJD-1950 to standard MJD
-      mjd = real(rjud_1950, dp) + MJD_1950_OFFSET
+      mjd = rjud_1950 + MJD_1950_OFFSET
 
       call sw_global%get_flux_data(mjd, flux_data, status)
       if (.not. status) then
-         outr = 1.0d0
+         outr = 1.0_dp
          write(*,'(A)') 'ERROR (soflud): space weather data lookup failed.'
          return
       end if
 
       ! Kp for 8 3-hour periods (sd(6) and sd(7) are overridden below)
-      sd(1:8) = real(flux_data%kp(1:8), 8)
+      sd(1:8) = flux_data%kp(1:8)
 
       ! sd(6) = 0.0 — time-reference constant used by rdymos nd formula.
       ! This overwrites the period-6 (15–18 h) Kp slot; see module header.
-      sd(6)  = 0.0d0
+      sd(6)  = 0.0_dp
 
       ! sd(7) = daily average Ap — used by rsmods for Ap→Kp conversion.
       ! This overwrites the period-7 (18–21 h) Kp slot; see module header.
-      sd(7)  = real(flux_data%ap_avg, 8)
+      sd(7)  = flux_data%ap_avg
 
       ! F10.7 solar flux
-      sd(9)  = real(flux_data%f107_obs, 8)
+      sd(9)  = flux_data%f107_obs
 
       ! F10.7 81-day centred average
-      sd(11) = real(flux_data%f107a_obs_ctr, 8)
+      sd(11) = flux_data%f107a_obs_ctr
 
    end subroutine soflud
 
@@ -1554,14 +1521,14 @@ END SUBROUTINE semian
 
    subroutine rdymos_cssi(Sa, Su, Rjud, Dafr, Gsti, Te, Ad, Wmol, Rhod, status)
 
-      real(8), intent(in)  :: Sa(3), Su(2)
-      real(8), intent(in)  :: Rjud, Dafr, Gsti
-      real(8), intent(out) :: Te(2), Ad(6), Wmol, Rhod
+      real(dp), intent(in)  :: Sa(3), Su(2)
+      real(dp), intent(in)  :: Rjud, Dafr, Gsti
+      real(dp), intent(out) :: Te(2), Ad(6), Wmol, Rhod
       integer, intent(out) :: status
 
       type(flux_data_type) :: flux_data
       real(dp) :: utc_mjd, kp, f107, f107a
-      real(8)  :: sf(3)
+      real(dp)  :: sf(3)
       logical  :: sw_status
 
       if (.not. sw_initialized) then
@@ -1571,7 +1538,7 @@ END SUBROUTINE semian
       end if
 
       ! Convert from MJD-1950 + fractional day to standard MJD
-      utc_mjd = real(Rjud, dp) + MJD_1950_OFFSET + real(Dafr, dp) / 86400.0_dp
+      utc_mjd = Rjud + MJD_1950_OFFSET + Dafr / 86400.0_dp
 
       ! Retrieve today's flux record
       call sw_global%get_flux_data(utc_mjd, flux_data, sw_status)
@@ -1587,9 +1554,9 @@ END SUBROUTINE semian
       call prepare_flux_data(sw_global, flux_data, utc_mjd, kp, f107, f107a)
 
       ! Pack SF array for rsdamo (same layout as soflud output to rdymos)
-      sf(1) = real(f107,  8)   ! F10.7 daily (1.71-day lag)
-      sf(2) = real(f107a, 8)   ! F10.7 81-day average
-      sf(3) = real(kp,    8)   ! Kp (6.7-h lag)
+      sf(1) = f107     ! F10.7 daily (1.71-day lag)
+      sf(2) = f107a    ! F10.7 81-day average
+      sf(3) = kp       ! Kp (6.7-h lag)
 
       ! Delegate computation to rsdamo, which calls dyjrmo and reorders output
       call rsdamo(Sa, Su, sf, Rjud, Dafr, Gsti, Te, Ad, Wmol, Rhod)

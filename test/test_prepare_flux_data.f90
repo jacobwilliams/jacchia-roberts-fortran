@@ -7,12 +7,9 @@ program test_prepare_flux_data
 
    use jacchia_roberts_module
    use space_weather_module
-   use iso_fortran_env, only: real64, int32
+   use jacchia_roberts_kinds, only: ip, dp
 
    implicit none
-
-   integer, parameter :: dp = real64
-   integer, parameter :: ip = int32
 
    type(jacchia_roberts_type) :: jrmodel
    type(sw_data_type) :: sw_data
