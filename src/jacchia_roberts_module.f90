@@ -952,6 +952,14 @@ contains
       end if
 
       ! ===== F10.7a AVERAGE (centered 81-day average) =====
+      ! if (f107_index == 0) then
+      !    ! GMAT bug?: uses previous day's F10.7a even after 8am
+      !    call sw_data%get_flux_data(flux_data%mjd - 1.0_dp, flux_data_prev, sw_status)
+      !    if (sw_status) then
+      !       f107a_out = flux_data_prev%f107a_obs_ctr
+      !    else
+      !       f107a_out = flux_data%f107a_obs_ctr  ! Fallback
+      !    end if
       if (f107_index == 0) then
          ! Current time is after measurement time - use today's F10.7a
          f107a_out = flux_data%f107a_obs_ctr
