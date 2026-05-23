@@ -47,7 +47,7 @@ call f%get(6,z,status_ok);        if (.not. status_ok) error stop 'error reading
 call f%get(7,sun_x,status_ok);    if (.not. status_ok) error stop 'error reading sun_x'
 call f%get(8,sun_y,status_ok);    if (.not. status_ok) error stop 'error reading sun_y'
 call f%get(9,sun_z,status_ok);    if (.not. status_ok) error stop 'error reading sun_z'
-call f%get(10,alt,status_ok);      if (.not. status_ok) error stop 'error reading alt' ! km
+call f%get(10,alt,status_ok);     if (.not. status_ok) error stop 'error reading alt' ! km
 call f%get(11,lat,status_ok);     if (.not. status_ok) error stop 'error reading lat' ! deg
 call f%get(12,density,status_ok); if (.not. status_ok) error stop 'error reading density' ! kg/km^3
 
