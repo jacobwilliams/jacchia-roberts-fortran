@@ -883,6 +883,8 @@ contains
 
       real(dp), parameter :: F107_REF_EPOCH = 48407.5_dp  !! MJD for 5/31/91 noon (matches C++ GSFC MJD 18408.0)
 
+      logical,parameter :: use_gmat_bug = .false. !! Set to .false. to use corrected logic for F10.7a selection instead of GMAT's apparent bug
+
       ! Calculate fractional day from midnight
       frac_epoch = utc_mjd - flux_data%mjd
 
@@ -953,16 +955,22 @@ contains
 
       ! ===== F10.7a AVERAGE (centered 81-day average) =====
       ! if (f107_index == 0) then
-      !    ! GMAT bug?: uses previous day's F10.7a even after 8am
-      !    call sw_data%get_flux_data(flux_data%mjd - 1.0_dp, flux_data_prev, sw_status)
-      !    if (sw_status) then
-      !       f107a_out = flux_data_prev%f107a_obs_ctr
-      !    else
-      !       f107a_out = flux_data%f107a_obs_ctr  ! Fallback
-      !    end if
       if (f107_index == 0) then
-         ! Current time is after measurement time - use today's F10.7a
-         f107a_out = flux_data%f107a_obs_ctr
+         if (use_gmat_bug) then
+            !-----------------------------------------------------
+            ! GMAT bug?: uses previous day's F10.7a even after 8am
+            ! see: https://github.com/nasa/GMAT/issues/4
+            call sw_data%get_flux_data(flux_data%mjd - 1.0_dp, flux_data_prev, sw_status)
+            if (sw_status) then
+               f107a_out = flux_data_prev%f107a_obs_ctr
+            else
+               f107a_out = flux_data%f107a_obs_ctr  ! Fallback
+            end if
+            !-----------------------------------------------------
+         else
+            ! Current time is after measurement time - use today's F10.7a
+            f107a_out = flux_data%f107a_obs_ctr
+         end if
       else
          ! Current time is before measurement time - use yesterday's F10.7a
          call sw_data%get_flux_data(flux_data%mjd - 1.0_dp, flux_data_prev, sw_status)
