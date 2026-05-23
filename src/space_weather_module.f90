@@ -53,7 +53,7 @@ module space_weather_module
       procedure,public :: initialize    => sw_init
       procedure,public :: get_flux_data => sw_get_flux_data
       procedure,public :: destroy       => sw_cleanup
-      procedure :: copy_record
+      procedure :: get_record => copy_record
    end type sw_data_type
 
 contains
@@ -269,7 +269,7 @@ contains
             write(*,'(A)') '         Using first file entry'
             me%warn_epoch_before = .false.
          end if
-         call me%copy_record(1, flux_data)
+         flux_data = me%get_record(1)
          return
       end if
 
@@ -280,7 +280,7 @@ contains
             write(*,'(A)') '         Using last file entry'
             me%warn_epoch_after = .false.
          end if
-         call me%copy_record(me%n_records, flux_data)
+         flux_data = me%get_record(me%n_records)
          return
       end if
 
@@ -296,7 +296,7 @@ contains
          if (idx < 1) idx = 1
          if (idx > me%n_records) idx = me%n_records
 
-         call me%copy_record(idx, flux_data)
+         flux_data = me%get_record(idx)
       else
          ! Monthly data: search from daily_end to end of array
          ! Find the index where daily data ends
@@ -309,7 +309,7 @@ contains
             idx = i
          end do
 
-         call me%copy_record(idx, flux_data)
+         flux_data = me%get_record(idx)
       end if
 
    end subroutine sw_get_flux_data
@@ -337,10 +337,10 @@ contains
    !>
    !   Copy a single record from the space weather data
 
-   subroutine copy_record(me, idx, flux_data)
-      class(sw_data_type), intent(inout) :: me
+   pure function copy_record(me, idx) result(flux_data)
+      class(sw_data_type), intent(in) :: me
       integer(ip), intent(in) :: idx !! Index of the record to copy
-      type(flux_data_type), intent(out) :: flux_data !! Output flux data structure
+      type(flux_data_type) :: flux_data !! Output flux data structure
 
       flux_data%mjd           = me%mjd(idx)
       flux_data%f107_obs      = me%f107_obs(idx)
@@ -349,6 +349,6 @@ contains
       flux_data%f107a_adj_ctr = me%f107a_adj_ctr(idx)
       flux_data%kp            = me%kp(:, idx)
       flux_data%ap_avg        = me%ap_avg(idx)
-   end subroutine copy_record
+   end function copy_record
 
 end module space_weather_module

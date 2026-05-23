@@ -404,6 +404,9 @@ contains
       real(dp), parameter :: c    = -294.3505_dp !! Constant for temperature calculation
       real(dp), parameter :: kbar = -0.00216222_dp !! Constant for temperature calculation
 
+      logical,parameter :: use_old_root_method = .false. !! to use the old (gdts) root method,
+                                                         !! which seems to have some problems.
+
       ! Compute hour angle of the sun
       sun_denom = sqrt(sun_vector(1)**2 + sun_vector(2)**2)
       cos_denom = sqrt(position(1)**2 + position(2)**2)
@@ -516,8 +519,13 @@ contains
             c_star(i) = CON_C(i)
          end do
 
-         call find_cstar_roots(c_star, me%tx, me%root1, me%root2, me%x_root, me%y_root)
-         !call find_cstar_roots_original(c_star, me%tx, me%root1, me%root2, me%x_root, me%y_root) !! For testing against original routine
+         if (use_old_root_method) then
+            ! original routine (gmat/gdts)
+            call find_cstar_roots_original(c_star, me%tx, me%root1, me%root2, me%x_root, me%y_root)
+         else
+            ! this one seems better behaved
+            call find_cstar_roots(c_star, me%tx, me%root1, me%root2, me%x_root, me%y_root)
+         end if
       end if
 
    end function exotherm
@@ -687,6 +695,9 @@ contains
       real(dp) :: x_star, u(2), w(2), v, factor_k, roots_2, log_f1
       integer(ip) :: i
 
+      logical,parameter :: use_vallado = .false. !! Flag to control whether to use Vallado's
+                                                 !! `factor_k` equation instead of original GDTS one.
+
       ! Compute M(z) polynomial
       m_poly = M_CON(7)
       do i = 6, 1, -1
@@ -772,8 +783,17 @@ contains
            (me%y_root**2 + (height - me%x_root) * (90.0_dp - me%x_root))) / &
            me%y_root
 
-      ! Compute factor_k
-      factor_k = -G_ZERO / (GAS_CON * (me%tx - TZERO))
+      ! Compute f1 power
+      if (use_vallado) then
+         ! Vallado's formula (3rd Ed, p 951)  -- this replacement is from GMAT
+         factor_k = -G_ZERO / (GAS_CON * (me%tx - TZERO))
+      else
+         ! Old code (and GTDS):
+         ! This formula matches the INPE numerical integration to within 0.4%,
+         ! so i'm not sure if the vallado change is correct or not.
+         factor_k = -1500625.0_dp * G_ZERO * me%cb_polar_squared / &
+                    (GAS_CON * CON_C(5) * (me%tx - TZERO))
+      end if
 
       ! Compute final density
       density = RHO_ZERO * TZERO * m_poly * exp(factor_k * (log_f1 + f2)) / &
@@ -1023,7 +1043,9 @@ contains
 
       real(dp), parameter :: F107_REF_EPOCH = 48407.5_dp  !! MJD for 5/31/91 noon (matches C++ GSFC MJD 18408.0)
 
-      logical,parameter :: use_gmat_bug = .false. !! Set to .false. to use corrected logic for F10.7a selection instead of GMAT's apparent bug
+      logical,parameter :: use_gmat_bug = .false. !! Set to .false. to use corrected logic
+                                                  !! for F10.7a selection instead of GMAT's
+                                                  !! apparent bug
 
       ! Calculate fractional day from midnight
       frac_epoch = utc_mjd - flux_data%mjd

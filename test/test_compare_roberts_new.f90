@@ -11,8 +11,12 @@
 !
 !  Δ% = 100 × (ρ_new − ρ_old) / ρ_old   (new = Fortran port, old = INPE)
 !
-!  Known algorithmic differences (not bugs):
-!    90-100 km : new uses Roberts analytic formula; old uses 5-pt Newton-Cotes.
+!  Known algorithmic differences:
+!    90-100 km : new uses original GTDS/Roberts analytical formula; old uses
+!                5-pt Newton-Cotes numerical integration. Both methods produce
+!                proper exponential decay and agree to within 0.4%.
+!                If using Vallado's formula, it gave 143-244%
+!                errors. Roberts (1971) claimed "identical" results.
 !   100-125 km : identical Roberts partial-fraction formula.
 !    >125 km   : same formula; Kp correction differs:
 !                new: step at 200 km    old: tanh blend centred at 350 km.
@@ -44,9 +48,9 @@ program test_compare_roberts_new
    real(dp),  parameter :: Dafr     = 43200.0_dp  !! Noon UT (seconds)
 
    !--- Full altitude array for Table 1 ---
-   integer,  parameter :: N_ALT = 15
+   integer,  parameter :: N_ALT = 17
    real(dp), parameter :: ALTITUDES(N_ALT) = [ &
-      90.0_dp, 100.0_dp, 110.0_dp, 150.0_dp, 200.0_dp, 250.0_dp, &
+      90.0_dp, 95.0_dp, 97.0_dp, 100.0_dp, 110.0_dp, 150.0_dp, 200.0_dp, 250.0_dp, &
       300.0_dp, 400.0_dp, 500.0_dp, 600.0_dp, &
       800.0_dp, 1000.0_dp, 1200.0_dp, 1500.0_dp, 2000.0_dp ]
 
@@ -105,7 +109,7 @@ program test_compare_roberts_new
 
    !--- Loop and working variables ---
    integer  :: i, j, k
-   real(dp) :: alt_km, rhod_old_dp, log_old, log_new, pct_diff
+   real(dp) :: alt_km, rhod_old_dp, log_old, log_new, pct_diff, abs_error
    character(len=6) :: flag
    real(dp) :: pct_arr(N_KEY)
    real(dp)  :: Rjud_local
@@ -153,8 +157,8 @@ program test_compare_roberts_new
    write(*,'(2A,F8.1)')  '  Time of day (s) :', '    Dafr = ', Dafr
    write(*,'(A)') '  Geometry: equatorial, noon (h=0), sun at equinox (dec=0)'
    write(*,'(A)') ''
-   write(*,'(A)') '  Alt(km)  Tinf_old(K)  log10(rho_old)  log10(rho_new)  Delta_rho(%)'
-   write(*,'(A)') '  -------  -----------  --------------  --------------  ------------'
+   write(*,'(A)') '  Alt(km)  Tinf_old(K)  rho_old         rho_new       Delta_rho(%)  abs_error   '
+   write(*,'(A)') '  -------  -----------  --------------  ------------  ------------  ------------'
 
    do i = 1, N_ALT
       alt_km   = ALTITUDES(i)
@@ -173,6 +177,7 @@ program test_compare_roberts_new
       log_old  = log10(rhod_old_dp)
       log_new  = log10(density_new)
       pct_diff = 100.0_dp * (density_new - rhod_old_dp) / rhod_old_dp
+      abs_error = abs(density_new - rhod_old_dp)
 
       if (abs(log_new - log_old) > 2.0_dp) then
          flag = '  <BUG'
@@ -180,13 +185,48 @@ program test_compare_roberts_new
          flag = ''
       end if
 
-      write(*,'(2X,F7.1,2X,F11.2,2X,F14.6,2X,F14.6,2X,F12.4,A)') &
-         alt_km, real(Te_old(1), dp), log_old, log_new, pct_diff, trim(flag)
+      write(*,'(2X,F7.1,2X,F11.2,2X,E12.6,2X,E12.6,2X,E12.6,2X,E12.6,A)') &
+         alt_km, real(Te_old(1), dp), rhod_old_dp, density_new, pct_diff, abs_error, trim(flag)
    end do
 
    write(*,'(A)') ''
    write(*,'(A)') '  Delta_rho = 100 * (rho_new - rho_old) / rho_old'
    write(*,'(A)') '  <BUG = |log10(new) - log10(old)| > 2 (numerical failure, not algorithm)'
+
+   !========================================
+   ! 90 to 100 tests
+   !========================================
+   write(*,'(A)') ''
+   write(*,'(A)') '  Alt(km)  Tinf_old(K)  rho_old         rho_new       Delta_rho(%)  abs_error   '
+   write(*,'(A)') '  -------  -----------  --------------  ------------  ------------  ------------'
+   do i = 90, 100
+      alt_km   = real(i, dp)
+      Sa(3)    = alt_km * km2m
+      position = [(EARTH_RADIUS + alt_km), 0.0_dp, 0.0_dp]
+
+      call rdymos_cssi(Sa, Su, Rjud_ref, Dafr, Gsti, Te_old, Ad_old, Wmol_old, Rhod_old, old_status)
+      if (old_status /= 0) then
+         write(*,'(2X,F7.1,A)') alt_km, '  [data lookup failed]'
+         cycle
+      end if
+
+      density_new = jr%density(alt_km, position, sun_vector, geo_lat, utc_mjd)
+
+      rhod_old_dp = real(Rhod_old, dp)
+      log_old  = log10(rhod_old_dp)
+      log_new  = log10(density_new)
+      pct_diff = 100.0_dp * (density_new - rhod_old_dp) / rhod_old_dp
+      abs_error = abs(density_new - rhod_old_dp)
+
+      if (abs(log_new - log_old) > 2.0_dp) then
+         flag = '  <BUG'
+      else
+         flag = ''
+      end if
+
+      write(*,'(2X,F7.1,2X,F11.2,2X,E12.6,2X,E12.6,2X,E12.6,2X,E12.6,A)') &
+         alt_km, real(Te_old(1), dp), rhod_old_dp, density_new, pct_diff, abs_error, trim(flag)
+   end do
 
    !==========================================================================
    ! Table 2 : rsdamo baseline — fixed SF, algorithm isolation
