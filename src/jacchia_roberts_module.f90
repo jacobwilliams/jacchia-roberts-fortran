@@ -786,6 +786,7 @@ contains
       ! Compute f1 power
       if (use_vallado) then
          ! Vallado's formula (3rd Ed, p 951)  -- this replacement is from GMAT
+         ! ==This may be incorrect==
          factor_k = -G_ZERO / (GAS_CON * (me%tx - TZERO))
       else
          ! Old code (and GTDS):
