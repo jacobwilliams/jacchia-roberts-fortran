@@ -33,7 +33,7 @@ program test_prepare_flux_data
    end if
 
    ! Initialize the model
-   call jrmodel%initialize(EARTH_POLAR_RADIUS, 'data/SpaceWeather-All-v1.2.txt', status)
+   call jrmodel%initialize(EARTH_POLAR_RADIUS, filename='data/SpaceWeather-All-v1.2.txt', status=status)
    if (status /= 0) then
       error stop 'ERROR: Failed to initialize model'
    end if

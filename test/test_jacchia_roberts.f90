@@ -48,7 +48,7 @@ program test_jacchia_roberts
    write(*,'(A)') ''
 
    ! Initialize the module
-   call atm%initialize(EARTH_POLAR_RADIUS, 'data/SpaceWeather-All-v1.2.txt', sw_status)
+   call atm%initialize(EARTH_POLAR_RADIUS, filename='data/SpaceWeather-All-v1.2.txt', status=sw_status)
    write(*,'(A)') 'Module initialized with Earth polar radius = 6356.766 km'
    if (sw_status /= 0) then
       write(*,'(A)') 'WARNING: Could not load space weather file'

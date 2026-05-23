@@ -126,7 +126,7 @@ program test_compare_roberts_new
       error stop 'ERROR: could not initialize old-model space weather data.'
    end if
 
-   call jr%initialize(EARTH_RADIUS, SW_FILE, sw_init_status)
+   call jr%initialize(EARTH_RADIUS, filename=SW_FILE, status=sw_init_status)
    if (sw_init_status /= 0) then
       write(*,'(A)') 'WARNING: new model space weather load failed; using nominal values.'
    end if

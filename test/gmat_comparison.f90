@@ -59,7 +59,7 @@ call f%get(11,lat,status_ok);     if (.not. status_ok) error stop 'error reading
 call f%get(12,density,status_ok); if (.not. status_ok) error stop 'error reading density' ! kg/km^3
 
 ! initialize the model:
-call jr%initialize(rad_earth, sw_file, status)
+call jr%initialize(rad_earth, filename=sw_file, status=status)
 if (status /= 0_ip) then
    error stop 'Error initializing model'
 end if

@@ -181,7 +181,13 @@ module jacchia_roberts_module
       real(dp) :: t_infinity       = 0.0_dp   !! Exospheric temperature at infinity
       real(dp) :: tx               = 0.0_dp   !! Temperature at boundary
       real(dp) :: sum              = 0.0_dp   !! Intermediate temperature sum
+
+      logical :: use_sw_file = .true. !! Flag to control whether to use space weather file data or specified values.
+      real(dp) :: f107_override = nominalF107 !! Override value for F10.7 if not using space weather file
+      real(dp) :: f107a_override = nominalF107a !! Override value for F10.7a if not using space weather file
+      real(dp) :: kp_override = nominalKp !! Override value for Kp index if not using space weather file
       type(sw_data_type) :: sw_data  !! Space weather data type (from space_weather_module)
+
       contains
       private
       procedure, public :: density     => jacchia_roberts_density
@@ -191,22 +197,31 @@ module jacchia_roberts_module
       procedure :: rho_100
       procedure :: rho_125
       procedure :: rho_high
+      procedure :: parms_to_temp
    end type jacchia_roberts_type
 
    ! Public procedures for testing
    public :: prepare_flux_data
+   public :: find_cstar_roots, find_cstar_roots_original
 
 contains
 
    !---------------------------------------------------------------------------
    !>
-   !   Initialize the Jacchia-Roberts module with central body parameters
+   !  Initialize the Jacchia-Roberts module with central body parameters.
+   !
+   !  Can use a space weather file for dynamic space weather
+   !  data or specify override values directly. [one or the other must be input]
 
-   subroutine jr_init(me, cb_polar_radius, filename, status)
+   subroutine jr_init(me, cb_polar_radius, status, filename, &
+                      f107_override, f107a_override, kp_override)
       class(jacchia_roberts_type), intent(inout) :: me
       real(dp), intent(in) :: cb_polar_radius !!  Polar radius of central body (km)
-      character(len=*), intent(in) :: filename !! Path to CSSI space weather file
       integer(ip), intent(out) :: status  !! Output status (0=success, non-zero=error)
+      character(len=*), intent(in), optional :: filename !! Path to CSSI space weather file
+      real(dp), intent(in), optional :: f107_override  !! Override value for F10.7 if not using space weather file
+      real(dp), intent(in), optional :: f107a_override !! Override value for F10.7a if not using space weather file
+      real(dp), intent(in), optional :: kp_override    !! Override value for Kp index if not using space weather file
 
       me%cb_polar_radius = cb_polar_radius
       me%cb_polar_squared = cb_polar_radius * cb_polar_radius
@@ -220,7 +235,23 @@ contains
       me%tx = 0.0_dp
       me%sum = 0.0_dp
 
-      call me%sw_data%initialize(filename, status)
+      me%use_sw_file = .false.
+      if (present(filename) .and. .not. present(f107_override) .and. &
+                                  .not. present(f107a_override) .and. &
+                                  .not. present(kp_override)) then
+         ! Use space weather file; override values not provided
+         me%use_sw_file = .true.
+         call me%sw_data%initialize(filename, status)
+      else if (present(f107_override) .and. present(f107a_override) .and. present(kp_override)) then
+         ! user specified values directly; do not use space weather file
+         me%f107_override = f107_override
+         me%f107a_override = f107a_override
+         me%kp_override = kp_override
+         status = 0
+      else
+         write(*,*) 'ERROR: No space weather file provided and override values not fully specified'
+         status = 2
+      end if
 
    end subroutine jr_init
 
@@ -232,6 +263,21 @@ contains
       class(jacchia_roberts_type), intent(inout) :: me
       call me%sw_data%destroy()
    end subroutine jr_cleanup
+
+   !---------------------------------------------------------------------------
+   !>
+   !  Compute exospheric temperature from F10.7 values using the Jacchia-Roberts formula
+
+   pure function parms_to_temp(me, f107_daily, f107a_avg, tkp) result(xtemp)
+      class(jacchia_roberts_type), intent(in) :: me
+      real(dp), intent(in) :: f107_daily !! Daily F10.7 value
+      real(dp), intent(in) :: f107a_avg !! 81-day average F10.7a
+      real(dp), intent(in) :: tkp !! Kp index
+      real(dp) :: xtemp !! Exospheric temperature (K)
+
+      xtemp = 379.0_dp + 3.24_dp * f107a_avg + 1.3_dp * (f107_daily - f107a_avg)
+
+   end function parms_to_temp
 
    !---------------------------------------------------------------------------
    !>
@@ -265,29 +311,36 @@ contains
       ! sun declination: atan2(Z, sqrt(X^2 + Y^2))
       sun_dec = atan2(sun_vector(3), sqrt(sun_vector(1)**2 + sun_vector(2)**2))
 
-      ! Get space weather data for this date
-      call me%sw_data%get_flux_data(utc_mjd, flux_data, sw_status)
+      if (me%use_sw_file) then
+         ! Get space weather data for this date
+         call me%sw_data%get_flux_data(utc_mjd, flux_data, sw_status)
 
-      if (.not. sw_status) then
-         write(*,*) 'WARNING: Using nominal space weather values'
-         ! Use nominal values as fallback
-         geo%xtemp = 379.0_dp + 3.24_dp * nominalF107a + 1.3_dp * (nominalF107 - nominalF107a)
-         geo%tkp = nominalKp
+         if (.not. sw_status) then
+            write(*,*) 'WARNING: Using nominal space weather values'
+            ! Use nominal values as fallback
+            geo%xtemp = me%parms_to_temp(nominalF107, nominalF107a, nominalKp)
+            geo%tkp = nominalKp
+         else
+            ! Prepare flux data with proper timing adjustments.
+            ! Kp: 6.7hr lag (matches PrepareKpData). F10.7: previous day (matches PrepareKpData).
+            ! F10.7a: detected day (matches PrepareApData intent; see prepare_flux_data docstring).
+            call prepare_flux_data(me%sw_data, flux_data, utc_mjd, tkp, f107_daily, f107a_avg)
+            ! Calculate exospheric temperature from adjusted F10.7 data
+            geo%xtemp = me%parms_to_temp(f107_daily, f107a_avg, tkp)
+            ! Set Kp index in geomagnetic parameters:
+            geo%tkp = tkp
+         end if
+
       else
-         ! Prepare flux data with proper timing adjustments.
-         ! Kp: 6.7hr lag (matches PrepareKpData). F10.7: previous day (matches PrepareKpData).
-         ! F10.7a: detected day (matches PrepareApData intent; see prepare_flux_data docstring).
-         call prepare_flux_data(me%sw_data, flux_data, utc_mjd, tkp, f107_daily, f107a_avg)
-         ! Calculate exospheric temperature from adjusted F10.7 data
-         geo%xtemp = 379.0_dp + 3.24_dp * f107a_avg + 1.3_dp * (f107_daily - f107a_avg)
-         ! Set Kp index in geomagnetic parameters:
-         geo%tkp = tkp
+         ! Use specified override values
+         geo%xtemp = me%parms_to_temp(me%f107_override, me%f107a_override, me%kp_override)
+         geo%tkp = me%kp_override
       end if
 
       ! Convert geodetic latitude to radians
       geo_lat_rad = geo_lat * RAD_PER_DEG
 
-      ! Compute height-dependent density (matches C++ algorithm exactly)
+      ! Compute height-dependent density
       if (height <= 90.0_dp) then
          ! At or below 90 km: use constant density
          raw_density = RHO_ZERO
@@ -464,6 +517,7 @@ contains
          end do
 
          call find_cstar_roots(c_star, me%tx, me%root1, me%root2, me%x_root, me%y_root)
+         !call find_cstar_roots_original(c_star, me%tx, me%root1, me%root2, me%x_root, me%y_root) !! For testing against original routine
       end if
 
    end function exotherm
@@ -532,6 +586,92 @@ contains
       y_root = sqrt(abs(x2y2 - x_root**2))
 
    end subroutine find_cstar_roots
+
+!---------------------------------------------------------------------------
+!>
+!  Original version of root-finding routine using the `roots` subroutine.
+!  **This method has severe numerical instability issues and should not be used.**
+!
+!### Problems with this method:
+!
+!  1. **Sequential deflation accumulates errors**: After finding each real root,
+!     the polynomial is deflated (reduced in degree). Each deflation introduces
+!     numerical errors that compound, corrupting the polynomial coefficients.
+!
+!  2. **Massive polynomial errors**: While the real roots (root1, root2) found
+!     first are accurate (~1e-8 error), the complex conjugate pair computed from
+!     the twice-deflated polynomial has errors of 50-700 (absolute polynomial
+!     evaluation), despite the `roots` routine converging.
+!
+!  3. **roots_2 errors of 70-76%**: At extreme temperatures (Tx ~ 300 K or
+!     Tx ~ 550-600 K), the quantity roots_2 = x_root² + y_root² differs by
+!     70-76% from the correct value due to deflation corruption.
+!
+!  4. **Severe density errors in 100-125 km range**: The incorrect complex roots
+!     propagate through exponential terms in rho_100 and rho_125, causing density
+!     overestimation by factors of 2-22× at low solar activity (F10.7 ~ 50).
+!     At 125 km, the old method predicts 22× higher density than reality.
+!
+!  5. **Discontinuity at 125 km boundary**: The density jumps by 37× in 5 km
+!     (125→130 km) because rho_high (>125 km) doesn't use complex roots and
+!     produces correct values, while rho_125 uses corrupted roots.
+!
+!### Why the real roots still work:
+!
+!  The real roots are found BEFORE deflation corrupts the polynomial, so they
+!  remain accurate. Only the complex roots, found last from the twice-deflated
+!  polynomial, are severely corrupted.
+!
+!### Solution:
+!
+!  Use [[find_cstar_roots]] instead, which uses simultaneous Newton-Raphson with
+!  temperature-dependent initial guesses (Kuga/INPE 1985) and computes complex
+!  roots analytically via Vieta's formulas, avoiding deflation entirely.
+!  Achieves ~1e-8 accuracy for all roots across all physical temperatures.
+!
+!@note Retained here for reference, testing, and demonstration of the bug.
+!      DO NOT USE in production code.
+
+   subroutine find_cstar_roots_original(c_star, tx, root1, root2, x_root, y_root)
+
+      use jacchia_roberts_utilities, only: roots, deflate_polynomial
+
+      real(dp), intent(inout)  :: c_star(5) !! Quartic polynomial coefficients `c_star(1)..c_star(5)` [note: modified in-place by deflation]
+      real(dp), intent(in)  :: tx        !! Temperature at 125 km (K) [not used here]
+      real(dp), intent(out) :: root1     !! Larger real root (> 125 km)
+      real(dp), intent(out) :: root2     !! Smaller real root (< 100 km)
+      real(dp), intent(out) :: x_root    !! Real part of complex conjugate root pair
+      real(dp), intent(out) :: y_root    !! Imaginary part of complex conjugate root pair
+
+      real(dp) :: aux(4,2)
+      integer(ip) :: na
+
+      na = 5
+
+      ! Get 1st real root
+      aux(1,1) = 125.0_dp
+      aux(1,2) = 0.0_dp
+      call roots(c_star, na, aux, 1)
+      root1 = aux(1,1)
+
+      call deflate_polynomial(c_star, na, root1, c_star)
+
+      ! Get 2nd real root
+      aux(1,1) = 200.0_dp
+      aux(1,2) = 0.0_dp
+      call roots(c_star, na-1, aux, 1)
+      root2 = aux(1,1)
+
+      call deflate_polynomial(c_star, na-1, root2, c_star)
+
+      ! Get remaining complex roots
+      aux(1,1) = 10.0_dp
+      aux(1,2) = 125.0_dp
+      call roots(c_star, na-2, aux, 1)
+      x_root = aux(1,1)
+      y_root = abs(aux(1,2))
+
+   end subroutine find_cstar_roots_original
 
    !---------------------------------------------------------------------------
    !>
