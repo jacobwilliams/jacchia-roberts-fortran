@@ -1,0 +1,136 @@
+% -----------------------------------------------------------------------------
+% GMAT Jacchia-Roberts density test script
+%
+% Built from the GMAT Ex_CSSISpaceWeatherFile sample structure.
+% -----------------------------------------------------------------------------
+
+
+%----------------------------------------
+%---------- Spacecraft
+%----------------------------------------
+
+Create Spacecraft Sat;
+
+Sat.DateFormat = UTCGregorian;
+Sat.Epoch = '08 Aug 2011 12:00:00.000';
+Sat.CoordinateSystem = EarthMJ2000Eq;
+Sat.DisplayStateType = Cartesian;
+Sat.X = -4453.783586;
+Sat.Y = -5038.203756;
+Sat.Z = -426.384456;
+Sat.VX = 3.831888;
+Sat.VY = -2.887221;
+Sat.VZ = -6.018232;
+Sat.DryMass = 1000;
+Sat.Cd = 2.2;
+Sat.Cr = 1.2;
+Sat.DragArea = 20;
+Sat.SRPArea = 20;
+Sat.SPADDragScaleFactor = 1;
+Sat.SPADSRPScaleFactor = 1;
+Sat.AtmosDensityScaleFactor = 1;
+Sat.ExtendedMassPropertiesModel = 'None';
+Sat.NAIFId = -10014001;
+Sat.NAIFIdReferenceFrame = -9014001;
+Sat.OrbitColor = Red;
+Sat.TargetColor = Teal;
+Sat.OrbitErrorCovariance = [ 1e+70 0 0 0 0 0 ; 0 1e+70 0 0 0 0 ; 0 0 1e+70 0 0 0 ; 0 0 0 1e+70 0 0 ; 0 0 0 0 1e+70 0 ; 0 0 0 0 0 1e+70 ];
+Sat.CdSigma = 1e+70;
+Sat.CrSigma = 1e+70;
+Sat.Id = 'SatId';
+Sat.Attitude = CoordinateSystemFixed;
+Sat.SPADSRPInterpolationMethod = Bilinear;
+Sat.SPADSRPScaleFactorSigma = 1e+70;
+Sat.SPADDragInterpolationMethod = Bilinear;
+Sat.SPADDragScaleFactorSigma = 1e+70;
+Sat.AtmosDensityScaleFactorSigma = 1e+70;
+Sat.ModelFile = 'aura.3ds';
+Sat.ModelOffsetX = 0;
+Sat.ModelOffsetY = 0;
+Sat.ModelOffsetZ = 0;
+Sat.ModelRotationX = 0;
+Sat.ModelRotationY = 0;
+Sat.ModelRotationZ = 0;
+Sat.ModelScale = 1;
+Sat.AttitudeDisplayStateType = 'Quaternion';
+Sat.AttitudeRateDisplayStateType = 'AngularVelocity';
+Sat.AttitudeCoordinateSystem = EarthMJ2000Eq;
+Sat.EulerAngleSequence = '321';
+
+
+
+%----------------------------------------
+%---------- ForceModels
+%----------------------------------------
+
+Create ForceModel FM;
+
+FM.CentralBody = Earth;
+FM.PrimaryBodies = {Earth};
+FM.SRP = Off;
+FM.RelativisticCorrection = Off;
+FM.ErrorControl = RSSStep;
+FM.GravityField.Earth.Degree = 4;
+FM.GravityField.Earth.Order = 4;
+FM.GravityField.Earth.StmLimit = 100;
+FM.GravityField.Earth.PotentialFile = '../data/gravity/earth/JGM2.cof';
+FM.GravityField.Earth.TideModel = 'None';
+FM.Drag.AtmosphereModel = JacchiaRoberts;
+FM.Drag.HistoricWeatherSource = 'CSSISpaceWeatherFile';
+FM.Drag.PredictedWeatherSource = 'CSSISpaceWeatherFile';
+FM.Drag.CSSISpaceWeatherFile = '../data/atmosphere/earth/SpaceWeather-All-v1.2.txt';
+FM.Drag.SchattenFile = 'SchattenPredict.txt';
+FM.Drag.F107 = 150;
+FM.Drag.F107A = 150;
+FM.Drag.MagneticIndex = 3;
+FM.Drag.SchattenErrorModel = 'Nominal';
+FM.Drag.SchattenTimingModel = 'NominalCycle';
+FM.Drag.DragModel = 'Spherical';
+
+%----------------------------------------
+%---------- Propagators
+%----------------------------------------
+
+Create Propagator RKV89;
+
+RKV89.FM = FM;
+RKV89.Type = RungeKutta89;
+RKV89.InitialStepSize = 60;
+RKV89.Accuracy = 9.999999999999999e-12;
+RKV89.MinStep = 0.001;
+RKV89.MaxStep = 2700;
+RKV89.MaxStepAttempts = 50;
+RKV89.StopIfAccuracyIsViolated = true;
+
+%----------------------------------------
+%---------- Subscribers
+%----------------------------------------
+
+Create ReportFile JR_Report;
+JR_Report.SolverIterations = Current;
+JR_Report.UpperLeft = [ 0 0 ];
+JR_Report.Size = [ 0 0 ];
+JR_Report.RelativeZOrder = 0;
+JR_Report.Maximized = false;
+
+JR_Report.Filename = 'JR_density_test_data.csv';
+JR_Report.Precision = 16;
+JR_Report.Add = {Sat.UTCModJulian, Sat.A1ModJulian, Sat.TTModJulian, Sat.X, Sat.Y, Sat.Z, Sun.EarthMJ2000Eq.X, Sun.EarthMJ2000Eq.Y, Sun.EarthMJ2000Eq.Z, Sat.Earth.Altitude, Sat.Earth.Latitude, Sat.FM.AtmosDensity};
+JR_Report.WriteHeaders = true;
+JR_Report.LeftJustify = On;
+JR_Report.ZeroFill = Off;
+JR_Report.FixedWidth = false;
+JR_Report.Delimiter = ',';
+JR_Report.ColumnWidth = 23;
+JR_Report.WriteReport = true;
+JR_Report.AppendToExistingFile = false;
+
+
+%----------------------------------------
+%---------- Mission Sequence
+%----------------------------------------
+
+
+BeginMissionSequence;
+
+Propagate RKV89(Sat) {Sat.ElapsedDays = 0.1};
