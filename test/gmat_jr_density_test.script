@@ -15,12 +15,12 @@ Sat.DateFormat = UTCGregorian;
 Sat.Epoch = '08 Aug 2011 12:00:00.000';
 Sat.CoordinateSystem = EarthMJ2000Eq;
 Sat.DisplayStateType = Cartesian;
-Sat.X = -4453.783586;
-Sat.Y = -5038.203756;
-Sat.Z = -426.384456;
-Sat.VX = 3.831888;
-Sat.VY = -2.887221;
-Sat.VZ = -6.018232;
+Sat.X = 6528.0;
+Sat.Y = 0.0;
+Sat.Z = 0.0;
+Sat.VX = 0.0;
+Sat.VY = 7.176;
+Sat.VZ = 4.144;
 Sat.DryMass = 1000;
 Sat.Cd = 2.2;
 Sat.Cr = 1.2;
@@ -56,6 +56,7 @@ Sat.AttitudeDisplayStateType = 'Quaternion';
 Sat.AttitudeRateDisplayStateType = 'AngularVelocity';
 Sat.AttitudeCoordinateSystem = EarthMJ2000Eq;
 Sat.EulerAngleSequence = '321';
+
 
 
 

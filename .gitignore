@@ -10,3 +10,5 @@ density_profile*.dat
 /doc
 /coverage
 /archive
+
+*.bak
