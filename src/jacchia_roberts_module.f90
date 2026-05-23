@@ -621,7 +621,7 @@ contains
 !     At 125 km, the old method predicts 22× higher density than reality.
 !
 !  5. **Discontinuity at 125 km boundary**: The density jumps by 37× in 5 km
-!     (125→130 km) because rho_high (>125 km) doesn't use complex roots and
+!     (125->130 km) because rho_high (>125 km) doesn't use complex roots and
 !     produces correct values, while rho_125 uses corrupted roots.
 !
 !### Why the real roots still work:

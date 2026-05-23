@@ -66,7 +66,7 @@ end if
 
 ! mjd = mjd + gmat_mjd_offset ! adjust GMAT/GSCF MJD to standard MJD
 
-! Replicate GMAT's faulty A1→UTC conversion (gives 40.034s instead of 34.034s for 2011):
+! Replicate GMAT's faulty A1->UTC conversion (gives 40.034s instead of 34.034s for 2011):
 !   a1utc_sec = floor(-9.24696 + 0.001925 * round(a1mjd_gsfc)) + 0.03437805175781120
 ! Then: gmat_utc_gsfc = a1mjd_gsfc - a1utc_sec / 86400
 mjd = (a1mjd - (floor(-9.24696_dp + 0.001925_dp * anint(a1mjd)) + &

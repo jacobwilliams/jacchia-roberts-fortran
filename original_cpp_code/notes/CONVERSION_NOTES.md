@@ -37,7 +37,7 @@ module jacchia_roberts_module
       real(dp) :: root1, root2, x_root, y_root
       ! ...
    end type jr_state_type
-   
+
    type(jr_state_type), save :: jr_state
 end module
 ```
@@ -69,7 +69,7 @@ end do
 
 ### Function Conversions
 
-#### 1. JacchiaRoberts → jacchia_roberts_density
+#### 1. JacchiaRoberts -> jacchia_roberts_density
 Main density calculation function:
 - Simplified interface (removed count parameter for multiple spacecraft)
 - Added explicit height limit checking
@@ -140,12 +140,12 @@ real(dp), parameter :: CON_C(5) = [ &
 
 The following GMAT-specific dependencies were removed or converted to placeholders:
 
-1. **AtmosphereModel base class** → Standalone module
-2. **MessageInterface** → Standard Fortran `write()` statements
-3. **SolarFluxReader** → Placeholder `get_solar_flux_placeholder()`
-4. **CalculateGeodetics** → Placeholder `calculate_geodetics_placeholder()`
-5. **GmatConstants** → Direct constant definitions
-6. **CelestialBody** → Polar radius passed to `jr_init()`
+1. **AtmosphereModel base class** -> Standalone module
+2. **MessageInterface** -> Standard Fortran `write()` statements
+3. **SolarFluxReader** -> Placeholder `get_solar_flux_placeholder()`
+4. **CalculateGeodetics** -> Placeholder `calculate_geodetics_placeholder()`
+5. **GmatConstants** -> Direct constant definitions
+6. **CelestialBody** -> Polar radius passed to `jr_init()`
 
 ### Error Handling
 
@@ -280,7 +280,7 @@ f107a = 150.0_dp
 kp = 3.0_dp
 ```
 
-**Needed:** 
+**Needed:**
 - Read CSSI Space Weather files
 - Interpolate values for requested epoch
 - Handle historic vs. predicted data
@@ -338,7 +338,7 @@ ctest         # Run tests
 
 ---
 
-**Conversion Date:** 2026  
-**Original C++ Source:** GMAT (General Mission Analysis Tool)  
-**Fortran Version:** 2008  
+**Conversion Date:** 2026
+**Original C++ Source:** GMAT (General Mission Analysis Tool)
+**Fortran Version:** 2008
 **Conversion Status:** Complete, placeholder functions need implementation

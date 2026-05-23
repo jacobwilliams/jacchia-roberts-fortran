@@ -1379,7 +1379,7 @@ END SUBROUTINE semian
 !
 !   - `sd(1..8)` = Kp for 8 3-hour periods (periods 1..8 = 0-3 h, 3-6 h, …, 21-24 h)
 !   - `sd(6)`    = 0.0  (time-reference constant; see rdymos note below)
-!   - `sd(7)`    = daily average Ap index (for rsmods Ap→Kp conversion)
+!   - `sd(7)`    = daily average Ap index (for rsmods Ap->Kp conversion)
 !   - `sd(9)`    = F10.7 daily observed solar flux
 !   - `sd(11)`   = F10.7 81-day centred average
 !
@@ -1396,10 +1396,10 @@ END SUBROUTINE semian
 !
 !   2. *Kp period conflict*: `rdymos` selects Kp via
 !      `nd = int((Dafr/3600 - sd(6) + 12 - 6.696) / 3)` then `sf(3) = sd(nd)`.
-!      With `sd(6) = 0`, `nd` maps UT 0-3 h → 1, 3-6 h → 2, …, 21-24 h → 8.
+!      With `sd(6) = 0`, `nd` maps UT 0-3 h -> 1, 3-6 h -> 2, …, 21-24 h -> 8.
 !      However:
-!      - `nd = 6` at UT 15-18 h → `sd(6) = 0.0` (wrong; Kp treated as 0)
-!      - `nd = 7` at UT 18-21 h → `sd(7) = Ap` (wrong unit)
+!      - `nd = 6` at UT 15-18 h -> `sd(6) = 0.0` (wrong; Kp treated as 0)
+!      - `nd = 7` at UT 18-21 h -> `sd(7) = Ap` (wrong unit)
 !      For all other UT hours (18 of 24) the correct Kp period is returned.
 !
 !  **Recommended alternative for rdymos**: use `rdymos_cssi` (below), which
@@ -1468,7 +1468,7 @@ END SUBROUTINE semian
       ! This overwrites the period-6 (15-18 h) Kp slot; see module header.
       sd(6)  = 0.0_dp
 
-      ! sd(7) = daily average Ap — used by rsmods for Ap→Kp conversion.
+      ! sd(7) = daily average Ap — used by rsmods for Ap->Kp conversion.
       ! This overwrites the period-7 (18-21 h) Kp slot; see module header.
       sd(7)  = flux_data%ap_avg
 

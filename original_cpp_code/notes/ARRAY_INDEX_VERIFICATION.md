@@ -61,7 +61,7 @@ do i = 1, 5
     end if
 end do
 ```
-✓ Indices correctly shifted: C++ `i=0..4` → Fortran `i=1..5`, C++ `i==2` → Fortran `i==3`
+✓ Indices correctly shifted: C++ `i=0..4` -> Fortran `i=1..5`, C++ `i==2` -> Fortran `i==3`
 
 ### rho_high Function
 **C++**:
@@ -90,28 +90,28 @@ do i = 1, 6
     end if
 end do
 ```
-✓ Indices correctly shifted: C++ `i=0..5` → Fortran `i=1..6`, C++ `i==2` → Fortran `i==3`, C++ `i==5` → Fortran `i==6`
+✓ Indices correctly shifted: C++ `i=0..5` -> Fortran `i=1..6`, C++ `i==2` -> Fortran `i==3`, C++ `i==5` -> Fortran `i==6`
 
 ### Polynomial Evaluations
 
 #### CON_C Polynomial
-**C++**: `for (sum = CON_C[4], i = 3; i >= 0; i--)` → accesses CON_C[4,3,2,1,0]
-**Fortran**: `jr_state%sum = CON_C(5); do i = 4, 1, -1` → accesses CON_C(5,4,3,2,1)
+**C++**: `for (sum = CON_C[4], i = 3; i >= 0; i--)` -> accesses CON_C[4,3,2,1,0]
+**Fortran**: `jr_state%sum = CON_C(5); do i = 4, 1, -1` -> accesses CON_C(5,4,3,2,1)
 ✓ Same 5 elements in same order
 
 #### CON_L Polynomial
-**C++**: `for (sum = CON_L[4], i = 3; i >= 0; i--)` → accesses CON_L[4,3,2,1,0]
-**Fortran**: `jr_state%sum = CON_L(5); do i = 4, 1, -1` → accesses CON_L(5,4,3,2,1)
+**C++**: `for (sum = CON_L[4], i = 3; i >= 0; i--)` -> accesses CON_L[4,3,2,1,0]
+**Fortran**: `jr_state%sum = CON_L(5); do i = 4, 1, -1` -> accesses CON_L(5,4,3,2,1)
 ✓ Same 5 elements in same order
 
 #### M_CON Polynomial
-**C++**: `for (m_poly = M_CON[6], i = 5; i >= 0; i--)` → accesses M_CON[6,5,4,3,2,1,0]
-**Fortran**: `m_poly = M_CON(7); do i = 6, 1, -1` → accesses M_CON(7,6,5,4,3,2,1)
+**C++**: `for (m_poly = M_CON[6], i = 5; i >= 0; i--)` -> accesses M_CON[6,5,4,3,2,1,0]
+**Fortran**: `m_poly = M_CON(7); do i = 6, 1, -1` -> accesses M_CON(7,6,5,4,3,2,1)
 ✓ Same 7 elements in same order
 
 #### ZETA_CON Polynomial
-**C++**: `for (rho_prime = ZETA_CON[6], i=5; i>=0; i--)` → accesses ZETA_CON[6,5,4,3,2,1,0]
-**Fortran**: `rho_prime = ZETA_CON(7); do i = 6, 1, -1` → accesses ZETA_CON(7,6,5,4,3,2,1)
+**C++**: `for (rho_prime = ZETA_CON[6], i=5; i>=0; i--)` -> accesses ZETA_CON[6,5,4,3,2,1,0]
+**Fortran**: `rho_prime = ZETA_CON(7); do i = 6, 1, -1` -> accesses ZETA_CON(7,6,5,4,3,2,1)
 ✓ Same 7 elements in same order
 
 #### S_CON/S_BETA Access
@@ -126,7 +126,7 @@ end do
 
 ## Summary
 
-All array indices have been verified to correctly map from C++ 0-based indexing to Fortran 1-based indexing. The critical bug in `CON_C(4)` → `CON_C(5)` has been fixed.
+All array indices have been verified to correctly map from C++ 0-based indexing to Fortran 1-based indexing. The critical bug in `CON_C(4)` -> `CON_C(5)` has been fixed.
 
 **Total Arrays Checked**: 9
 **Issues Found**: 1 (CON_C indexing in rho_125)

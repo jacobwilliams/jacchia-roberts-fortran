@@ -22,10 +22,10 @@
 !                new: step at 200 km    old: tanh blend centred at 350 km.
 !    ~300 km   : largest difference (~1.3%) from the Kp-correction boundary.
 !
-!  Geometry mapping old → new:
+!  Geometry mapping old -> new:
 !    Sa(2) [geocentric lat, rad]  ≈ geo_lat [geodetic deg]  (small difference)
-!    Su(2) [sun dec, rad]         → sun_vector via [cos(d),0,sin(d)]
-!    h = Sa(1)−Su(1) [hour angle] → satellite xy-position angle
+!    Su(2) [sun dec, rad]         -> sun_vector via [cos(d),0,sin(d)]
+!    h = Sa(1)−Su(1) [hour angle] -> satellite xy-position angle
 !
 !  Build:  fpm test test_compare_roberts
 
