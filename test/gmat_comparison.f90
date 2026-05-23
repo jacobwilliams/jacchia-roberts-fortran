@@ -1,3 +1,11 @@
+!>
+!  Test program to compare the Fortran jacchia-roberts model results to
+!  GMAT's built-in implementation using a set of test data exported from GMAT.
+!
+!  The data was exported by the GMAT script: `test/gmat_jr_density_test.script`
+!
+!  The test orbit is an elliptical orbit with ~150 km periapsis and ~2000 km apoapsis.
+
 program gmat_comparison
 
 use csv_module
@@ -5,32 +13,31 @@ use jacchia_roberts_module
 use jacchia_roberts_kinds, only: ip, dp
 use space_weather_module, only: sw_data_type, flux_data_type
 
-character(len=*),parameter :: gmat_file = 'test/JR_density_test_data.csv'
-real(dp),parameter :: rad_earth = 6356.766_dp ! Earth polar radius (km)
-character(len=*),parameter :: sw_file = 'data/SpaceWeather-All-v1.2.txt' ! space weather file to
+character(len=*),parameter :: gmat_file = 'test/JR_density_test_data.csv' !! CSV file exported from GMAT with the test orbit and density data to compare against
+real(dp),parameter :: rad_earth = 6356.766_dp !! Earth polar radius (km)
+character(len=*),parameter :: sw_file = 'data/SpaceWeather-All-v1.2.txt' !! space weather file to load (same as GMAT)
 
-type(csv_file) :: f
-character(len=30),dimension(:),allocatable :: header
+type(csv_file) :: f !! for reading the CSV file exported from GMAT
+type(jacchia_roberts_type) :: jr
+type(sw_data_type) :: sw_debug
+type(flux_data_type) :: flux_debug
 real(dp),dimension(:),allocatable :: mjd, a1mjd, ttmjd, x, y, z, alt, lat, density, sun_x, sun_y, sun_z
 real(dp),dimension(:),allocatable :: rho_model, percent_errors
 real(dp),dimension(:),allocatable :: rho_model_shifted, percent_errors_shifted
+real(dp),dimension(3) :: r, r_sun_hat
 real(dp) :: rho, percent_error, max_error, max_error2
 real(dp) :: rho_shifted, percent_error_shifted, max_error_shifted
 logical :: status_ok
-real(dp),dimension(3) :: r, r_sun_hat
 integer :: i, max_i, max_i2 !! counter and top-error rows
-type(jacchia_roberts_type) :: jr
 integer(ip) :: status
-type(sw_data_type) :: sw_debug
-type(flux_data_type) :: flux_debug
 real(dp) :: tkp_debug, f107_debug, f107a_debug
 real(dp) :: frac_epoch, frac_epoch_kp
 integer(ip) :: sub_index
 logical :: sw_status
 
-real(dp),parameter :: gmat_mjd_offset = 29999.5_dp ! GMAT's MJD is offset from the standard MJD by this amount
+real(dp),parameter :: gmat_mjd_offset = 29999.5_dp !! GMAT's MJD is offset from the standard MJD by this amount
 real(dp),parameter :: F107_REF_EPOCH = 48407.5_dp  ! MJD for 5/31/91 noon
-real(dp),parameter :: weather_time_bias_seconds = -10.0_dp ! probe GMAT/Fortran epoch alignment
+real(dp),parameter :: weather_time_bias_seconds = -10.0_dp !! probe GMAT/Fortran epoch alignment
 
 ! read the file
 call f%read(gmat_file,header_row=1,status_ok=status_ok)
@@ -73,7 +80,7 @@ allocate(percent_errors_shifted(size(mjd)))
 
 ! compare each point to the results from the jacchia-roberts model
 write(*,*) ''
-write(*,'(*(a16,1x))') 'mjd', 'alt', 'lat', 'gmat', 'jr', '% error'
+write(*,'(a7,1x,a7,1x,a7,1x,a16,1x,a16,1x,a8,1x,a8)') 'mjd', 'alt', 'lat', 'gmat', 'jr', '% err', 'abs err'
 max_error = -1.0_dp
 max_error_shifted = -1.0_dp
 max_error2 = -1.0_dp
@@ -91,7 +98,8 @@ do i = 1, size(mjd)
    percent_errors(i) = percent_error
    percent_errors_shifted(i) = percent_error_shifted
    if (percent_error_shifted > max_error_shifted) max_error_shifted = percent_error_shifted
-   write(*,'(*(E16.9,1x))') mjd(i), alt(i), lat(i), density(i), rho, percent_error
+!    write(*,'(*(E16.9,1x))') mjd(i), alt(i), lat(i), density(i), rho, percent_error, abs(rho - density(i))
+   write(*,'(F7.1,1x,F7.1,1x,F7.1,1x,E16.9,1x,E16.9,1x,E8.2,1x,E8.2)') mjd(i), alt(i), lat(i), density(i), rho, percent_error, abs(rho - density(i))
     if (percent_error > max_error) then
         max_error2 = max_error
         max_i2 = max_i
@@ -111,9 +119,9 @@ write(*,'(a,E24.16)') 'Max % error (epoch -10s shifted) : ', max_error_shifted
 call sw_debug%initialize(sw_file, status)
 if (status /= 0_ip) error stop 'Error initializing debug space weather data'
 call print_point_diagnostics(max_i, 'Point A (largest error)')
-if (max_i2 /= max_i) then
-    call print_point_diagnostics(max_i2, 'Point B (second largest error)')
-end if
+! if (max_i2 /= max_i) then
+!     call print_point_diagnostics(max_i2, 'Point B (second largest error)')
+! end if
 
 call sw_debug%destroy()
 
