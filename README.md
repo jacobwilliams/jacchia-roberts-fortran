@@ -74,7 +74,7 @@ real(dp),dimension(3),parameter :: r = [7000.0_dp, 0.0_dp, 0.0_dp] ! spacecraft 
 real(dp),dimension(3),parameter :: sun = [1.0_dp, 0.0_dp, 0.0_dp] ! sun direction unit vector
 
 ! initialize the model:
-call jr%initialize(rad_earth, sw_file, status)
+call jr%initialize(rad_earth, filename=sw_file, status=status)
 
 ! compute the density:
 density = jr%density(alt_km, r, sun_vector, lat, utc_mjd)
