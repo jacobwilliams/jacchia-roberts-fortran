@@ -80,7 +80,7 @@ allocate(percent_errors_shifted(size(mjd)))
 
 ! compare each point to the results from the jacchia-roberts model
 write(*,*) ''
-write(*,'(a7,1x,a7,1x,a7,1x,a16,1x,a16,1x,a8,1x,a8)') 'mjd', 'alt', 'lat', 'gmat', 'jr', '% err', 'abs err'
+write(*,'(a12,1x,a7,1x,a7,1x,a16,1x,a16,1x,a8,1x,a8)') 'mjd', 'alt', 'lat', 'gmat', 'jr', '% err', 'abs err'
 max_error = -1.0_dp
 max_error_shifted = -1.0_dp
 max_error2 = -1.0_dp
@@ -99,7 +99,7 @@ do i = 1, size(mjd)
    percent_errors_shifted(i) = percent_error_shifted
    if (percent_error_shifted > max_error_shifted) max_error_shifted = percent_error_shifted
 !    write(*,'(*(E16.9,1x))') mjd(i), alt(i), lat(i), density(i), rho, percent_error, abs(rho - density(i))
-   write(*,'(F7.1,1x,F7.1,1x,F7.1,1x,E16.9,1x,E16.9,1x,E8.2,1x,E8.2)') mjd(i), alt(i), lat(i), density(i), rho, percent_error, abs(rho - density(i))
+   write(*,'(F12.6,1x,F7.1,1x,F7.1,1x,E16.9,1x,E16.9,1x,E8.2,1x,E8.2)') mjd(i), alt(i), lat(i), density(i), rho, percent_error, abs(rho - density(i))
     if (percent_error > max_error) then
         max_error2 = max_error
         max_i2 = max_i
