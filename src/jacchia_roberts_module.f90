@@ -587,7 +587,7 @@ contains
       root2 = r2n
 
       ! Complex conjugate pair via Vieta's formulas:
-      !   sum  of all 4 roots = -c_star(4)/c_star(5) = 340.5/0.8 = 425.625
+      !   sum  of all 4 roots = -c_star(4)/c_star(5) = -CON_C(4)/CON_C(5) = 340.5/0.8 = 425.625
       !   prod of all 4 roots =  c_star(1)/c_star(5)
       x_root = 0.5_dp * (425.625_dp - root1 - root2)
       x2y2   = c_star(1) / (c_star(5) * root1 * root2)
