@@ -425,38 +425,38 @@ contains
          hour_angle = 0.0_dp
       else
 
-      ! Calculate cosine of angle between vectors
-      cosAlpha = (sun_vector(1) * position(1) + sun_vector(2) * position(2)) / &
-                 (sun_denom * cos_denom)
+         ! Calculate cosine of angle between vectors
+         cosAlpha = (sun_vector(1) * position(1) + sun_vector(2) * position(2)) / &
+                  (sun_denom * cos_denom)
 
-      ! Compute cross product for sign determination
-      cross_denom = abs(sun_vector(1) * position(2) - sun_vector(2) * position(1))
+         ! Compute cross product for sign determination
+         cross_denom = abs(sun_vector(1) * position(2) - sun_vector(2) * position(1))
 
-      ! Calculate hour angle with boundary checking
-      ! When vectors are nearly collinear, cosAlpha determines the angle directly
-      if (cosAlpha >= 1.0_dp - error_tolerance) then
-         ! Vectors aligned: hour angle = 0
-         hour_angle = 0.0_dp
-      else if (cosAlpha <= -1.0_dp + error_tolerance) then
-         ! Vectors opposite: hour angle = +/- PI
-         ! If cross product is too small (collinear case), default to +PI
-         if (cross_denom < real_tol) then
-            hour_angle = PI
-         else
-            hour_angle = sign(1.0_dp, sun_vector(1) * position(2) - &
-                             sun_vector(2) * position(1)) * PI
-         end if
-      else
-         ! General case: use cross product to determine sign
-         ! If vectors are collinear (shouldn't happen here due to cosAlpha checks),
-         ! default to 0
-         if (cross_denom < real_tol) then
+         ! Calculate hour angle with boundary checking
+         ! When vectors are nearly collinear, cosAlpha determines the angle directly
+         if (cosAlpha >= 1.0_dp - error_tolerance) then
+            ! Vectors aligned: hour angle = 0
             hour_angle = 0.0_dp
+         else if (cosAlpha <= -1.0_dp + error_tolerance) then
+            ! Vectors opposite: hour angle = +/- PI
+            ! If cross product is too small (collinear case), default to +PI
+            if (cross_denom < real_tol) then
+               hour_angle = PI
+            else
+               hour_angle = sign(1.0_dp, sun_vector(1) * position(2) - &
+                              sun_vector(2) * position(1)) * PI
+            end if
          else
-            hour_angle = sign(1.0_dp, sun_vector(1) * position(2) - &
-                         sun_vector(2) * position(1)) * acos(cosAlpha)
+            ! General case: use cross product to determine sign
+            ! If vectors are collinear (shouldn't happen here due to cosAlpha checks),
+            ! default to 0
+            if (cross_denom < real_tol) then
+               hour_angle = 0.0_dp
+            else
+               hour_angle = sign(1.0_dp, sun_vector(1) * position(2) - &
+                           sun_vector(2) * position(1)) * acos(cosAlpha)
+            end if
          end if
-      end if
 
       end if  ! sun_denom guard
 
@@ -551,7 +551,7 @@ contains
    !@note This replaces the original C++ code's, which was found to be unstable
    !      for some input temperatures (e.g. 300 K).
 
-   subroutine find_cstar_roots(c_star, tx, root1, root2, x_root, y_root)
+   pure subroutine find_cstar_roots(c_star, tx, root1, root2, x_root, y_root)
       real(dp), intent(in)  :: c_star(5) !! Quartic polynomial coefficients `c_star(1)..c_star(5)`
       real(dp), intent(in)  :: tx        !! Temperature at 125 km (K), used for initial guesses
       real(dp), intent(out) :: root1     !! Larger real root (> 125 km)
@@ -640,7 +640,7 @@ contains
 !@note Retained here for reference, testing, and demonstration of the bug.
 !      DO NOT USE in production code.
 
-   subroutine find_cstar_roots_original(c_star, tx, root1, root2, x_root, y_root)
+   pure subroutine find_cstar_roots_original(c_star, tx, root1, root2, x_root, y_root)
 
       use jacchia_roberts_utilities, only: roots, deflate_polynomial
 
