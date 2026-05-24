@@ -118,10 +118,9 @@ SUBROUTINE rdymos(Sa,Su,Rjud,Dafr,Gsti,Te,Ad,Wmol,Rhod)
 !
    IMPLICIT NONE
 
-   real(dp) Ad , dafl , Dafr , Gsti , outr , Rhod , rjfl , Rjud , Sa , sd , sf , Su , tauo , Te , Wmol
-   INTEGER int , nd
-   DIMENSION Sa(3) , Su(2) , Te(2) , Ad(6)
-   DIMENSION sf(3) , sd(15)
+   real(dp) :: Ad(6) , dafl , Dafr , Gsti , outr , Rhod , rjfl , Rjud , &
+               Sa(3) , sd(15) , sf(3) , Su(2) , tauo , Te(2) , Wmol
+   INTEGER :: int , nd
 !
 !------
 !
@@ -138,9 +137,9 @@ SUBROUTINE rdymos(Sa,Su,Rjud,Dafr,Gsti,Te,Ad,Wmol,Rhod)
 
    CALL soflud(rjfl,dafl,sd,outr)
 
-   IF ( outr/=0. ) THEN
+   IF ( outr/=0.0_dp ) THEN
       WRITE (6,*) ' ERROR IN ROUTINE JDYMOS: OUTR = ' , int(outr)
-      STOP
+      error stop
    ENDIF
 
    tauo = 6.696_dp
@@ -214,11 +213,9 @@ SUBROUTINE rsmods(Altu,Rjud,Dafr,Te,Al,Wmol,Rhod)
 !
    IMPLICIT NONE
 
-   real(dp) Al , Altu , Dafr , outr , Rhod , &
-            Rjud , sd , sf , Te , vari , Wmol
-   INTEGER int
-   DIMENSION Te(2) , Al(6)
-   DIMENSION sf(3) , sd(15)
+   real(dp) :: Al(6) , Altu , Dafr , outr , Rhod , &
+               Rjud , sd(15) , sf(3) , Te(2) , vari , Wmol
+   INTEGER :: int
 !
 !------
 !
@@ -325,14 +322,8 @@ SUBROUTINE rsdamo(Sa,Su,Sf,Rjud,Dafr,Gsti,Te,Ad,Wmol,Rhod)
 !
    IMPLICIT NONE
 
-   real(dp) Ad , al , amjd , Dafr , Gsti , Rhod , Rjud , Sa , Sf , Su , Te , Wmol
-
-   DIMENSION Sa(3) , Su(2) , Sf(3) , Te(2) , Ad(6)
-   DIMENSION al(6)
-
-!
-!------
-!
+   real(dp) :: Ad(6) , al(6) , amjd , Dafr , Gsti , Rhod , &
+               Rjud , Sa(3) , Sf(3) , Su(2) , Te(2) , Wmol
 
    amjd = Rjud + 33282.0_dp + Dafr/86400.0_dp
 
@@ -604,25 +595,25 @@ SUBROUTINE dyjrmo(Djm,Sun,Sat,Geo,Temp,Dn,Amw,Dens)
 !         377,1971
 !
 ! AUTHOR : HELIO KOITI KUGA - JUNE 1985 -INPE-DMC/DDO
-!
-! DIMENSION ARRAY'S, VARIABLES AND CONSTANTS
-!
+
    IMPLICIT NONE
 
-   real(dp) abs , Amw , capphi , cos , d1 , d2 , d3 , d4 , d5 , d6 , Dens , df , Djm , dlhe , dlr , dlr20 , dlrgm , dlrsa , &
-            dlrsl
-   real(dp) Dn , dtg , dtg18 , dtg20 , eta , expkp , f , fdfz , fs , fsm , gdft , Geo , h , pk , s , Sat
-   real(dp) sat1 , sat2 , sat3 , sign , sin , sumn , sumnm , Sun , sun1 , sun2 , tanh , tau , Temp , theta , tinf , tsubc , tsubl ,  &
-            tz
-   INTEGER mod
-   DIMENSION Sun(2) , Sat(3) , Geo(3) , Temp(2) , Dn(6)
+   real(dp) :: abs , Amw , capphi , cos , d1 , d2 , d3 , d4 , d5 , d6 , Dens , df , &
+               Djm , dlhe , dlr , dlr20 , dlrgm , dlrsa , dlrsl , Dn(6) , dtg , dtg18 , &
+               dtg20 , eta , expkp , f , fdfz , fs , fsm , gdft , Geo(3) , h , pk , s , Sat(3) , &
+               sat1 , sat2 , sat3 , sign , sin , sumn , sumnm , Sun(2) , sun1 , sun2 , tanh , &
+               tau , Temp(2) , theta , tinf , tsubc , tsubl , tz
 
    real(dp),parameter :: pi = acos(-1.0_dp)
    real(dp),parameter :: piv2 = 2.0_dp * pi
    real(dp),parameter :: piv4 = 4.0_dp * pi
    real(dp),parameter :: pid4 = pi / 4.0_dp
    real(dp),parameter :: cons25 = sin(pid4)**3
-!
+   real(dp),parameter :: RAD_PER_DEG = pi / 180.0_dp !! degree to radian conversion factor
+   real(dp),parameter :: d37 = 37.0_dp * RAD_PER_DEG  !! 37 degrees in radians
+   real(dp),parameter :: d06 = 6.0_dp  * RAD_PER_DEG  !! 6 degrees in radians
+   real(dp),parameter :: d43 = 43.0_dp * RAD_PER_DEG  !! 43 degrees in radians
+
    sun1 = Sun(1)
    sun2 = Sun(2)
    sat1 = Sat(1)
@@ -647,7 +638,8 @@ SUBROUTINE dyjrmo(Djm,Sun,Sat,Geo,Temp,Dn,Amw,Dens)
 !       EQUATION 16J
 !
    h = sat1 - sun1
-   tau = h - 0.64577182_dp + 0.10471976_dp*sin(h+0.75049158_dp)
+   ! tau = h - 0.64577182_dp + 0.10471976_dp*sin(h+0.75049158_dp)
+   tau = h - d37 + d06 * sin(h + d43)
 !
 !       EXOSPHERIC TEMPERATURE TSUBL WITHOUT CORRECTION
 !       FOR GEOMAGNETIC ACTIVITY
@@ -763,8 +755,7 @@ SUBROUTINE stjrmo(Tinf,Sat3,Tz,Dn)
 !
    IMPLICIT NONE
 
-   real(dp) Dn , Sat3 , Tinf , Tz
-   DIMENSION Dn(6)
+   real(dp) :: Dn(6) , Sat3 , Tinf , Tz
 
    IF ( Sat3>125.0_dp ) THEN
 !
@@ -816,16 +807,15 @@ SUBROUTINE stjr01(Tinf,Sat3,Tl2,Al10n)
 !
    IMPLICIT NONE
 
-   real(dp) ain , al , Al10n , am1 , am2 , an , anm , dens , dz , dzx , exp , fact1 , fact2 , gx , gz , Sat3 , sum1 ,  &
-            sum2
-   real(dp) Tinf , tl1 , Tl2 , tx , z , zd , zend , zr
-   INTEGER i , int , j , n
-   DIMENSION Al10n(6)
+   real(dp) :: ain , al , Al10n(6) , am1 , am2 , an , anm , dens , dz , dzx , &
+               exp , fact1 , fact2 , gx , gz , Sat3 , sum1 ,  &
+               sum2 , Tinf , tl1 , Tl2 , tx , z , zd , zend , zr
+   INTEGER :: i , int , j , n
 
    real(dp),parameter :: ra = 6356.766_dp !! POLAR EARTH RADIUS (KM)
    real(dp),dimension(5),parameter :: wt = 2.0_dp/45.0_dp*[7.0_dp,32.0_dp,12.0_dp,32.0_dp,7.0_dp] !! WEIGHTS FOR THE NEWTON-COTES FIVE POINT QUADRATURE FORMULAE
 !
-   tx = 371.668_dp + 0.0518806_dp*Tinf - 294.3503_dp*exp(-0.00216222_dp*Tinf)
+   tx = 371.6678_dp + 0.0518806_dp*Tinf - 294.3503_dp*exp(-0.00216222_dp*Tinf)
    gx = 0.054285714_dp*(tx-183.0_dp)
    al = log(Sat3/90.0_dp)
    n = int(al/0.050_dp) + 1
@@ -840,7 +830,7 @@ SUBROUTINE stjr01(Tinf,Sat3,Tl2,Al10n)
       z = zend
       zend = zr*z
       dz = 0.25_dp*(zend-z)
-      sum1 = 0.31111111_dp*ain
+      sum1 = wt(1)*ain
       DO j = 2 , 5
          z = z + dz
 !
@@ -915,22 +905,18 @@ SUBROUTINE stjr02(Tinf,Sat3,Tz,Dn)
 !
    IMPLICIT NONE
 
-   real(dp) abs , am100 , atan , aux , aux1 , aux2 , c0a , cx , d1 , d2 , d3 , d4 , d5 , de100 , deavog , dife , Dn , dpz1 ,  &
-        & dpz2
-   real(dp) dzx , f3 , f4 , gsubx , h2 , h3 , h4 , prod , pz1 , pz2 , q1 , q2 , q3 , q4 , q5 , q6 , r , r1 , r1n
-   real(dp) r2 , r2n , ra , ras , Sat3 , sksf , sksf34 , soma , sqrt , t100 , t100tz , temp , Tinf , tsubx , txmt0 , Tz , ur1 ,      &
-        & ur1h2 , ur2 , ur2h3
-   real(dp) vra , wr1 , wr2 , x , x2y2 , y , z
-   INTEGER i
-   DIMENSION Dn(6)
-!
-!-----
-!       R ... UNIVERSAL GAS CONSTANT(JOULES/K MOLE)
-!       RA... POLAR EARTH RADIUS    (KM)
-!       RAS.. RA**2                 (KM**2)
-!
-   DATA r/8.31432_dp/
-   DATA ra , ras/6356.766_dp , 4.04084739788e+07_dp/
+   real(dp) :: abs , am100 , atan , aux , aux1 , aux2 , c0a , cx , d1 , d2 , d3 , &
+               d4 , d5 , de100 , deavog , dife , Dn(6) , dpz1 ,  &
+               dpz2 , dzx , f3 , f4 , gsubx , h2 , h3 , h4 , prod , pz1 , pz2 , q1 , &
+               q2 , q3 , q4 , q5 , q6 , r1 , r1n , r2 , r2n , Sat3 , sksf , sksf34 , &
+               soma , sqrt , t100 , t100tz , temp , Tinf , tsubx , txmt0 , Tz , ur1 , &
+               ur1h2 , ur2 , ur2h3 , vra , wr1 , wr2 , x , x2y2 , y , z
+   INTEGER :: i
+
+   real(dp),parameter :: r = 8.31432_dp   !! UNIVERSAL GAS CONSTANT(JOULES/K MOLE)
+   real(dp),parameter :: ra = 6356.766_dp !! POLAR EARTH RADIUS    (KM)
+   real(dp),parameter :: ras = ra*ra      !! RA**2                 (KM**2)
+
 !
 !       DENSITY ANALYTICALLY CALCULATED
 !
@@ -1103,21 +1089,13 @@ SUBROUTINE stjr03(Tinf,Sat3,Tz,Dn)
 !
    IMPLICIT NONE
 
-   real(dp) a1 , a1a2a , a2 , al , aux , aux1 , aux2 , d1 , d2 , d3 , d4 , d5 , d6 , Dn , exp , h500 , r , ra , ras , Sat3
+   real(dp) a1 , a1a2a , a2 , al , aux , aux1 , aux2 , d1 , d2 , d3 , d4 , d5 , d6 , Dn(6) , exp , h500 , Sat3
    real(dp) tetx , Tinf , tsubx , txmt0 , Tz , tz500 , z
-   INTEGER Icount
-   COMMON /ncall / Icount
-   DIMENSION Dn(6)
-!
-!-----
-!
-!       R....UNIVERSAL GAS CONSTANT (JOULES/K MOLE)
-!       RA...POLAR EARTH RADIUS     (KM)
-!       RAS..RA**2                  (KM**2)
-!
-   DATA r/8.31432_dp/
-   DATA ra , ras/6356.766_dp , 4.04084739788e+07_dp/
-   Icount = Icount + 1
+
+   real(dp),parameter :: r = 8.31432_dp   !! UNIVERSAL GAS CONSTANT (JOULES/K MOLE)
+   real(dp),parameter :: ra = 6356.766_dp !! POLAR EARTH RADIUS     (KM)
+   real(dp),parameter :: ras = ra*ra      !! RA**2                  (KM**2)
+
 !
 !       DENSITY ANALYTICALLY CALCULATED
 !
@@ -1219,15 +1197,11 @@ FUNCTION temlo(Altu,C)
 !
    IMPLICIT NONE
 
-   real(dp) Altu , auxi , C , higo , higx , temlo , to , zo , zx
+   real(dp) Altu , auxi , C(7), higo , higx , temlo
 
-   DIMENSION C(7)
-!
-!------
-!
-   DATA zx/125.0_dp/
-   DATA zo/90.0_dp/
-   DATA to/188.0_dp/
+   real(dp),parameter :: zx = 125.0_dp
+   real(dp),parameter :: zo = 90.0_dp
+   real(dp),parameter :: to = 188.0_dp
 
    higx = Altu - zx
    higo = Altu - zo
@@ -1287,14 +1261,12 @@ SUBROUTINE sealat(Tyfr,Sudc,Rlat,Altu,Al)
 !
    IMPLICIT NONE
 
-   real(dp) Al(6) , Altu , cr(6) , delz , dslm , dslt , esse , pcap , pitw , Rlat , sila , Sudc , Tyfr
-   INTEGER i
-!
-!------
-!
-   DATA pitw/6.28318530718_dp/
+   real(dp) :: Al(6) , Altu , delz , dslm , dslt , esse , pcap , Rlat , sila , Sudc , Tyfr
+   INTEGER :: i
 
-   DATA cr/ - 0.79_dp , 0_dp , 0_dp , 0_dp , -.16_dp , 0_dp/
+   real(dp),parameter :: pi = acos(-1.0_dp)
+   real(dp),parameter :: pitw = 2.0_dp * pi
+   real(dp),dimension(6),parameter :: cr = [ -0.79_dp , 0.0_dp , 0.0_dp , 0.0_dp , -0.16_dp , 0.0_dp ]
 
    sila = sin(Rlat)
    dslt = Sudc*sila/0.409157536545_dp
@@ -1345,11 +1317,10 @@ SUBROUTINE semian(Tyfr,Altu,Alco)
 !
    IMPLICIT NONE
 
-   real(dp) Alco , Altu , auxi , foft , goft , pitw , tauc , Tyfr
-!
-!------
-!
-   DATA pitw/6.28318530718_dp/
+   real(dp) :: Alco , Altu , auxi , foft , goft , tauc , Tyfr
+
+   real(dp),parameter :: pi = acos(-1.0_dp)
+   real(dp),parameter :: pitw = 2.0_dp * pi
 
    auxi = 0.04_dp*Altu*Altu/1.0e+04_dp + 0.05_dp
    foft = auxi*exp(-0.25e-02_dp*Altu)
