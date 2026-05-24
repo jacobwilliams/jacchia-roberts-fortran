@@ -2,6 +2,11 @@
 !  Test code for the Jacchia-Roberts model.
 !  Uses the older INPE code for the Jacchia-Roberts model
 !  as a reference for testing the new implementation.
+!
+!  Source:
+!  * Original [dead link]: http://www.dem.inpe.br/~val/atmod/default.html
+!    The Orbital Dynamics group of INPE (Brazilian National Institute for Space Research)
+!  * Archive: https://github.com/jacobwilliams/INPE-atmosphere-models
 
 module inpe_roberts_module
 
@@ -604,20 +609,19 @@ SUBROUTINE dyjrmo(Djm,Sun,Sat,Geo,Temp,Dn,Amw,Dens)
 !
    IMPLICIT NONE
 
-   real(dp) abs , Amw , capphi , cons25 , cos , d1 , d2 , d3 , d4 , d5 , d6 , Dens , df , Djm , dlhe , dlr , dlr20 , dlrgm , dlrsa , &
-        & dlrsl
-   real(dp) Dn , dtg , dtg18 , dtg20 , eta , expkp , f , fdfz , fs , fsm , gdft , Geo , h , pid4 , piv2 , piv4 , pk , s , Sat
+   real(dp) abs , Amw , capphi , cos , d1 , d2 , d3 , d4 , d5 , d6 , Dens , df , Djm , dlhe , dlr , dlr20 , dlrgm , dlrsa , &
+            dlrsl
+   real(dp) Dn , dtg , dtg18 , dtg20 , eta , expkp , f , fdfz , fs , fsm , gdft , Geo , h , pk , s , Sat
    real(dp) sat1 , sat2 , sat3 , sign , sin , sumn , sumnm , Sun , sun1 , sun2 , tanh , tau , Temp , theta , tinf , tsubc , tsubl ,  &
-        & tz
+            tz
    INTEGER mod
    DIMENSION Sun(2) , Sat(3) , Geo(3) , Temp(2) , Dn(6)
-!-----
-   DATA piv2 , piv4 , pid4 , cons25/6.2831853_dp , 12.566371_dp , 0.78539816_dp , 0.35355339_dp/
-!
-!      PIV2 = 2 * PI
-!      PIV4 = 4 * PI
-!      PID4 = PI / 4
-!      CONS25 = SIN (PI/4) **3
+
+   real(dp),parameter :: pi = acos(-1.0_dp)
+   real(dp),parameter :: piv2 = 2.0_dp * pi
+   real(dp),parameter :: piv4 = 4.0_dp * pi
+   real(dp),parameter :: pid4 = pi / 4.0_dp
+   real(dp),parameter :: cons25 = sin(pid4)**3
 !
    sun1 = Sun(1)
    sun2 = Sun(2)
@@ -778,8 +782,7 @@ SUBROUTINE stjrmo(Tinf,Sat3,Tz,Dn)
       RETURN
    ENDIF
    CALL stjr01(Tinf,Sat3,Tz,Dn)
-   RETURN
-!
+
 END SUBROUTINE stjrmo
 
 
@@ -813,19 +816,14 @@ SUBROUTINE stjr01(Tinf,Sat3,Tl2,Al10n)
 !
    IMPLICIT NONE
 
-   real(dp) ain , al , Al10n , am1 , am2 , an , anm , dens , dz , dzx , exp , fact1 , fact2 , gx , gz , ra , Sat3 , sum1 ,  &
-        & sum2
-   real(dp) Tinf , tl1 , Tl2 , tx , wt , z , zd , zend , zr
+   real(dp) ain , al , Al10n , am1 , am2 , an , anm , dens , dz , dzx , exp , fact1 , fact2 , gx , gz , Sat3 , sum1 ,  &
+            sum2
+   real(dp) Tinf , tl1 , Tl2 , tx , z , zd , zend , zr
    INTEGER i , int , j , n
-   DIMENSION wt(5) , Al10n(6)
-!
-!-----
-!
-!   RA = POLAR EARTH RADIUS (KM)
-!   WT = WEIGHTS FOR THE NEWTON-COTES
-!        FIVE POINT QUADRATURE FORMULAE
-!
-   DATA ra , wt/6356.766_dp , 0.31111111_dp , 1.4222222_dp , 0.53333333_dp , 1.4222222_dp , 0.31111111_dp/
+   DIMENSION Al10n(6)
+
+   real(dp),parameter :: ra = 6356.766_dp !! POLAR EARTH RADIUS (KM)
+   real(dp),dimension(5),parameter :: wt = 2.0_dp/45.0_dp*[7.0_dp,32.0_dp,12.0_dp,32.0_dp,7.0_dp] !! WEIGHTS FOR THE NEWTON-COTES FIVE POINT QUADRATURE FORMULAE
 !
    tx = 371.668_dp + 0.0518806_dp*Tinf - 294.3503_dp*exp(-0.00216222_dp*Tinf)
    gx = 0.054285714_dp*(tx-183.0_dp)
