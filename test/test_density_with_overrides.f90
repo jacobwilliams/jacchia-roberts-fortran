@@ -62,8 +62,8 @@ program test_density_with_overrides
       error stop 'ERROR: Failed to initialize JR model'
    end if
 
-   write(*, '(A)') ' Altitude      Density        log10(ρ)'
-   write(*, '(A)') ' --------      -------        ---------'
+   write(*, '(A)') ' Altitude      Density               log10(ρ)'
+   write(*, '(A)') ' --------      -------               ---------'
 
    do i = 1, size(test_heights)
       height = test_heights(i)
@@ -72,7 +72,7 @@ program test_density_with_overrides
       density = jr_model%density(height, position, sun_vector, geo_lat, utc_mjd)
 
       write(*, '(F7.1, A, ES14.6, A, F8.4)') &
-         height, ' km   ', density, ' kg/m³   ', log10(density)
+         height, ' km   ', density, ' kg/m^3   ', log10(density)
    end do
 
    call jr_model%destroy()
@@ -102,8 +102,8 @@ program test_density_with_overrides
       error stop 'ERROR: Failed to initialize JR model'
    end if
 
-   write(*, '(A)') ' Altitude      Density        log10(ρ)'
-   write(*, '(A)') ' --------      -------        ---------'
+   write(*, '(A)') ' Altitude      Density               log10(ρ)'
+   write(*, '(A)') ' --------      -------               ---------'
 
    do i = 1, size(test_heights)
       height = test_heights(i)
@@ -112,7 +112,7 @@ program test_density_with_overrides
       density = jr_model%density(height, position, sun_vector, geo_lat, utc_mjd)
 
       write(*, '(F7.1, A, ES14.6, A, F8.4)') &
-         height, ' km   ', density, ' kg/m³   ', log10(density)
+         height, ' km   ', density, ' kg/m^3   ', log10(density)
    end do
 
    call jr_model%destroy()
@@ -142,8 +142,8 @@ program test_density_with_overrides
       error stop 'ERROR: Failed to initialize JR model'
    end if
 
-   write(*, '(A)') ' Altitude      Density        log10(ρ)'
-   write(*, '(A)') ' --------      -------        ---------'
+   write(*, '(A)') ' Altitude      Density               log10(ρ)'
+   write(*, '(A)') ' --------      -------               ---------'
 
    do i = 1, size(test_heights)
       height = test_heights(i)
@@ -152,7 +152,7 @@ program test_density_with_overrides
       density = jr_model%density(height, position, sun_vector, geo_lat, utc_mjd)
 
       write(*, '(F7.1, A, ES14.6, A, F8.4)') &
-         height, ' km   ', density, ' kg/m³   ', log10(density)
+         height, ' km   ', density, ' kg/m^3   ', log10(density)
    end do
 
    call jr_model%destroy()
@@ -182,8 +182,8 @@ program test_density_with_overrides
       error stop 'ERROR: Failed to initialize JR model'
    end if
 
-   write(*, '(A)') ' Altitude      Density        log10(ρ)'
-   write(*, '(A)') ' --------      -------        ---------'
+   write(*, '(A)') ' Altitude      Density               log10(ρ)'
+   write(*, '(A)') ' --------      -------               ---------'
 
    do i = 1, size(test_heights)
       height = test_heights(i)
@@ -192,7 +192,7 @@ program test_density_with_overrides
       density = jr_model%density(height, position, sun_vector, geo_lat, utc_mjd)
 
       write(*, '(F7.1, A, ES14.6, A, F8.4)') &
-         height, ' km   ', density, ' kg/m³   ', log10(density)
+         height, ' km   ', density, ' kg/m^3   ', log10(density)
    end do
 
    call jr_model%destroy()
