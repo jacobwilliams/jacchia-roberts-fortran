@@ -598,7 +598,7 @@ contains
 !---------------------------------------------------------------------------
 !>
 !  Original version of root-finding routine using the `roots` subroutine.
-!  **This method has severe numerical instability issues and should not be used.**
+!  This is based on the routine from GMAT.
 !
 !### Problems with this method:
 !
@@ -638,7 +638,6 @@ contains
 !  Achieves ~1e-8 accuracy for all roots across all physical temperatures.
 !
 !@note Retained here for reference, testing, and demonstration of the bug.
-!      DO NOT USE in production code.
 
    pure subroutine find_cstar_roots_original(c_star, tx, root1, root2, x_root, y_root)
 
