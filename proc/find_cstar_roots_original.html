@@ -1,0 +1,816 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Jacchia-Roberts atmosphere model in Modern Fortran">
+    <meta name="author" content="Jacob Williams" >
+    <link rel="icon" href="../favicon.png">
+
+    <title>find_cstar_roots_original &ndash; jacchia-roberts-fortran</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../css/brands.min.css" rel="stylesheet">
+    <link href="../css/regular.min.css" rel="stylesheet">
+    <link href="../css/solid.min.css" rel="stylesheet">
+    <link href="../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="../css/local.css" rel="stylesheet">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <script src="../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../index.html">jacchia-roberts-fortran </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                  <li class="nav-item">
+                    <a class="nav-link" href="../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <div class="row">
+    <h1>find_cstar_roots_original
+      <small>Subroutine</small>
+      
+    </h1>
+      <div class="container p-2 mb-4 bg-light border rounded-3">
+    <div class="row align-items-center justify-content-between" id="info-bar">
+      <div class="col">
+        <ul class="list-inline" style="margin-bottom:0px;display:inline">
+
+            <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
+              <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
+                 title=" 3.6% of total for procedures.">27 statements</a>
+            </li>
+
+            <li class="list-inline-item" id="source-file">
+              <i class="fa fa-code"></i>
+              <a href="../src/jacchia_roberts_module.f90"> Source File</a>
+            </li>
+        </ul>
+      </div>
+      <div class="col">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='../sourcefile/jacchia_roberts_module.f90.html'>jacchia_roberts_module.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/jacchia_roberts_module.html'>jacchia_roberts_module</a></li>
+            <li class="breadcrumb-item active" aria-current="page">find_cstar_roots_original</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Enable Bootstrap tooltips
+    (function () {
+      const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+      const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    })();
+  </script>
+
+  </div>
+  
+  <div class="row">
+    <div class="col-md-3 hidden-xs hidden-sm visible-md visible-lg">
+      <div id="sidebar">
+      <h3>Contents</h3>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    <div class="card card-primary">
+      <div class="card-header text-left"><h3 class="card-title">Source Code</h3></div>
+      <div class="list-group">
+        <a class="list-group-item" href="../proc/find_cstar_roots_original.html#src">find_cstar_roots_original</a>
+      </div>
+    </div>
+
+
+  </div>
+
+    </div>
+    
+    <div class="col-md-9" id='text'>
+    <h2>public pure subroutine find_cstar_roots_original(c_star, tx, root1, root2, x_root, y_root)  
+</h2>
+        <div class="card mb-4">
+      <h3 class="card-header card-title bg-light">Uses</h3>
+      <div class="card-body">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+              <ul class="list-inline">
+                  <li class="list-inline-item"><a href='../module/jacchia_roberts_utilities.html'>jacchia_roberts_utilities</a></li>
+              </ul>
+            </li>
+            <li class="list-group-item">
+              <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: proc~~find_cstar_roots_original~~UsesGraph Pages: 1 -->
+<svg id="procfind_cstar_roots_originalUsesGraph" width="616pt" height="32pt"
+ viewBox="0.00 0.00 616.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~find_cstar_roots_original~~UsesGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<title>proc~~find_cstar_roots_original~~UsesGraph</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 612,-28 612,4 -4,4"/>
+<!-- proc~find_cstar_roots_original -->
+<g id="proc~~find_cstar_roots_original~~UsesGraph_node1" class="node">
+<title>proc~find_cstar_roots_original</title>
+<polygon fill="none" stroke="black" points="608,-24 466,-24 466,0 608,0 608,-24"/>
+<text text-anchor="middle" x="537" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">find_cstar_roots_original</text>
+</g>
+<!-- module~jacchia_roberts_utilities -->
+<g id="proc~~find_cstar_roots_original~~UsesGraph_node2" class="node">
+<title>module~jacchia_roberts_utilities</title>
+<g id="a_proc~~find_cstar_roots_original~~UsesGraph_node2"><a xlink:href="../module/jacchia_roberts_utilities.html" xlink:title="jacchia_roberts_utilities">
+<polygon fill="#337ab7" stroke="#337ab7" points="430,-24 293,-24 293,0 430,0 430,-24"/>
+<text text-anchor="middle" x="361.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">jacchia_roberts_utilities</text>
+</a>
+</g>
+</g>
+<!-- proc~find_cstar_roots_original&#45;&gt;module~jacchia_roberts_utilities -->
+<g id="proc~~find_cstar_roots_original~~UsesGraph_edge1" class="edge">
+<title>proc~find_cstar_roots_original&#45;&gt;module~jacchia_roberts_utilities</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M465.93,-12C457.41,-12 448.67,-12 440.06,-12"/>
+<polygon fill="#000000" stroke="#000000" points="440.02,-8.5 430.02,-12 440.02,-15.5 440.02,-8.5"/>
+</g>
+<!-- module~jacchia_roberts_kinds -->
+<g id="proc~~find_cstar_roots_original~~UsesGraph_node3" class="node">
+<title>module~jacchia_roberts_kinds</title>
+<g id="a_proc~~find_cstar_roots_original~~UsesGraph_node3"><a xlink:href="../module/jacchia_roberts_kinds.html" xlink:title="jacchia_roberts_kinds">
+<polygon fill="#337ab7" stroke="#337ab7" points="257,-24 130,-24 130,0 257,0 257,-24"/>
+<text text-anchor="middle" x="193.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">jacchia_roberts_kinds</text>
+</a>
+</g>
+</g>
+<!-- module~jacchia_roberts_utilities&#45;&gt;module~jacchia_roberts_kinds -->
+<g id="proc~~find_cstar_roots_original~~UsesGraph_edge2" class="edge">
+<title>module~jacchia_roberts_utilities&#45;&gt;module~jacchia_roberts_kinds</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M292.98,-12C284.56,-12 275.91,-12 267.41,-12"/>
+<polygon fill="#000000" stroke="#000000" points="267.14,-8.5 257.14,-12 267.14,-15.5 267.14,-8.5"/>
+</g>
+<!-- iso_fortran_env -->
+<g id="proc~~find_cstar_roots_original~~UsesGraph_node4" class="node">
+<title>iso_fortran_env</title>
+<g id="a_proc~~find_cstar_roots_original~~UsesGraph_node4"><a xlink:href="http://fortranwiki.org/fortran/show/iso_fortran_env" xlink:title="iso_fortran_env">
+<polygon fill="#337ab7" stroke="#337ab7" points="94,-24 0,-24 0,0 94,0 94,-24"/>
+<text text-anchor="middle" x="47" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">iso_fortran_env</text>
+</a>
+</g>
+</g>
+<!-- module~jacchia_roberts_kinds&#45;&gt;iso_fortran_env -->
+<g id="proc~~find_cstar_roots_original~~UsesGraph_edge3" class="edge">
+<title>module~jacchia_roberts_kinds&#45;&gt;iso_fortran_env</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M129.96,-12C121.39,-12 112.64,-12 104.19,-12"/>
+<polygon fill="#000000" stroke="#000000" points="104.08,-8.5 94.08,-12 104.08,-15.5 104.08,-8.5"/>
+</g>
+</g>
+</svg>
+</div>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#UsesGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="UsesGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="518pt" height="32pt"
+ viewBox="0.00 0.00 517.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 513.5,-28 513.5,4 -4,4"/>
+<!-- Module -->
+<g id="node1" class="node">
+<title>Module</title>
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-24 0,-24 0,0 54,0 54,-24"/>
+<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
+</g>
+<!-- Submodule -->
+<g id="node2" class="node">
+<title>Submodule</title>
+<polygon fill="#5bc0de" stroke="#5bc0de" points="145.5,-24 72.5,-24 72.5,0 145.5,0 145.5,-24"/>
+<text text-anchor="middle" x="109" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
+</g>
+<!-- Subroutine -->
+<g id="node3" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="234,-24 164,-24 164,0 234,0 234,-24"/>
+<text text-anchor="middle" x="199" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node4" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="310,-24 252,-24 252,0 310,0 310,-24"/>
+<text text-anchor="middle" x="281" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+</g>
+<!-- Program -->
+<g id="node5" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="386,-24 328,-24 328,0 386,0 386,-24"/>
+<text text-anchor="middle" x="357" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node6" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="509.5,-24 404.5,-24 404.5,0 509.5,0 509.5,-24"/>
+<text text-anchor="middle" x="457" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+<p>Solid arrows point from a submodule to the (sub)module which it is
+descended from. Dashed arrows point from a module or program unit to 
+modules which it uses.
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
+            </li>
+        </ul>
+      </div>
+    </div>
+
+
+    <p>Original version of root-finding routine using the <code>roots</code> subroutine.
+  This is based on the routine from GMAT.</p>
+<h3>Problems with this method:</h3>
+<ol>
+<li>
+<p><strong>Sequential deflation accumulates errors</strong>: After finding each real root,
+     the polynomial is deflated (reduced in degree). Each deflation introduces
+     numerical errors that compound, corrupting the polynomial coefficients.</p>
+</li>
+<li>
+<p><strong>Massive polynomial errors</strong>: While the real roots (root1, root2) found
+     first are accurate (~1e-8 error), the complex conjugate pair computed from
+     the twice-deflated polynomial has errors of 50-700 (absolute polynomial
+     evaluation), despite the <code>roots</code> routine converging.</p>
+</li>
+<li>
+<p><strong>roots_2 errors of 70-76%</strong>: At extreme temperatures (Tx ~ 300 K or
+     Tx ~ 550-600 K), the quantity roots_2 = x_root² + y_root² differs by
+     70-76% from the correct value due to deflation corruption.</p>
+</li>
+<li>
+<p><strong>Severe density errors in 100-125 km range</strong>: The incorrect complex roots
+     propagate through exponential terms in rho_100 and rho_125, causing density
+     overestimation by factors of 2-22× at low solar activity (F10.7 ~ 50).
+     At 125 km, the old method predicts 22× higher density than reality.</p>
+</li>
+<li>
+<p><strong>Discontinuity at 125 km boundary</strong>: The density jumps by 37× in 5 km
+     (125-&gt;130 km) because rho_high (&gt;125 km) doesn't use complex roots and
+     produces correct values, while rho_125 uses corrupted roots.</p>
+</li>
+</ol>
+<h3>Why the real roots still work:</h3>
+<p>The real roots are found BEFORE deflation corrupts the polynomial, so they
+  remain accurate. Only the complex roots, found last from the twice-deflated
+  polynomial, are severely corrupted.</p>
+<h3>Solution:</h3>
+<p>Use <a href="../proc/find_cstar_roots.html">find_cstar_roots</a> instead, which uses simultaneous Newton-Raphson with
+  temperature-dependent initial guesses (Kuga/INPE 1985) and computes complex
+  roots analytically via Vieta's formulas, avoiding deflation entirely.
+  Achieves ~1e-8 accuracy for all roots across all physical temperatures.</p>
+<div class="alert alert-info">
+<p class="alert-title h4">Note</p>
+<p>Retained here for reference, testing, and demonstration of the bug.</p>
+</div>
+
+
+    <h3>Arguments</h3>
+        <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-c_star~3"></span>
+              real(kind=dp),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>c_star</strong>(5)</td>
+            <td>
+                <p>Quartic polynomial coefficients <code>c_star(1)..c_star(5)</code> [note: modified in-place by deflation]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tx~3"></span>
+              real(kind=dp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>tx</strong></td>
+            <td>
+                <p>Temperature at 125 km (K) [not used here]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-root1~3"></span>
+              real(kind=dp),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>root1</strong></td>
+            <td>
+                <p>Larger real root (&gt; 125 km)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-root2~3"></span>
+              real(kind=dp),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>root2</strong></td>
+            <td>
+                <p>Smaller real root (&lt; 100 km)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x_root~3"></span>
+              real(kind=dp),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>x_root</strong></td>
+            <td>
+                <p>Real part of complex conjugate root pair</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-y_root~3"></span>
+              real(kind=dp),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>y_root</strong></td>
+            <td>
+                <p>Imaginary part of complex conjugate root pair</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <br>
+    <div class="card">
+      <div class="card-header">
+  <h3 class="card-title">Calls</h3>
+      </div>
+      <div class="card-body">
+  <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: proc~~find_cstar_roots_original~~CallsGraph Pages: 1 -->
+<svg id="procfind_cstar_roots_originalCallsGraph" width="301pt" height="74pt"
+ viewBox="0.00 0.00 301.00 74.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~find_cstar_roots_original~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 70)">
+<title>proc~~find_cstar_roots_original~~CallsGraph</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-70 297,-70 297,4 -4,4"/>
+<!-- proc~find_cstar_roots_original -->
+<g id="proc~~find_cstar_roots_original~~CallsGraph_node1" class="node">
+<title>proc~find_cstar_roots_original</title>
+<polygon fill="none" stroke="black" points="142,-45 0,-45 0,-21 142,-21 142,-45"/>
+<text text-anchor="middle" x="71" y="-30.6" font-family="Helvetica,sans-Serif" font-size="10.50">find_cstar_roots_original</text>
+</g>
+<!-- proc~deflate_polynomial -->
+<g id="proc~~find_cstar_roots_original~~CallsGraph_node2" class="node">
+<title>proc~deflate_polynomial</title>
+<g id="a_proc~~find_cstar_roots_original~~CallsGraph_node2"><a xlink:href="../proc/deflate_polynomial.html" xlink:title="deflate_polynomial">
+<polygon fill="#d9534f" stroke="#d9534f" points="293,-66 178,-66 178,-42 293,-42 293,-66"/>
+<text text-anchor="middle" x="235.5" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">deflate_polynomial</text>
+</a>
+</g>
+</g>
+<!-- proc~find_cstar_roots_original&#45;&gt;proc~deflate_polynomial -->
+<g id="proc~~find_cstar_roots_original~~CallsGraph_edge1" class="edge">
+<title>proc~find_cstar_roots_original&#45;&gt;proc~deflate_polynomial</title>
+<path fill="none" stroke="#000000" d="M142.33,-42.09C150.75,-43.18 159.32,-44.28 167.68,-45.37"/>
+<polygon fill="#000000" stroke="#000000" points="167.39,-48.86 177.76,-46.67 168.29,-41.91 167.39,-48.86"/>
+</g>
+<!-- proc~roots -->
+<g id="proc~~find_cstar_roots_original~~CallsGraph_node3" class="node">
+<title>proc~roots</title>
+<g id="a_proc~~find_cstar_roots_original~~CallsGraph_node3"><a xlink:href="../proc/roots.html" xlink:title="roots">
+<polygon fill="#d9534f" stroke="#d9534f" points="262.5,-24 208.5,-24 208.5,0 262.5,0 262.5,-24"/>
+<text text-anchor="middle" x="235.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">roots</text>
+</a>
+</g>
+</g>
+<!-- proc~find_cstar_roots_original&#45;&gt;proc~roots -->
+<g id="proc~~find_cstar_roots_original~~CallsGraph_edge2" class="edge">
+<title>proc~find_cstar_roots_original&#45;&gt;proc~roots</title>
+<path fill="none" stroke="#000000" d="M142.33,-23.91C161.47,-21.44 181.43,-18.86 197.86,-16.73"/>
+<polygon fill="#000000" stroke="#000000" points="198.64,-20.16 208.11,-15.41 197.74,-13.22 198.64,-20.16"/>
+</g>
+</g>
+</svg>
+</div>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#CallsGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="CallsGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="641pt" height="28pt"
+ viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.86 0.86) rotate(0) translate(4 28)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
+<!-- Subroutine -->
+<g id="node1" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
+<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node2" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
+<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+</g>
+<!-- Interface -->
+<g id="node3" class="node">
+<title>Interface</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
+<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+</g>
+<!-- Type Bound Procedure -->
+<g id="node4" class="node">
+<title>Type Bound Procedure</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
+<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+</g>
+<!-- Unknown Procedure Type -->
+<g id="node5" class="node">
+<title>Unknown Procedure Type</title>
+<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
+<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+</g>
+<!-- Program -->
+<g id="node6" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
+<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node7" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
+<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+<p>Solid arrows point from a procedure to one which it calls. Dashed 
+arrows point from an interface to procedures which implement that interface.
+This could include the module procedures in a generic interface or the
+implementation in a submodule of an interface in a parent module.
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+  <h3 class="card-title">Called by</h3>
+      </div>
+      <div class="card-body">
+  <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: proc~~find_cstar_roots_original~~CalledByGraph Pages: 1 -->
+<svg id="procfind_cstar_roots_originalCalledByGraph" width="641pt" height="31pt"
+ viewBox="0.00 0.00 641.00 31.03" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~find_cstar_roots_original~~CalledByGraph" class="graph" transform="scale(0.97 0.97) rotate(0) translate(4 28)">
+<title>proc~~find_cstar_roots_original~~CalledByGraph</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 657,-28 657,4 -4,4"/>
+<!-- proc~find_cstar_roots_original -->
+<g id="proc~~find_cstar_roots_original~~CalledByGraph_node1" class="node">
+<title>proc~find_cstar_roots_original</title>
+<polygon fill="none" stroke="black" points="653,-24 511,-24 511,0 653,0 653,-24"/>
+<text text-anchor="middle" x="582" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">find_cstar_roots_original</text>
+</g>
+<!-- proc~exotherm -->
+<g id="proc~~find_cstar_roots_original~~CalledByGraph_node2" class="node">
+<title>proc~exotherm</title>
+<g id="a_proc~~find_cstar_roots_original~~CalledByGraph_node2"><a xlink:href="../proc/exotherm.html" xlink:title="jacchia_roberts_type%exotherm">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="475,-24 292,-24 292,0 475,0 475,-24"/>
+<text text-anchor="middle" x="383.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">jacchia_roberts_type%exotherm</text>
+</a>
+</g>
+</g>
+<!-- proc~exotherm&#45;&gt;proc~find_cstar_roots_original -->
+<g id="proc~~find_cstar_roots_original~~CalledByGraph_edge1" class="edge">
+<title>proc~exotherm&#45;&gt;proc~find_cstar_roots_original</title>
+<path fill="none" stroke="#000000" d="M475.27,-12C483.78,-12 492.36,-12 500.76,-12"/>
+<polygon fill="#000000" stroke="#000000" points="500.9,-15.5 510.9,-12 500.9,-8.5 500.9,-15.5"/>
+</g>
+<!-- proc~jacchia_roberts_density -->
+<g id="proc~~find_cstar_roots_original~~CalledByGraph_node3" class="node">
+<title>proc~jacchia_roberts_density</title>
+<g id="a_proc~~find_cstar_roots_original~~CalledByGraph_node3"><a xlink:href="../proc/jacchia_roberts_density.html" xlink:title="jacchia_roberts_type%jacchia_roberts_density">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="256,-24 0,-24 0,0 256,0 256,-24"/>
+<text text-anchor="middle" x="128" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">jacchia_roberts_type%jacchia_roberts_density</text>
+</a>
+</g>
+</g>
+<!-- proc~jacchia_roberts_density&#45;&gt;proc~exotherm -->
+<g id="proc~~find_cstar_roots_original~~CalledByGraph_edge2" class="edge">
+<title>proc~jacchia_roberts_density&#45;&gt;proc~exotherm</title>
+<path fill="none" stroke="#000000" d="M256.12,-12C264.73,-12 273.33,-12 281.78,-12"/>
+<polygon fill="#000000" stroke="#000000" points="281.99,-15.5 291.99,-12 281.99,-8.5 281.99,-15.5"/>
+</g>
+</g>
+</svg>
+</div>                <script>
+                  var panprocfind_cstar_roots_originalCalledByGraph = svgPanZoom('#procfind_cstar_roots_originalCalledByGraph',
+                    {zoomEnabled: true, controlIconsEnabled: true, fit: true, center: true,}
+                  );
+                </script>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#CalledByGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="CalledByGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="641pt" height="28pt"
+ viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.86 0.86) rotate(0) translate(4 28)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
+<!-- Subroutine -->
+<g id="node1" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
+<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node2" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
+<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+</g>
+<!-- Interface -->
+<g id="node3" class="node">
+<title>Interface</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
+<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+</g>
+<!-- Type Bound Procedure -->
+<g id="node4" class="node">
+<title>Type Bound Procedure</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
+<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+</g>
+<!-- Unknown Procedure Type -->
+<g id="node5" class="node">
+<title>Unknown Procedure Type</title>
+<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
+<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+</g>
+<!-- Program -->
+<g id="node6" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
+<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node7" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
+<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+<p>Solid arrows point from a procedure to one which it calls. Dashed 
+arrows point from an interface to procedures which implement that interface.
+This could include the module procedures in a generic interface or the
+implementation in a submodule of an interface in a parent module.
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br>
+
+
+    
+    
+
+    
+    
+
+
+
+    
+    <section>
+    <h2><span class="anchor" id="src"></span>Source Code</h2>
+    <div class="hl codehilite"><pre><span></span><span class="w">   </span><span class="k">pure subroutine </span><span class="n">find_cstar_roots_original</span><span class="p">(</span><span class="n">c_star</span><span class="p">,</span><span class="w"> </span><span class="n">tx</span><span class="p">,</span><span class="w"> </span><span class="n">root1</span><span class="p">,</span><span class="w"> </span><span class="n">root2</span><span class="p">,</span><span class="w"> </span><span class="n">x_root</span><span class="p">,</span><span class="w"> </span><span class="n">y_root</span><span class="p">)</span>
+
+<span class="w">      </span><span class="k">use </span><span class="n">jacchia_roberts_utilities</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">roots</span><span class="p">,</span><span class="w"> </span><span class="n">deflate_polynomial</span>
+
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">dp</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">inout</span><span class="p">)</span><span class="w">  </span><span class="kd">::</span><span class="w"> </span><span class="n">c_star</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span><span class="w"> </span><span class="c">!! Quartic polynomial coefficients `c_star(1)..c_star(5)` [note: modified in-place by deflation]</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">dp</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w">  </span><span class="kd">::</span><span class="w"> </span><span class="n">tx</span><span class="w">        </span><span class="c">!! Temperature at 125 km (K) [not used here]</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">dp</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">root1</span><span class="w">     </span><span class="c">!! Larger real root (&gt; 125 km)</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">dp</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">root2</span><span class="w">     </span><span class="c">!! Smaller real root (&lt; 100 km)</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">dp</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">x_root</span><span class="w">    </span><span class="c">!! Real part of complex conjugate root pair</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">dp</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">y_root</span><span class="w">    </span><span class="c">!! Imaginary part of complex conjugate root pair</span>
+
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">dp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">aux</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">      </span><span class="kt">integer</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">na</span>
+
+<span class="w">      </span><span class="n">na</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span>
+
+<span class="w">      </span><span class="c">! Get 1st real root</span>
+<span class="w">      </span><span class="n">aux</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">12</span><span class="mf">5.0_dp</span>
+<span class="w">      </span><span class="n">aux</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_dp</span>
+<span class="w">      </span><span class="k">call </span><span class="n">roots</span><span class="p">(</span><span class="n">c_star</span><span class="p">,</span><span class="w"> </span><span class="n">na</span><span class="p">,</span><span class="w"> </span><span class="n">aux</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="w">      </span><span class="n">root1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">aux</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="w">      </span><span class="k">call </span><span class="n">deflate_polynomial</span><span class="p">(</span><span class="n">c_star</span><span class="p">,</span><span class="w"> </span><span class="n">na</span><span class="p">,</span><span class="w"> </span><span class="n">root1</span><span class="p">,</span><span class="w"> </span><span class="n">c_star</span><span class="p">)</span>
+
+<span class="w">      </span><span class="c">! Get 2nd real root</span>
+<span class="w">      </span><span class="n">aux</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">20</span><span class="mf">0.0_dp</span>
+<span class="w">      </span><span class="n">aux</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_dp</span>
+<span class="w">      </span><span class="k">call </span><span class="n">roots</span><span class="p">(</span><span class="n">c_star</span><span class="p">,</span><span class="w"> </span><span class="n">na</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">aux</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="w">      </span><span class="n">root2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">aux</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="w">      </span><span class="k">call </span><span class="n">deflate_polynomial</span><span class="p">(</span><span class="n">c_star</span><span class="p">,</span><span class="w"> </span><span class="n">na</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">root2</span><span class="p">,</span><span class="w"> </span><span class="n">c_star</span><span class="p">)</span>
+
+<span class="w">      </span><span class="c">! Get remaining complex roots</span>
+<span class="w">      </span><span class="n">aux</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="mf">0.0_dp</span>
+<span class="w">      </span><span class="n">aux</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">12</span><span class="mf">5.0_dp</span>
+<span class="w">      </span><span class="k">call </span><span class="n">roots</span><span class="p">(</span><span class="n">c_star</span><span class="p">,</span><span class="w"> </span><span class="n">na</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">aux</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="w">      </span><span class="n">x_root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">aux</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="w">      </span><span class="n">y_root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">abs</span><span class="p">(</span><span class="n">aux</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+
+<span class="w">   </span><span class="k">end subroutine </span><span class="n">find_cstar_roots_original</span>
+</pre></div>
+
+    </section>
+    <br>
+    
+    </div>
+  </div>
+
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              jacchia-roberts-fortran
+ was developed by Jacob Williams<br>              &copy; 2026 
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+            </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>

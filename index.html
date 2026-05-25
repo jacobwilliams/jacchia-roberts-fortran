@@ -1,0 +1,282 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Jacchia-Roberts atmosphere model in Modern Fortran">
+    <meta name="author" content="Jacob Williams" >
+    <link rel="icon" href="./favicon.png">
+
+    <title> jacchia-roberts-fortran </title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="./css/fontawesome.min.css" rel="stylesheet">
+    <link href="./css/brands.min.css" rel="stylesheet">
+    <link href="./css/regular.min.css" rel="stylesheet">
+    <link href="./css/solid.min.css" rel="stylesheet">
+    <link href="./css/v4-font-face.min.css" rel="stylesheet">
+    <link href="./css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="./css/local.css" rel="stylesheet">
+    <link href="./css/pygments.css" rel="stylesheet">
+    <script src="./js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="./index.html">jacchia-roberts-fortran </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                  <li class="nav-item">
+                    <a class="nav-link" href="./lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="./lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="./lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="./lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="./search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <!-- Main component for a primary marketing message or call to action -->
+    <div class="p-5 mb-4 bg-light border rounded-3" id="jumbotron">
+      <p>Jacchia-Roberts atmosphere model in Modern Fortran</p>
+        <p> Find us on&hellip;</p>
+      <p>
+        <a class="btn btn-lg btn-primary" href="https://github.com/jacobwilliams/jacchia-roberts-fortran" role="button">GitHub</a>
+        
+        
+        
+        
+      </p>
+    </div>
+
+      <div class="row" id='text'>
+        <div class=col-md-8>
+          <h1>jacchia-roberts-fortran</h1>
+          <p>A modern Fortran implementation of the Jacchia-Roberts atmospheric density model.</p>
+<h2>Status</h2>
+<p><a href="https://github.com/topics/fortran"><img alt="Language" src="https://img.shields.io/badge/-Fortran-734f96?logo=fortran&amp;logoColor=white"></a>
+<a href="https://github.com/jacobwilliams/jacchia-roberts-fortran/actions"><img alt="CI Status" src="https://github.com/jacobwilliams/jacchia-roberts-fortran/actions/workflows/CI.yml/badge.svg"></a>
+<a href="https://github.com/jacobwilliams/jacchia-roberts-fortran/releases/latest"><img alt="GitHub release" src="https://img.shields.io/github/release/jacobwilliams/jacchia-roberts-fortran.svg?style=plastic"></a></p>
+<h2>Overview</h2>
+<p>The Jacchia-Roberts atmosphere model computes atmospheric density for altitudes between 100 km and 2500 km. This model is widely used in satellite orbit determination and prediction applications. The model automatically retrieves F10.7 solar flux and Kp geomagnetic indices from a user-specified CSSI Space Weather file.</p>
+<h2>Building the Code</h2>
+<p>This project uses the Fortran Package Manager (fpm) for building:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># activate the environment</span>
+pixi<span class="w"> </span>shell
+
+<span class="c1"># Build the library and test</span>
+fpm<span class="w"> </span>build
+
+<span class="c1"># Run the test program</span>
+fpm<span class="w"> </span><span class="nb">test</span>
+
+<span class="c1"># Build with specific compiler flags</span>
+fpm<span class="w"> </span>build<span class="w"> </span>--profile<span class="w"> </span>release
+</code></pre></div>
+
+<p>By default, the library is built with double precision (<code>real64</code>) real values. Explicitly specifying the real kind can be done using the following processor flags:</p>
+<table>
+<thead>
+<tr>
+<th>Preprocessor flag</th>
+<th>Kind</th>
+<th>Number of bytes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>REAL32</code></td>
+<td><code>real(kind=real32)</code></td>
+<td>4</td>
+</tr>
+<tr>
+<td><code>REAL64</code></td>
+<td><code>real(kind=real64)</code></td>
+<td>8</td>
+</tr>
+<tr>
+<td><code>REAL128</code></td>
+<td><code>real(kind=real128)</code></td>
+<td>16</td>
+</tr>
+</tbody>
+</table>
+<p>For example, to build a single precision version of the library, use:</p>
+<div class="codehilite"><pre><span></span><code>fpm build --profile release --flag &quot;-DREAL32&quot;
+</code></pre></div>
+
+<p>To use this as a dependency in another fpm project:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">[dependencies]</span>
+<span class="n">jacchia-roberts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">git</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;https://github.com/jacobwilliams/jacchia-roberts-fortran.git&quot;</span><span class="w"> </span><span class="p">}</span>
+</code></pre></div>
+
+<h2>Example</h2>
+<p>The following example program shows how to use the model:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">program </span><span class="n">example</span>
+
+<span class="k">use </span><span class="n">jacchia_roberts_module</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">jacchia_roberts_type</span>
+<span class="k">use </span><span class="n">jacchia_roberts_kinds</span><span class="p">,</span><span class="w">  </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">ip</span><span class="p">,</span><span class="w"> </span><span class="n">dp</span>
+
+<span class="k">implicit none</span>
+
+<span class="k">type</span><span class="p">(</span><span class="n">jacchia_roberts_type</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">jr</span>
+<span class="kt">integer</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">status</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">dp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">density</span>
+
+<span class="c">! example inputs:</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">dp</span><span class="p">),</span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">rad_earth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">635</span><span class="mf">6.766_dp</span><span class="w"> </span><span class="c">! Earth polar radius (km)</span>
+<span class="kt">character</span><span class="p">(</span><span class="nb">len</span><span class="o">=*</span><span class="p">),</span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">sw_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;data/SpaceWeather-All-v1.2.txt&#39;</span><span class="w"> </span><span class="c">! space weather file to load</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">dp</span><span class="p">),</span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">utc_mjd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5921</span><span class="mf">5.5_dp</span><span class="w"> </span><span class="c">! MJD: Jan 1, 2021 12:00 UTC</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">dp</span><span class="p">),</span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">alt_km</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">20</span><span class="mf">0.0_dp</span><span class="w"> </span><span class="c">! geodetic altitude (km)</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">dp</span><span class="p">),</span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">lat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="mf">0.0_dp</span><span class="w"> </span><span class="c">! geodetic latitude (deg)</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">dp</span><span class="p">),</span><span class="k">dimension</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">r</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">700</span><span class="mf">0.0_dp</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0_dp</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0_dp</span><span class="p">]</span><span class="w"> </span><span class="c">! spacecraft position vector (km)</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">dp</span><span class="p">),</span><span class="k">dimension</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">sun</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">1.0_dp</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0_dp</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0_dp</span><span class="p">]</span><span class="w"> </span><span class="c">! sun direction unit vector</span>
+
+<span class="c">! initialize the model:</span>
+<span class="k">call </span><span class="n">jr</span><span class="p">%</span><span class="n">initialize</span><span class="p">(</span><span class="n">rad_earth</span><span class="p">,</span><span class="w"> </span><span class="n">filename</span><span class="o">=</span><span class="n">sw_file</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">)</span>
+
+<span class="c">! compute the density:</span>
+<span class="n">density</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">jr</span><span class="p">%</span><span class="n">density</span><span class="p">(</span><span class="n">alt_km</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">,</span><span class="w"> </span><span class="n">sun_vector</span><span class="p">,</span><span class="w"> </span><span class="n">lat</span><span class="p">,</span><span class="w"> </span><span class="n">utc_mjd</span><span class="p">)</span>
+
+<span class="k">end program </span><span class="n">example</span>
+</code></pre></div>
+
+<h2>Documentation</h2>
+<p>The latest API documentation can be found <a href="https://jacobwilliams.github.io/jacchia-roberts-fortran/">here</a>. This was generated from the source code using <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>.</p>
+<h2>References</h2>
+<ol>
+<li>Roberts, C. E., Jr., "<a href="https://ui.adsabs.harvard.edu/scan/manifest/1971CeMec...4..368R">An Analytic Model for Upper Atmosphere Densities Based Upon Jacchia's 1970 Models</a>", <em>Celestial Mechanics</em>, Vol. 4, pp. 368-377, 1971.</li>
+<li>Jacchia, L. G., "<a href="https://articles.adsabs.harvard.edu/pdf/1970SAOSR.313.....J">New Static Models of the Thermosphere and Exosphere with Empirical Temperature Profiles</a>", <em>Smithsonian Astrophysical Observatory Special Report No. 313</em>, 1970.</li>
+<li>Vallado, D. A., "Fundamentals of Astrodynamics and Applications", 4th Edition, Microcosm Press, 2013.</li>
+<li><a href="https://github.com/nasa/GMAT">GMAT</a> -- The fortran code is based on the C++ code from here</li>
+<li><a href="https://celestrak.org/SpaceData/">CelesTrak</a> -- Source of space weather files.</li>
+</ol>
+        </div>
+          <div class="col-md-4">
+            <div class="card card-body bg-light">
+              <h2 class="card-title">Developer Info</h2>
+              <h4 class="card-text">Jacob Williams</h4>
+              <p class="card-text"></p>
+                <div class="text-center"><div class="btn-group" role="group">
+                    
+                    <a class="btn btn-lg btn-primary" href="https://github.com/jacobwilliams"><i class="fa fa-github fa-lg"></i></a>
+                    
+                    
+                    
+                    
+                    
+                    
+                </div></div>
+            </div>
+          </div>
+      </div>
+        <div class="row">
+          <hr>
+          <div class="col-xs-6 col-sm-3">
+            <div>
+              <h3>Source Files</h3>
+              <ul><li><a href='sourcefile/jacchia_roberts_kinds.f90.html'>jacchia_roberts_kinds.F90</a></li><li><a href='sourcefile/jacchia_roberts_module.f90.html'>jacchia_roberts_module.f90</a></li><li><a href='sourcefile/jacchia_roberts_utilities.f90.html'>jacchia_roberts_utilities.f90</a></li><li><a href='sourcefile/space_weather_module.f90.html'>space_weather_module.f90</a></li></ul>
+            </div>
+            <div>
+              <ul>
+                <li><a href="./lists/files.html"><em>All source files&hellip;</em></a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-xs-6 col-sm-3">
+            <div>
+              <h3>Modules</h3>
+              <ul><li><a href='module/jacchia_roberts_kinds.html'>jacchia_roberts_kinds</a></li><li><a href='module/jacchia_roberts_module.html'>jacchia_roberts_module</a></li><li><a href='module/jacchia_roberts_utilities.html'>jacchia_roberts_utilities</a></li><li><a href='module/space_weather_module.html'>space_weather_module</a></li></ul>
+            </div>
+            <div>
+              <ul>
+                <li><a href="./lists/modules.html"><em>All modules&hellip;</em></a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-xs-6 col-sm-3">
+            <div>
+              <h3>Procedures</h3>
+              <ul><li><a href='proc/copy_record.html'>copy_record</a></li><li><a href='proc/date_to_mjd.html'>date_to_mjd</a></li><li><a href='proc/deflate_polynomial.html'>deflate_polynomial</a></li><li><a href='proc/exotherm.html'>exotherm</a></li><li><a href='proc/find_cstar_roots.html'>find_cstar_roots</a></li><li><a href='proc/find_cstar_roots_original.html'>find_cstar_roots_original</a></li><li><a href='proc/jacchia_roberts_density.html'>jacchia_roberts_density</a></li><li><a href='proc/jr_cleanup.html'>jr_cleanup</a></li><li><a href='proc/jr_init.html'>jr_init</a></li><li><a href='proc/julian_day.html'>julian_day</a></li></ul>
+            </div>
+            <div>
+              <ul>
+                <li><a href="./lists/procedures.html"><em>All procedures&hellip;</em></a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-xs-6 col-sm-3">
+            <div>
+              <h3>Derived Types</h3>
+              <ul><li><a href='type/flux_data_type.html'>flux_data_type</a></li><li><a href='type/geoparms_type.html'>geoparms_type</a></li><li><a href='type/jacchia_roberts_type.html'>jacchia_roberts_type</a></li><li><a href='type/sw_data_type.html'>sw_data_type</a></li></ul>
+            </div>
+            <div>
+              <ul>
+                <li><a href="./lists/types.html"><em>All derived types&hellip;</em></a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              jacchia-roberts-fortran
+ was developed by Jacob Williams<br>              &copy; 2026 
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+            </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>

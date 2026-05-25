@@ -1,0 +1,2448 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Jacchia-Roberts atmosphere model in Modern Fortran">
+    <meta name="author" content="Jacob Williams" >
+    <link rel="icon" href="../favicon.png">
+
+    <title>jacchia_roberts_module &ndash; jacchia-roberts-fortran</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../css/brands.min.css" rel="stylesheet">
+    <link href="../css/regular.min.css" rel="stylesheet">
+    <link href="../css/solid.min.css" rel="stylesheet">
+    <link href="../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="../css/local.css" rel="stylesheet">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <script src="../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../index.html">jacchia-roberts-fortran </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                  <li class="nav-item">
+                    <a class="nav-link" href="../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <div class="row">
+    <h1>jacchia_roberts_module
+      <small>Module</small>
+      
+    </h1>
+      <div class="container p-2 mb-4 bg-light border rounded-3">
+    <div class="row align-items-center justify-content-between" id="info-bar">
+      <div class="col">
+        <ul class="list-inline" style="margin-bottom:0px;display:inline">
+
+            <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
+              <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
+                 title="62.8% of total for modules and submodules.">549 statements</a>
+            </li>
+
+            <li class="list-inline-item" id="source-file">
+              <i class="fa fa-code"></i>
+              <a href="../src/jacchia_roberts_module.f90"> Source File</a>
+            </li>
+        </ul>
+      </div>
+      <div class="col">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='../sourcefile/jacchia_roberts_module.f90.html'>jacchia_roberts_module.f90</a></li>
+            <li class="breadcrumb-item active" aria-current="page">jacchia_roberts_module</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Enable Bootstrap tooltips
+    (function () {
+      const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+      const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    })();
+  </script>
+
+  </div>
+
+  <div class="row">
+    <div class="col-md-3">
+        <div id="sidebar">
+      <h3>Contents</h3>
+  
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#vars-0"
+         aria-expanded="false" aria-controls="vars-0">
+         <h4 class="card-header bg-primary text-white">Variables</h4>
+      </a>
+      <div id="vars-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../module/jacchia_roberts_module.html#variable-pi">PI</a>
+            <a class="list-group-item" href="../module/jacchia_roberts_module.html#variable-rad_per_deg">RAD_PER_DEG</a>
+            <a class="list-group-item" href="../module/jacchia_roberts_module.html#variable-rho_zero">RHO_ZERO</a>
+            <a class="list-group-item" href="../module/jacchia_roberts_module.html#variable-tzero">TZERO</a>
+            <a class="list-group-item" href="../module/jacchia_roberts_module.html#variable-g_zero">G_ZERO</a>
+            <a class="list-group-item" href="../module/jacchia_roberts_module.html#variable-gas_con">GAS_CON</a>
+            <a class="list-group-item" href="../module/jacchia_roberts_module.html#variable-avogadro">AVOGADRO</a>
+            <a class="list-group-item" href="../module/jacchia_roberts_module.html#variable-nominalkp">nominalKp</a>
+            <a class="list-group-item" href="../module/jacchia_roberts_module.html#variable-nominalf107">nominalF107</a>
+            <a class="list-group-item" href="../module/jacchia_roberts_module.html#variable-nominalf107a">nominalF107a</a>
+            <a class="list-group-item" href="../module/jacchia_roberts_module.html#variable-con_c">CON_C</a>
+            <a class="list-group-item" href="../module/jacchia_roberts_module.html#variable-con_l">CON_L</a>
+            <a class="list-group-item" href="../module/jacchia_roberts_module.html#variable-mzero">MZERO</a>
+            <a class="list-group-item" href="../module/jacchia_roberts_module.html#variable-m_con">M_CON</a>
+            <a class="list-group-item" href="../module/jacchia_roberts_module.html#variable-s_con">S_CON</a>
+            <a class="list-group-item" href="../module/jacchia_roberts_module.html#variable-s_beta">S_BETA</a>
+            <a class="list-group-item" href="../module/jacchia_roberts_module.html#variable-omega">OMEGA</a>
+            <a class="list-group-item" href="../module/jacchia_roberts_module.html#variable-zeta_con">ZETA_CON</a>
+            <a class="list-group-item" href="../module/jacchia_roberts_module.html#variable-mol_mass">MOL_MASS</a>
+            <a class="list-group-item" href="../module/jacchia_roberts_module.html#variable-num_dens">NUM_DENS</a>
+            <a class="list-group-item" href="../module/jacchia_roberts_module.html#variable-con_den">CON_DEN</a>
+        </div>
+      </div>
+    </div>
+
+  
+  
+  
+  
+  
+  
+  
+  
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#types-0"
+         aria-expanded="false" aria-controls="types-0">
+         <h4 class="card-header bg-primary text-white">Derived Types</h4>
+      </a>
+      <div id="types-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../module/jacchia_roberts_module.html#type-geoparms_type">geoparms_type</a>
+            <a class="list-group-item" href="../module/jacchia_roberts_module.html#type-jacchia_roberts_type">jacchia_roberts_type</a>
+        </div>
+      </div>
+    </div>
+
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#funcs-0"
+         aria-expanded="false" aria-controls="funcs-0">
+         <h4 class="card-header bg-primary text-white">Functions</h4>
+      </a>
+      <div id="funcs-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../module/jacchia_roberts_module.html#proc-parms_to_temp">parms_to_temp</a>
+            <a class="list-group-item" href="../module/jacchia_roberts_module.html#proc-jacchia_roberts_density">jacchia_roberts_density</a>
+            <a class="list-group-item" href="../module/jacchia_roberts_module.html#proc-exotherm">exotherm</a>
+            <a class="list-group-item" href="../module/jacchia_roberts_module.html#proc-rho_100">rho_100</a>
+            <a class="list-group-item" href="../module/jacchia_roberts_module.html#proc-rho_125">rho_125</a>
+            <a class="list-group-item" href="../module/jacchia_roberts_module.html#proc-rho_high">rho_high</a>
+            <a class="list-group-item" href="../module/jacchia_roberts_module.html#proc-rho_cor">rho_cor</a>
+        </div>
+      </div>
+    </div>
+
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#subs-0"
+         aria-expanded="false" aria-controls="subs-0">
+         <h4 class="card-header bg-primary text-white">Subroutines</h4>
+      </a>
+      <div id="subs-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../module/jacchia_roberts_module.html#proc-jr_init">jr_init</a>
+            <a class="list-group-item" href="../module/jacchia_roberts_module.html#proc-jr_cleanup">jr_cleanup</a>
+            <a class="list-group-item" href="../module/jacchia_roberts_module.html#proc-find_cstar_roots">find_cstar_roots</a>
+            <a class="list-group-item" href="../module/jacchia_roberts_module.html#proc-find_cstar_roots_original">find_cstar_roots_original</a>
+            <a class="list-group-item" href="../module/jacchia_roberts_module.html#proc-prepare_flux_data">prepare_flux_data</a>
+        </div>
+      </div>
+    </div>
+
+  
+  
+  
+  
+  
+  
+  
+
+
+  </div>
+
+    </div>
+
+    <div class="col-md-9" id='text'>
+      <p>Jacchia-Roberts atmospheric density model.</p>
+<p>The Jacchia-Roberts atmosphere model is valid for altitudes from
+   100 km to 2500 km.</p>
+<h3>Reference:</h3>
+<ul>
+<li>Roberts, C. E., Jr., "An Analytic Model for Upper Atmosphere Densities
+     Based Upon Jacchia's 1970 Models", Celestial Mechanics, Vol. 4,
+     pp. 368-377, 1971.</li>
+<li>See GMAT: General Mission Analysis Tool files:
+     <code>JacchiaRobertsAtmosphere.cpp</code> and <code>SolarFluxReader.cpp</code>.</li>
+<li>See also: https://github.com/jacobwilliams/INPE-atmosphere-models</li>
+</ul>
+<br>          <div class="card mb-4">
+      <h3 class="card-header card-title bg-light">Uses</h3>
+      <div class="card-body">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+              <ul class="list-inline">
+                  <li class="list-inline-item"><a href='jacchia_roberts_kinds.html'>jacchia_roberts_kinds</a></li>
+                  <li class="list-inline-item"><a href='space_weather_module.html'>space_weather_module</a></li>
+              </ul>
+            </li>
+            <li class="list-group-item">
+              <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: module~~jacchia_roberts_module~~UsesGraph Pages: 1 -->
+<svg id="modulejacchia_roberts_moduleUsesGraph" width="641pt" height="49pt"
+ viewBox="0.00 0.00 641.00 48.89" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="module~~jacchia_roberts_module~~UsesGraph" class="graph" transform="scale(0.81 0.81) rotate(0) translate(4 56.1)">
+<title>module~~jacchia_roberts_module~~UsesGraph</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-56.1 784,-56.1 784,4 -4,4"/>
+<!-- module~jacchia_roberts_module -->
+<g id="module~~jacchia_roberts_module~~UsesGraph_node1" class="node">
+<title>module~jacchia_roberts_module</title>
+<polygon fill="none" stroke="black" points="780,-44 641,-44 641,-20 780,-20 780,-44"/>
+<text text-anchor="middle" x="710.5" y="-29.6" font-family="Helvetica,sans-Serif" font-size="10.50">jacchia_roberts_module</text>
+</g>
+<!-- module~jacchia_roberts_kinds -->
+<g id="module~~jacchia_roberts_module~~UsesGraph_node2" class="node">
+<title>module~jacchia_roberts_kinds</title>
+<g id="a_module~~jacchia_roberts_module~~UsesGraph_node2"><a xlink:href="../module/jacchia_roberts_kinds.html" xlink:title="jacchia_roberts_kinds">
+<polygon fill="#337ab7" stroke="#337ab7" points="257,-44 130,-44 130,-20 257,-20 257,-44"/>
+<text text-anchor="middle" x="193.5" y="-29.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">jacchia_roberts_kinds</text>
+</a>
+</g>
+</g>
+<!-- module~jacchia_roberts_module&#45;&gt;module~jacchia_roberts_kinds -->
+<g id="module~~jacchia_roberts_module~~UsesGraph_edge1" class="edge">
+<title>module~jacchia_roberts_module&#45;&gt;module~jacchia_roberts_kinds</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M640.77,-38.38C570.81,-44.31 459.2,-52.2 362.5,-52"/>
+</g>
+<!-- module~space_weather_module -->
+<g id="module~~jacchia_roberts_module~~UsesGraph_node3" class="node">
+<title>module~space_weather_module</title>
+<g id="a_module~~jacchia_roberts_module~~UsesGraph_node3"><a xlink:href="../module/space_weather_module.html" xlink:title="space_weather_module">
+<polygon fill="#337ab7" stroke="#337ab7" points="605,-24 466,-24 466,0 605,0 605,-24"/>
+<text text-anchor="middle" x="535.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">space_weather_module</text>
+</a>
+</g>
+</g>
+<!-- module~jacchia_roberts_module&#45;&gt;module~space_weather_module -->
+<g id="module~~jacchia_roberts_module~~UsesGraph_edge2" class="edge">
+<title>module~jacchia_roberts_module&#45;&gt;module~space_weather_module</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M640.63,-24.04C632.23,-23.07 623.6,-22.07 615.08,-21.08"/>
+<polygon fill="#000000" stroke="#000000" points="615.47,-17.61 605.13,-19.93 614.67,-24.56 615.47,-17.61"/>
+</g>
+<!-- iso_fortran_env -->
+<g id="module~~jacchia_roberts_module~~UsesGraph_node4" class="node">
+<title>iso_fortran_env</title>
+<g id="a_module~~jacchia_roberts_module~~UsesGraph_node4"><a xlink:href="http://fortranwiki.org/fortran/show/iso_fortran_env" xlink:title="iso_fortran_env">
+<polygon fill="#337ab7" stroke="#337ab7" points="94,-44 0,-44 0,-20 94,-20 94,-44"/>
+<text text-anchor="middle" x="47" y="-29.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">iso_fortran_env</text>
+</a>
+</g>
+</g>
+<!-- module~jacchia_roberts_kinds&#45;&gt;iso_fortran_env -->
+<g id="module~~jacchia_roberts_module~~UsesGraph_edge3" class="edge">
+<title>module~jacchia_roberts_kinds&#45;&gt;iso_fortran_env</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M129.96,-32C121.39,-32 112.64,-32 104.19,-32"/>
+<polygon fill="#000000" stroke="#000000" points="104.08,-28.5 94.08,-32 104.08,-35.5 104.08,-28.5"/>
+</g>
+<!-- module~space_weather_module&#45;&gt;module~jacchia_roberts_kinds -->
+<g id="module~~jacchia_roberts_module~~UsesGraph_edge4" class="edge">
+<title>module~space_weather_module&#45;&gt;module~jacchia_roberts_kinds</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M502.68,-24.04C468.54,-35.86 412.47,-52.1 362.5,-52"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M360.5,-52C329.86,-51.94 296.27,-48.53 267.36,-44.54"/>
+<polygon fill="#000000" stroke="#000000" points="267.74,-41.06 257.35,-43.11 266.75,-47.99 267.74,-41.06"/>
+</g>
+<!-- module~jacchia_roberts_utilities -->
+<g id="module~~jacchia_roberts_module~~UsesGraph_node5" class="node">
+<title>module~jacchia_roberts_utilities</title>
+<g id="a_module~~jacchia_roberts_module~~UsesGraph_node5"><a xlink:href="../module/jacchia_roberts_utilities.html" xlink:title="jacchia_roberts_utilities">
+<polygon fill="#337ab7" stroke="#337ab7" points="430,-24 293,-24 293,0 430,0 430,-24"/>
+<text text-anchor="middle" x="361.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">jacchia_roberts_utilities</text>
+</a>
+</g>
+</g>
+<!-- module~space_weather_module&#45;&gt;module~jacchia_roberts_utilities -->
+<g id="module~~jacchia_roberts_module~~UsesGraph_edge5" class="edge">
+<title>module~space_weather_module&#45;&gt;module~jacchia_roberts_utilities</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M465.53,-12C457.23,-12 448.7,-12 440.28,-12"/>
+<polygon fill="#000000" stroke="#000000" points="440.08,-8.5 430.08,-12 440.08,-15.5 440.08,-8.5"/>
+</g>
+<!-- module~jacchia_roberts_utilities&#45;&gt;module~jacchia_roberts_kinds -->
+<g id="module~~jacchia_roberts_module~~UsesGraph_edge6" class="edge">
+<title>module~jacchia_roberts_utilities&#45;&gt;module~jacchia_roberts_kinds</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M292.98,-20.13C284.47,-21.16 275.72,-22.21 267.13,-23.25"/>
+<polygon fill="#000000" stroke="#000000" points="266.65,-19.78 257.14,-24.45 267.49,-26.73 266.65,-19.78"/>
+</g>
+</g>
+</svg>
+</div>                <script>
+                  var panmodulejacchia_roberts_moduleUsesGraph = svgPanZoom('#modulejacchia_roberts_moduleUsesGraph',
+                    {zoomEnabled: true, controlIconsEnabled: true, fit: true, center: true,}
+                  );
+                </script>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#UsesGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="UsesGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="518pt" height="32pt"
+ viewBox="0.00 0.00 517.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 513.5,-28 513.5,4 -4,4"/>
+<!-- Module -->
+<g id="node1" class="node">
+<title>Module</title>
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-24 0,-24 0,0 54,0 54,-24"/>
+<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
+</g>
+<!-- Submodule -->
+<g id="node2" class="node">
+<title>Submodule</title>
+<polygon fill="#5bc0de" stroke="#5bc0de" points="145.5,-24 72.5,-24 72.5,0 145.5,0 145.5,-24"/>
+<text text-anchor="middle" x="109" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
+</g>
+<!-- Subroutine -->
+<g id="node3" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="234,-24 164,-24 164,0 234,0 234,-24"/>
+<text text-anchor="middle" x="199" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node4" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="310,-24 252,-24 252,0 310,0 310,-24"/>
+<text text-anchor="middle" x="281" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+</g>
+<!-- Program -->
+<g id="node5" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="386,-24 328,-24 328,0 386,0 386,-24"/>
+<text text-anchor="middle" x="357" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node6" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="509.5,-24 404.5,-24 404.5,0 509.5,0 509.5,-24"/>
+<text text-anchor="middle" x="457" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+<p>Solid arrows point from a submodule to the (sub)module which it is
+descended from. Dashed arrows point from a module or program unit to 
+modules which it uses.
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
+            </li>
+        </ul>
+      </div>
+    </div>
+
+      
+      <br>
+
+
+        <section>
+          <h2>Variables</h2>
+            <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Visibility</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+<th></th><th scope="col">Initial</th>        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-pi"></span>
+              real(kind=dp),
+            </td>
+              <td>private,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>PI</strong></td>
+<td> =</td>
+                <td>acos(-1.0_dp)</td>
+            <td>
+                <p>Pi constant</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-rad_per_deg"></span>
+              real(kind=dp),
+            </td>
+              <td>private,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>RAD_PER_DEG</strong></td>
+<td> =</td>
+                <td>PI/180.0_dp</td>
+            <td>
+                <p>degree to radian conversion factor</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-rho_zero"></span>
+              real(kind=dp),
+            </td>
+              <td>private,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>RHO_ZERO</strong></td>
+<td> =</td>
+                <td>3.46e-9_dp</td>
+            <td>
+                <p>Low altitude density in g/cm^3</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tzero"></span>
+              real(kind=dp),
+            </td>
+              <td>private,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>TZERO</strong></td>
+<td> =</td>
+                <td>183.0_dp</td>
+            <td>
+                <p>Temperature in degrees Kelvin at height of 90 km</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-g_zero"></span>
+              real(kind=dp),
+            </td>
+              <td>private,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>G_ZERO</strong></td>
+<td> =</td>
+                <td>9.80665_dp</td>
+            <td>
+                <p>Earth gravitational constant m/s^2</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-gas_con"></span>
+              real(kind=dp),
+            </td>
+              <td>private,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>GAS_CON</strong></td>
+<td> =</td>
+                <td>8.31432_dp</td>
+            <td>
+                <p>Gas constant (joules/(degK-mole))</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-avogadro"></span>
+              real(kind=dp),
+            </td>
+              <td>private,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>AVOGADRO</strong></td>
+<td> =</td>
+                <td>6.022045e23_dp</td>
+            <td>
+                <p>Avogadro's number</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-nominalkp"></span>
+              real(kind=dp),
+            </td>
+              <td>private,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>nominalKp</strong></td>
+<td> =</td>
+                <td>3.0_dp</td>
+            <td>
+                <p>Nominal Kp index</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-nominalf107"></span>
+              real(kind=dp),
+            </td>
+              <td>private,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>nominalF107</strong></td>
+<td> =</td>
+                <td>150.0_dp</td>
+            <td>
+                <p>Nominal F10.7 value (solar flux units)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-nominalf107a"></span>
+              real(kind=dp),
+            </td>
+              <td>private,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>nominalF107a</strong></td>
+<td> =</td>
+                <td>150.0_dp</td>
+            <td>
+                <p>Nominal F10.7a value (solar flux units)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-con_c"></span>
+              real(kind=dp),
+            </td>
+              <td>private,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>CON_C</strong>(5)</td>
+<td> =</td>
+                <td>[-89284375.0_dp, 3542400.0_dp, -52687.5_dp, 340.5_dp, -0.8_dp]</td>
+            <td>
+                <p>Constants for series expansion</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-con_l"></span>
+              real(kind=dp),
+            </td>
+              <td>private,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>CON_L</strong>(5)</td>
+<td> =</td>
+                <td>[0.1031445e5_dp, 0.2341230e1_dp, 0.1579202e-2_dp, -0.1252487e-5_dp, 0.2462708e-9_dp]</td>
+            <td>
+                <p>Constants for series expansion</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-mzero"></span>
+              real(kind=dp),
+            </td>
+              <td>private,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>MZERO</strong></td>
+<td> =</td>
+                <td>28.82678_dp</td>
+            <td>
+                <p>Constants required between 90 km and 100 km</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-m_con"></span>
+              real(kind=dp),
+            </td>
+              <td>private,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>M_CON</strong>(7)</td>
+<td> =</td>
+                <td>[-435093.363387_dp, 28275.5646391_dp, -765.33466108_dp, 11.043387545_dp, -0.08958790995_dp, 0.00038737586_dp, -0.000000697444_dp]</td>
+            <td>
+                <p>Constants for series expansion of M(z) function</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-s_con"></span>
+              real(kind=dp),
+            </td>
+              <td>private,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>S_CON</strong>(6)</td>
+<td> =</td>
+                <td>[3144902516.672729_dp, -123774885.4832917_dp, 1816141.096520398_dp, -11403.31079489267_dp, 24.36498612105595_dp, 0.008957502869707995_dp]</td>
+            <td>
+                <p>Constants for series expansion of S(z) function</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-s_beta"></span>
+              real(kind=dp),
+            </td>
+              <td>private,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>S_BETA</strong>(6)</td>
+<td> =</td>
+                <td>[-52864482.17910969_dp, -16632.50847336828_dp, -1.308252378125_dp, 0.0_dp, 0.0_dp, 0.0_dp]</td>
+            <td>
+                <p>Constants for series expansion of S(z) function - temperature part</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-omega"></span>
+              real(kind=dp),
+            </td>
+              <td>private,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>OMEGA</strong></td>
+<td> =</td>
+                <td>-0.94585589_dp</td>
+            <td>
+                <p>Constants required for altitudes between 100 km and 125 km</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-zeta_con"></span>
+              real(kind=dp),
+            </td>
+              <td>private,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>ZETA_CON</strong>(7)</td>
+<td> =</td>
+                <td>[0.1985549e-10_dp, -0.1833490e-14_dp, 0.1711735e-17_dp, -0.1021474e-20_dp, 0.3727894e-24_dp, -0.7734110e-28_dp, 0.7026942e-32_dp]</td>
+            <td>
+                <p>Constants for series expansion</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-mol_mass"></span>
+              real(kind=dp),
+            </td>
+              <td>private,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>MOL_MASS</strong>(6)</td>
+<td> =</td>
+                <td>[28.0134_dp, 39.948_dp, 4.0026_dp, 31.9988_dp, 15.9994_dp, 1.00797_dp]</td>
+            <td>
+                <p>Molecular masses of atmospheric constituents in grams/mole</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-num_dens"></span>
+              real(kind=dp),
+            </td>
+              <td>private,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>NUM_DENS</strong>(5)</td>
+<td> =</td>
+                <td>[0.78110_dp, 0.93432e-2_dp, 0.61471e-5_dp, 0.161778_dp, 0.95544e-1_dp]</td>
+            <td>
+                <p>Number density divided by Avogadro's number of atmospheric constituents</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-con_den"></span>
+              real(kind=dp),
+            </td>
+              <td>private,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>CON_DEN</strong>(5,7)</td>
+<td> =</td>
+                <td>reshape([0.1093155e2_dp, 0.1186783e-2_dp, -0.1677341e-5_dp, 0.1420228e-8_dp, -0.7139785e-12_dp, 0.1969715e-15_dp, -0.2296182e-19_dp, 0.8049405e1_dp, 0.2382822e-2_dp, -0.3391366e-5_dp, 0.2909714e-8_dp, -0.1481702e-11_dp, 0.4127600e-15_dp, -0.4837461e-19_dp, 0.7646886e1_dp, -0.4383486e-3_dp, 0.4694319e-6_dp, -0.2894886e-9_dp, 0.9451989e-13_dp, -0.1270838e-16_dp, 0.0_dp, 0.9924237e1_dp, 0.1600311e-2_dp, -0.2274761e-5_dp, 0.1938454e-8_dp, -0.9782183e-12_dp, 0.2698450e-15_dp, -0.3131808e-19_dp, 0.1097083e2_dp, 0.6118742e-4_dp, -0.1165003e-6_dp, 0.9239354e-10_dp, -0.3490739e-13_dp, 0.5116298e-17_dp, 0.0_dp], [5, 7], order=[2, 1])</td>
+            <td>
+                <p>Polynomial coefficients for constituent densities of each atmospheric gas</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+        </section>
+        <br>
+
+
+
+
+        <section>
+          <h2>Derived Types</h2>
+              <div class="card">
+    <div class="card-header codesum">
+      <span class="anchor" id="type-geoparms_type"></span>
+      <h3>
+        type, public&nbsp;::&nbsp;
+        <a href='../type/geoparms_type.html'>geoparms_type</a>
+        
+      </h3>
+    </div>
+    <div class="card-body">
+      <p>Geomagnetic parameters</p>
+
+        <h4>Components</h4>
+          <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Visibility</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+<th></th><th scope="col">Initial</th>        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tkp"></span>
+              real(kind=dp),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>tkp</strong></td>
+<td> =</td>
+                <td>0.0_dp</td>
+            <td>
+<p>Geomagnetic index Kp</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-xtemp"></span>
+              real(kind=dp),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>xtemp</strong></td>
+<td> =</td>
+                <td>0.0_dp</td>
+            <td>
+<p>Exospheric temperature (K)</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum">
+      <span class="anchor" id="type-jacchia_roberts_type"></span>
+      <h3>
+        type, public&nbsp;::&nbsp;
+        <a href='../type/jacchia_roberts_type.html'>jacchia_roberts_type</a>
+        
+      </h3>
+    </div>
+    <div class="card-body">
+      <p>Jacchia-Roberts atmosphere model type</p>
+
+        <h4>Components</h4>
+          <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Visibility</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+<th></th><th scope="col">Initial</th>        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-cb_polar_radius"></span>
+              real(kind=dp),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>cb_polar_radius</strong></td>
+<td> =</td>
+                <td>0.0_dp</td>
+            <td>
+<p>Central body polar radius (km)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-cb_polar_squared"></span>
+              real(kind=dp),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>cb_polar_squared</strong></td>
+<td> =</td>
+                <td>0.0_dp</td>
+            <td>
+<p>Polar radius squared (km^2)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-root1"></span>
+              real(kind=dp),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>root1</strong></td>
+<td> =</td>
+                <td>0.0_dp</td>
+            <td>
+<p>Auxiliary temperature root</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-root2"></span>
+              real(kind=dp),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>root2</strong></td>
+<td> =</td>
+                <td>0.0_dp</td>
+            <td>
+<p>Auxiliary temperature root</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x_root"></span>
+              real(kind=dp),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>x_root</strong></td>
+<td> =</td>
+                <td>0.0_dp</td>
+            <td>
+<p>Complex root real part</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-y_root"></span>
+              real(kind=dp),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>y_root</strong></td>
+<td> =</td>
+                <td>0.0_dp</td>
+            <td>
+<p>Complex root imaginary part (absolute value)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-t_infinity"></span>
+              real(kind=dp),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>t_infinity</strong></td>
+<td> =</td>
+                <td>0.0_dp</td>
+            <td>
+<p>Exospheric temperature at infinity</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tx"></span>
+              real(kind=dp),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>tx</strong></td>
+<td> =</td>
+                <td>0.0_dp</td>
+            <td>
+<p>Temperature at boundary</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-sum"></span>
+              real(kind=dp),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>sum</strong></td>
+<td> =</td>
+                <td>0.0_dp</td>
+            <td>
+<p>Intermediate temperature sum</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-use_sw_file"></span>
+              logical,
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>use_sw_file</strong></td>
+<td> =</td>
+                <td>.true.</td>
+            <td>
+<p>Flag to control whether to use space weather file data or specified values.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-f107_override"></span>
+              real(kind=dp),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>f107_override</strong></td>
+<td> =</td>
+                <td>nominalF107</td>
+            <td>
+<p>Override value for F10.7 if not using space weather file</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-f107a_override"></span>
+              real(kind=dp),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>f107a_override</strong></td>
+<td> =</td>
+                <td>nominalF107a</td>
+            <td>
+<p>Override value for F10.7a if not using space weather file</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-kp_override"></span>
+              real(kind=dp),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>kp_override</strong></td>
+<td> =</td>
+                <td>nominalKp</td>
+            <td>
+<p>Override value for Kp index if not using space weather file</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-sw_data"></span>
+              type(<a href='../type/sw_data_type.html'>sw_data_type</a>),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>sw_data</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+<p>Space weather data type (from space_weather_module)</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+
+        <h4>Type-Bound Procedures</h4>
+        <table class="table table-striped varlist">
+          <tbody>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='../type/jacchia_roberts_type.html#boundprocedure-density'>density</a></strong> => <a href='/home/runner/work/jacchia-roberts-fortran/jacchia-roberts-fortran/doc/proc/jacchia_roberts_density.html'>jacchia_roberts_density</a></td>
+                  <td></td>
+              </tr>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='../type/jacchia_roberts_type.html#boundprocedure-initialize'>initialize</a></strong> => <a href='/home/runner/work/jacchia-roberts-fortran/jacchia-roberts-fortran/doc/proc/jr_init.html'>jr_init</a></td>
+                  <td></td>
+              </tr>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='../type/jacchia_roberts_type.html#boundprocedure-destroy'>destroy</a></strong> => <a href='/home/runner/work/jacchia-roberts-fortran/jacchia-roberts-fortran/doc/proc/jr_cleanup.html'>jr_cleanup</a></td>
+                  <td></td>
+              </tr>
+              <tr>
+                <td>  procedure, private ::
+  <strong><a href='../type/jacchia_roberts_type.html#boundprocedure-exotherm'>exotherm</a></strong></td>
+                  <td></td>
+              </tr>
+              <tr>
+                <td>  procedure, private ::
+  <strong><a href='../type/jacchia_roberts_type.html#boundprocedure-rho_100'>rho_100</a></strong></td>
+                  <td></td>
+              </tr>
+              <tr>
+                <td>  procedure, private ::
+  <strong><a href='../type/jacchia_roberts_type.html#boundprocedure-rho_125'>rho_125</a></strong></td>
+                  <td></td>
+              </tr>
+              <tr>
+                <td>  procedure, private ::
+  <strong><a href='../type/jacchia_roberts_type.html#boundprocedure-rho_high'>rho_high</a></strong></td>
+                  <td></td>
+              </tr>
+              <tr>
+                <td>  procedure, private ::
+  <strong><a href='../type/jacchia_roberts_type.html#boundprocedure-parms_to_temp'>parms_to_temp</a></strong></td>
+                  <td></td>
+              </tr>
+          </tbody>
+        </table>
+    </div>
+  </div>
+
+        </section>
+        <br>
+
+        <section>
+          <h2>Functions</h2>
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-parms_to_temp"></span> <h3>private pure function <a href='../proc/parms_to_temp.html'>parms_to_temp</a>(me, f107_daily, f107a_avg, tkp) result(xtemp)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Compute exospheric temperature from F10.7 values using the Jacchia-Roberts formula</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-me~3"></span>
+              class(<a href='../type/jacchia_roberts_type.html'>jacchia_roberts_type</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>me</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-f107_daily"></span>
+              real(kind=dp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>f107_daily</strong></td>
+            <td>
+<p>Daily F10.7 value</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-f107a_avg"></span>
+              real(kind=dp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>f107a_avg</strong></td>
+            <td>
+<p>81-day average F10.7a</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tkp~2"></span>
+              real(kind=dp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>tkp</strong></td>
+            <td>
+<p>Kp index</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>real(kind=dp)</small>
+    </h4>
+    <p>Exospheric temperature (K)</p>
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-jacchia_roberts_density"></span> <h3>private  function <a href='../proc/jacchia_roberts_density.html'>jacchia_roberts_density</a>(me, height, position, sun_vector, geo_lat, utc_mjd) result(density)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Compute atmospheric density using the Jacchia-Roberts model</p><a href="../proc/jacchia_roberts_density.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-me~4"></span>
+              class(<a href='../type/jacchia_roberts_type.html'>jacchia_roberts_type</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>me</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-height"></span>
+              real(kind=dp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>height</strong></td>
+            <td>
+<p>Spacecraft height above reference ellipsoid (km)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-position"></span>
+              real(kind=dp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>position</strong>(3)</td>
+            <td>
+<p>Spacecraft position vector (km, TOD/GCI)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-sun_vector"></span>
+              real(kind=dp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>sun_vector</strong>(3)</td>
+            <td>
+<p>Unit vector to Sun (TOD/GCI)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-geo_lat"></span>
+              real(kind=dp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>geo_lat</strong></td>
+            <td>
+<p>Geodetic latitude (degrees)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-utc_mjd"></span>
+              real(kind=dp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>utc_mjd</strong></td>
+            <td>
+<p>UTC Modified Julian Date</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>real(kind=dp)</small>
+    </h4>
+    <p>Atmospheric density (kg/m^3)</p>
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-exotherm"></span> <h3>private  function <a href='../proc/exotherm.html'>exotherm</a>(me, position, sun_vector, geo, height, sun_dec, geo_lat) result(exotemp)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Compute the temperature of Earth's atmosphere and auxiliary
+temperature-related quantities at a given altitude</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-me~5"></span>
+              class(<a href='../type/jacchia_roberts_type.html'>jacchia_roberts_type</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>me</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-position~2"></span>
+              real(kind=dp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>position</strong>(3)</td>
+            <td>
+<p>Spacecraft position (km)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-sun_vector~2"></span>
+              real(kind=dp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>sun_vector</strong>(3)</td>
+            <td>
+<p>Sun unit vector</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-geo~2"></span>
+              type(<a href='../type/geoparms_type.html'>geoparms_type</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>geo</strong></td>
+            <td>
+<p>Geomagnetic parameters</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-height~2"></span>
+              real(kind=dp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>height</strong></td>
+            <td>
+<p>Spacecraft height (km)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-sun_dec~2"></span>
+              real(kind=dp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>sun_dec</strong></td>
+            <td>
+<p>Sun declination (radians)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-geo_lat~2"></span>
+              real(kind=dp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>geo_lat</strong></td>
+            <td>
+<p>Geodetic latitude (radians)</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>real(kind=dp)</small>
+    </h4>
+    <p>Local exospheric temperature (K)</p>
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-rho_100"></span> <h3>private  function <a href='../proc/rho_100.html'>rho_100</a>(me, height, temperature) result(density)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Compute density of the atmosphere between 90 and 100 km</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-me~6"></span>
+              class(<a href='../type/jacchia_roberts_type.html'>jacchia_roberts_type</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>me</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-height~3"></span>
+              real(kind=dp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>height</strong></td>
+            <td>
+<p>Spacecraft altitude (km)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-temperature~2"></span>
+              real(kind=dp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>temperature</strong></td>
+            <td>
+<p>Exospheric temperature (K)</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>real(kind=dp)</small>
+    </h4>
+    <p>Atmospheric density (g/cm^3)</p>
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-rho_125"></span> <h3>private  function <a href='../proc/rho_125.html'>rho_125</a>(me, height, temperature) result(density)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Compute density of the atmosphere between 100 and 125 km</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-me~7"></span>
+              class(<a href='../type/jacchia_roberts_type.html'>jacchia_roberts_type</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>me</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-height~4"></span>
+              real(kind=dp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>height</strong></td>
+            <td>
+<p>Spacecraft altitude (km)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-temperature~3"></span>
+              real(kind=dp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>temperature</strong></td>
+            <td>
+<p>Exospheric temperature (K)</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>real(kind=dp)</small>
+    </h4>
+    <p>Atmospheric density (g/cm^3)</p>
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-rho_high"></span> <h3>private  function <a href='../proc/rho_high.html'>rho_high</a>(me, height, temperature, t_500, sun_dec, geo_lat) result(density)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Compute density of the atmosphere between 125 and 2500 km</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-me~8"></span>
+              class(<a href='../type/jacchia_roberts_type.html'>jacchia_roberts_type</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>me</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-height~5"></span>
+              real(kind=dp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>height</strong></td>
+            <td>
+<p>Spacecraft altitude (km)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-temperature~4"></span>
+              real(kind=dp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>temperature</strong></td>
+            <td>
+<p>Exospheric temperature at spacecraft altitude (K)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-t_500~2"></span>
+              real(kind=dp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>t_500</strong></td>
+            <td>
+<p>Exospheric temperature at altitude of 500 km (K)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-sun_dec~3"></span>
+              real(kind=dp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>sun_dec</strong></td>
+            <td>
+<p>Declination of the sun in TOD coordinates (radians)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-geo_lat~3"></span>
+              real(kind=dp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>geo_lat</strong></td>
+            <td>
+<p>Geodetic latitude of spacecraft (radians)</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>real(kind=dp)</small>
+    </h4>
+    
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-rho_cor"></span> <h3>private pure function <a href='../proc/rho_cor.html'>rho_cor</a>(height, utc_mjd, geo_lat, geo) result(correction)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Calculates the density correction factor</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-height~6"></span>
+              real(kind=dp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>height</strong></td>
+            <td>
+<p>Spacecraft altitude (km)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-utc_mjd~2"></span>
+              real(kind=dp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>utc_mjd</strong></td>
+            <td>
+<p>UTC Modified Julian Date</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-geo_lat~4"></span>
+              real(kind=dp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>geo_lat</strong></td>
+            <td>
+<p>Geodetic latitude of spacecraft (radians)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-geo~3"></span>
+              type(<a href='../type/geoparms_type.html'>geoparms_type</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>geo</strong></td>
+            <td>
+<p>Geomagnetic parameters</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>real(kind=dp)</small>
+    </h4>
+    <p>Correction factor (multiplicative)</p>
+
+    </div>
+  </div>
+
+        </section>
+        <br>
+
+        <section>
+          <h2>Subroutines</h2>
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-jr_init"></span> <h3>private  subroutine <a href='../proc/jr_init.html'>jr_init</a>(me, cb_polar_radius, status, filename, f107_override, f107a_override, kp_override)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Initialize the Jacchia-Roberts module with central body parameters.</p><a href="../proc/jr_init.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-me"></span>
+              class(<a href='../type/jacchia_roberts_type.html'>jacchia_roberts_type</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>me</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-cb_polar_radius~2"></span>
+              real(kind=dp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>cb_polar_radius</strong></td>
+            <td>
+<p>Polar radius of central body (km)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-status"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>status</strong></td>
+            <td>
+<p>Output status (0=success, non-zero=error)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-filename"></span>
+              character(len=*),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>filename</strong></td>
+            <td>
+<p>Path to CSSI space weather file</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-f107_override~2"></span>
+              real(kind=dp),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>f107_override</strong></td>
+            <td>
+<p>Override value for F10.7 if not using space weather file</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-f107a_override~2"></span>
+              real(kind=dp),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>f107a_override</strong></td>
+            <td>
+<p>Override value for F10.7a if not using space weather file</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-kp_override~2"></span>
+              real(kind=dp),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>kp_override</strong></td>
+            <td>
+<p>Override value for Kp index if not using space weather file</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-jr_cleanup"></span> <h3>private  subroutine <a href='../proc/jr_cleanup.html'>jr_cleanup</a>(me)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Clean up module resources</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-me~2"></span>
+              class(<a href='../type/jacchia_roberts_type.html'>jacchia_roberts_type</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>me</strong></td>
+            <td>
+
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-find_cstar_roots"></span> <h3>public pure subroutine <a href='../proc/find_cstar_roots.html'>find_cstar_roots</a>(c_star, tx, root1, root2, x_root, y_root)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Find the two real roots and the complex conjugate root pair of the
+   degree-4 temperature-profile polynomial c_star(z).</p><a href="../proc/find_cstar_roots.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-c_star~2"></span>
+              real(kind=dp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>c_star</strong>(5)</td>
+            <td>
+<p>Quartic polynomial coefficients <code>c_star(1)..c_star(5)</code></p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tx~2"></span>
+              real(kind=dp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>tx</strong></td>
+            <td>
+<p>Temperature at 125 km (K), used for initial guesses</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-root1~2"></span>
+              real(kind=dp),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>root1</strong></td>
+            <td>
+<p>Larger real root (&gt; 125 km)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-root2~2"></span>
+              real(kind=dp),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>root2</strong></td>
+            <td>
+<p>Smaller real root (&lt; 100 km)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x_root~2"></span>
+              real(kind=dp),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>x_root</strong></td>
+            <td>
+<p>Real part of complex conjugate root pair</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-y_root~2"></span>
+              real(kind=dp),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>y_root</strong></td>
+            <td>
+<p>Imaginary part of complex conjugate root pair</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-find_cstar_roots_original"></span> <h3>public pure subroutine <a href='../proc/find_cstar_roots_original.html'>find_cstar_roots_original</a>(c_star, tx, root1, root2, x_root, y_root)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Original version of root-finding routine using the <code>roots</code> subroutine.
+  This is based on the routine from GMAT.</p><a href="../proc/find_cstar_roots_original.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-c_star~3"></span>
+              real(kind=dp),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>c_star</strong>(5)</td>
+            <td>
+<p>Quartic polynomial coefficients <code>c_star(1)..c_star(5)</code> [note: modified in-place by deflation]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tx~3"></span>
+              real(kind=dp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>tx</strong></td>
+            <td>
+<p>Temperature at 125 km (K) [not used here]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-root1~3"></span>
+              real(kind=dp),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>root1</strong></td>
+            <td>
+<p>Larger real root (&gt; 125 km)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-root2~3"></span>
+              real(kind=dp),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>root2</strong></td>
+            <td>
+<p>Smaller real root (&lt; 100 km)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x_root~3"></span>
+              real(kind=dp),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>x_root</strong></td>
+            <td>
+<p>Real part of complex conjugate root pair</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-y_root~3"></span>
+              real(kind=dp),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>y_root</strong></td>
+            <td>
+<p>Imaginary part of complex conjugate root pair</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-prepare_flux_data"></span> <h3>public  subroutine <a href='../proc/prepare_flux_data.html'>prepare_flux_data</a>(sw_data, flux_data, utc_mjd, kp_out, f107_out, f107a_out)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Prepare flux data for the current epoch, accounting for measurement timing.
+Kp selection matches the GMAT <code>PrepareKpData</code> historic-data branch:</p><a href="../proc/prepare_flux_data.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-sw_data~2"></span>
+              type(<a href='../type/sw_data_type.html'>sw_data_type</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>sw_data</strong></td>
+            <td>
+<p>Space weather data manager</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-flux_data~2"></span>
+              type(<a href='../type/flux_data_type.html'>flux_data_type</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>flux_data</strong></td>
+            <td>
+<p>Current day's flux data</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-utc_mjd~3"></span>
+              real(kind=dp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>utc_mjd</strong></td>
+            <td>
+<p>Current epoch (MJD)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-kp_out"></span>
+              real(kind=dp),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>kp_out</strong></td>
+            <td>
+<p>Selected Kp index for current epoch</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-f107_out"></span>
+              real(kind=dp),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>f107_out</strong></td>
+            <td>
+<p>Selected F10.7 daily value for current epoch</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-f107a_out"></span>
+              real(kind=dp),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>f107a_out</strong></td>
+            <td>
+<p>Selected F10.7a average for current epoch</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+        </section>
+        <br>
+
+
+
+    </div>
+  </div>
+
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              jacchia-roberts-fortran
+ was developed by Jacob Williams<br>              &copy; 2026 
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+            </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>
