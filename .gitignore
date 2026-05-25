@@ -12,3 +12,5 @@ density_profile*.dat
 /archive
 
 *.bak
+plot_density_profiles.py
+density_profiles.png

@@ -26,3 +26,4 @@ library = true
 
 [dev-dependencies]
 csv-fortran = { git="https://github.com/jacobwilliams/csv-fortran.git" }
+pyplot-fortran = { git="https://github.com/jacobwilliams/pyplot-fortran.git" }
