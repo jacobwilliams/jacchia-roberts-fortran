@@ -1,9 +1,7 @@
 name = "jacchia-roberts"
 version = "1.0.0"
 license = "Apache-2.0"
-author = "Converted from GMAT C++ implementation"
-maintainer = "jwilliam"
-copyright = "2002-2026 United States Government (NASA/GSFC), 2026 Fortran conversion"
+author = "Jacob Williams"
 
 [build]
 auto-executables = true
