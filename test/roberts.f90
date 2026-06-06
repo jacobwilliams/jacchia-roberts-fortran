@@ -3,10 +3,21 @@
 !  Uses the older INPE code for the Jacchia-Roberts model
 !  as a reference for testing the new implementation.
 !
-!  Source:
+!### Source:
 !  * Original [dead link]: http://www.dem.inpe.br/~val/atmod/default.html
 !    The Orbital Dynamics group of INPE (Brazilian National Institute for Space Research)
 !  * Archive: https://github.com/jacobwilliams/INPE-atmosphere-models
+!
+!### References
+!  1. JACCHIA, L. G.  ATMOSPHERIC MODELS IN  THE  REGION
+!     FROM  110  TO  2000 KM.  IN:  COMMITTEE  ON  SPACE
+!     RESEARCH (COSPAR) "CIRA 1972".  BERLIM,  AKADEMIK-
+!     VERLAG, 1972. PART 3, P. 227-338.
+!
+!  2. ROBERTS JR., C. E. AN ANALYTICAL MODEL  FOR  UPPER
+!     ATMOSPHERIC DENSITIES BASED  UPON  JACCHIA'S  1970
+!     MODELS.  "CELESTIAL  MECHANICS",   4(3/4):368-377,
+!     DEC. 1971.
 
 module inpe_roberts_module
 
@@ -40,12 +51,7 @@ module inpe_roberts_module
 
    contains
 
-!----
-!
-SUBROUTINE rdymos(Sa,Su,Rjud,Dafr,Gsti,Te,Ad,Wmol,Rhod)
-!
-!------
-!
+!>
 !
 ! PURPOSE:
 !
@@ -96,18 +102,6 @@ SUBROUTINE rdymos(Sa,Su,Rjud,Dafr,Gsti,Te,Ad,Wmol,Rhod)
 !     O     ATOMIC OXYGEN
 !     H     ATOMIC HYDROGEN
 !
-! REFERENCES:
-!
-!     (1) JACCHIA, L. G.  ATMOSPHERIC MODELS IN  THE  REGION
-!         FROM  110  TO  2000 KM.  IN:  COMMITTEE  ON  SPACE
-!         RESEARCH (COSPAR) "CIRA 1972".  BERLIM,  AKADEMIK-
-!         VERLAG, 1972. PART 3, P. 227-338.
-!
-!     (2) ROBERTS JR., C. E. AN ANALYTICAL MODEL  FOR  UPPER
-!         ATMOSPHERIC DENSITIES BASED  UPON  JACCHIA'S  1970
-!         MODELS.  "CELESTIAL  MECHANICS",   4(3/4):368-377,
-!         DEC. 1971.
-!
 ! AUTHORS:
 !
 !     VALDEMIR CARRARA       - INPE - S.J.CAMPOS - BR
@@ -115,15 +109,14 @@ SUBROUTINE rdymos(Sa,Su,Rjud,Dafr,Gsti,Te,Ad,Wmol,Rhod)
 ! DATE:
 !
 !     APR. 1989              V. 1.0
-!
+
+SUBROUTINE rdymos(Sa,Su,Rjud,Dafr,Gsti,Te,Ad,Wmol,Rhod)
+
    IMPLICIT NONE
 
    real(dp) :: Ad(6) , dafl , Dafr , Gsti , outr , Rhod , rjfl , Rjud , &
                Sa(3) , sd(15) , sf(3) , Su(2) , tauo , Te(2) , Wmol
    INTEGER :: int , nd
-!
-!------
-!
 
    rjfl = 0.0_dp  ! this was uninitiated in the original code
 
@@ -152,10 +145,7 @@ SUBROUTINE rdymos(Sa,Su,Rjud,Dafr,Gsti,Te,Ad,Wmol,Rhod)
 
 END SUBROUTINE rdymos
 
-SUBROUTINE rsmods(Altu,Rjud,Dafr,Te,Al,Wmol,Rhod)
-!
-!------
-!
+!>
 ! PURPOSE:
 !
 !     THE SUBROUTINE RSMODS USES THE ROBERTS VERSION (2)  OF
@@ -186,23 +176,6 @@ SUBROUTINE rsmods(Altu,Rjud,Dafr,Te,Al,Wmol,Rhod)
 !           POINT IN KG/KGMOL.
 !     RHOD  MEAN-MASS-DENSITY OF THE ATMOSPHERE, IN KG/M/M/M
 !
-! SUBCALLS:
-!
-!     SOFLUD
-!     RSMADE
-!
-! REFERENCES:
-!
-!     (1) JACCHIA, L. G.  ATMOSPHERIC MODELS IN  THE  REGION
-!         FROM  110  TO  2000 KM.  IN:  COMMITTEE  ON  SPACE
-!         RESEARCH (COSPAR) "CIRA 1972".  BERLIM,  AKADEMIK-
-!         VERLAG, 1972. PART 3, P. 227-338.
-!
-!     (2) ROBERTS JR., C. E. AN ANALYTICAL MODEL  FOR  UPPER
-!         ATMOSPHERIC DENSITIES BASED  UPON  JACCHIA'S  1970
-!         MODELS.  "CELESTIAL  MECHANICS",   4(3/4):368-377,
-!         DEC. 1971.
-!
 ! AUTHORS:
 !
 !     VALDEMIR CARRARA       - INPE - S.J.CAMPOS - BR
@@ -210,15 +183,15 @@ SUBROUTINE rsmods(Altu,Rjud,Dafr,Te,Al,Wmol,Rhod)
 ! DATE:
 !
 !     APR. 1989              V. 1.0
-!
+
+SUBROUTINE rsmods(Altu,Rjud,Dafr,Te,Al,Wmol,Rhod)
+
    IMPLICIT NONE
 
    real(dp) :: Al(6) , Altu , Dafr , outr , Rhod , &
                Rjud , sd(15) , sf(3) , Te(2) , vari , Wmol
    INTEGER :: int
-!
-!------
-!
+
    CALL soflud(Rjud,Dafr,sd,outr)
 
    IF ( outr/=0.0_dp ) THEN
@@ -235,11 +208,7 @@ SUBROUTINE rsmods(Altu,Rjud,Dafr,Te,Al,Wmol,Rhod)
 
 END SUBROUTINE rsmods
 
-
-SUBROUTINE rsdamo(Sa,Su,Sf,Rjud,Dafr,Gsti,Te,Ad,Wmol,Rhod)
-!
-!------
-!
+!>
 ! PURPOSE:
 !
 !     THE SUBROUTINE  RSDAMO  GIVES  THE  DENSITY, MOLECULAR
@@ -296,22 +265,6 @@ SUBROUTINE rsdamo(Sa,Su,Sf,Rjud,Dafr,Gsti,Te,Ad,Wmol,Rhod)
 !       O        ATOMIC OXYGEN
 !       H        ATOMIC HYDROGEN
 !
-! SUBCALLS:
-!
-!       DYJRMO
-!
-! REFERENCES:
-!
-!     (1) JACCHIA, L. G.  ATMOSPHERIC MODELS IN  THE  REGION
-!         FROM  110  TO  2000 KM.  IN:  COMMITTEE  ON  SPACE
-!         RESEARCH (COSPAR) "CIRA 1972".  BERLIM,  AKADEMIK-
-!         VERLAG, 1972. PART 3, P. 227-338.
-!
-!     (2) ROBERTS JR., C. E. AN ANALYTICAL MODEL  FOR  UPPER
-!         ATMOSPHERIC DENSITIES BASED  UPON  JACCHIA'S  1970
-!         MODELS.  "CELESTIAL  MECHANICS",   4(3/4):368-377,
-!         DEC. 1971.
-!
 ! AUTHORS:
 !
 !     VALDEMIR CARRARA       - INPE - S.J.CAMPOS - BR
@@ -319,7 +272,9 @@ SUBROUTINE rsdamo(Sa,Su,Sf,Rjud,Dafr,Gsti,Te,Ad,Wmol,Rhod)
 ! DATE:
 !
 !     APR. 1989              V. 1.0
-!
+
+SUBROUTINE rsdamo(Sa,Su,Sf,Rjud,Dafr,Gsti,Te,Ad,Wmol,Rhod)
+
    IMPLICIT NONE
 
    real(dp) :: Ad(6) , al(6) , amjd , Dafr , Gsti , Rhod , &
@@ -338,11 +293,7 @@ SUBROUTINE rsdamo(Sa,Su,Sf,Rjud,Dafr,Gsti,Te,Ad,Wmol,Rhod)
 
 END SUBROUTINE rsdamo
 
-
-SUBROUTINE rsmade(Altu,Sf,Te,Ad,Wmol,Rhod)
-!
-!------
-!
+!>
 ! PURPOSE:
 !
 !     THE SUBROUTINE CALCULATES THE ATMOSPHERIC DENSITY  FOR
@@ -384,22 +335,6 @@ SUBROUTINE rsmade(Altu,Sf,Te,Ad,Wmol,Rhod)
 !       O        ATOMIC OXYGEN
 !       H        ATOMIC HYDROGEN
 !
-! SUBCALLS:
-!
-!       RMOWEI
-!
-! REFERENCES:
-!
-!     (1) JACCHIA, L. G.  ATMOSPHERIC MODELS IN  THE  REGION
-!         FROM  110  TO  2000 KM.  IN:  COMMITTEE  ON  SPACE
-!         RESEARCH (COSPAR) "CIRA 1972".  BERLIM,  AKADEMIK-
-!         VERLAG, 1972. PART 3, P. 227-338.
-!
-!     (2) ROBERTS JR., C. E. AN ANALYTICAL MODEL  FOR  UPPER
-!         ATMOSPHERIC DENSITIES BASED  UPON  JACCHIA'S  1970
-!         MODELS.  "CELESTIAL  MECHANICS",   4(3/4):368-377,
-!         DEC. 1971.
-!
 ! AUTHORS:
 !
 !     VALDEMIR CARRARA       - INPE - S.J.CAMPOS - BR
@@ -408,15 +343,14 @@ SUBROUTINE rsmade(Altu,Sf,Te,Ad,Wmol,Rhod)
 !
 !     APR. 1987              V. 1.0
 !     AUG. 2011              V. 1.1 (INCLUDED MISSING TEMPERATURE)
-!
+
+SUBROUTINE rsmade(Altu,Sf,Te,Ad,Wmol,Rhod)
+
    IMPLICIT NONE
 
    real(dp) :: Ad(6) , al(6) , Altu , anac , anut , fbar , flux , &
             heig , Rhod , Sf(3) , Te(2) , thaf , tz , weig , Wmol
    INTEGER :: ic
-!
-!------
-!
 
    flux = Sf(1)
    fbar = Sf(2)
@@ -447,20 +381,13 @@ SUBROUTINE rsmade(Altu,Sf,Te,Ad,Wmol,Rhod)
 
 END SUBROUTINE rsmade
 
-SUBROUTINE rmowei(Tinf,Heig,Ad,Wmol,Rhod)
-!
-!------
-!
+!>
 ! PURPOSE:
 !
 !     THE SUBROUTINE CALCULATES THE ATMOSPHERIC DENSITY  FOR
-!
 !     HEIGHTS FROM 110 TO 2000 KM, USING THE ROBERTS VERSION
-!                                            -
 !     (2) OF THE JACCHIA'S 70 STATIC MODEL  TO  COMPUTE  THE
-!                                    --
 !     ATMOSPHERIC DENSITY AND MOLECULAR WEIGHT (1).
-!                                       ---
 !
 ! INPUTS:
 !
@@ -489,22 +416,6 @@ SUBROUTINE rmowei(Tinf,Heig,Ad,Wmol,Rhod)
 !       O        ATOMIC OXYGEN
 !       H        ATOMIC HYDROGEN
 !
-! SUBCALLS:
-!
-!       STJRMO
-!
-! REFERENCES:
-!
-!     (1) JACCHIA, L. G.  ATMOSPHERIC MODELS IN  THE  REGION
-!         FROM  110  TO  2000 KM.  IN:  COMMITTEE  ON  SPACE
-!         RESEARCH (COSPAR) "CIRA 1972".  BERLIM,  AKADEMIK-
-!         VERLAG, 1972. PART 3, P. 227-338.
-!
-!     (2) ROBERTS JR., C. E. AN ANALYTICAL MODEL  FOR  UPPER
-!         ATMOSPHERIC DENSITIES BASED  UPON  JACCHIA'S  1970
-!         MODELS.  "CELESTIAL  MECHANICS",   4(3/4):368-377,
-!         DEC. 1971.
-!
 ! AUTHORS:
 !
 !     VALDEMIR CARRARA       - INPE - S.J.CAMPOS - BR
@@ -512,15 +423,13 @@ SUBROUTINE rmowei(Tinf,Heig,Ad,Wmol,Rhod)
 ! DATE:
 !
 !     APR. 1989              V. 1.0
-!
+
+SUBROUTINE rmowei(Tinf,Heig,Ad,Wmol,Rhod)
+
    IMPLICIT NONE
 
    real(dp) :: Ad(6) , al(6) , anac , anut , Heig , Rhod , Tinf , tz , weig , Wmol
    INTEGER :: ic
-
-!
-!------
-!
 
    CALL stjrmo(Tinf,Heig,tz,al)
 
@@ -543,11 +452,7 @@ SUBROUTINE rmowei(Tinf,Heig,Ad,Wmol,Rhod)
    Rhod = weig/avog
 END SUBROUTINE rmowei
 
-
-SUBROUTINE dyjrmo(Djm,Sun,Sat,Geo,Temp,Dn,Amw,Dens)
-!
-!-----
-!
+!>
 !  PURPOSE : COMPUTATION OF THE ATMOSPHERIC PROPERTIES
 !            ACCORDING TO THE ANALYTICAL ROBERTS(1972)
 !            METHOD APPLIED TO THE JACCHIA(1971) MODEL
@@ -595,6 +500,8 @@ SUBROUTINE dyjrmo(Djm,Sun,Sat,Geo,Temp,Dn,Amw,Dens)
 !         377,1971
 !
 ! AUTHOR : HELIO KOITI KUGA - JUNE 1985 -INPE-DMC/DDO
+
+SUBROUTINE dyjrmo(Djm,Sun,Sat,Geo,Temp,Dn,Amw,Dens)
 
    IMPLICIT NONE
 
@@ -730,10 +637,7 @@ SUBROUTINE dyjrmo(Djm,Sun,Sat,Geo,Temp,Dn,Amw,Dens)
 !
 END SUBROUTINE dyjrmo
 
-SUBROUTINE stjrmo(Tinf,Sat3,Tz,Dn)
-!
-!-----
-!
+!>
 !  PURPOSE : STATIC MODEL FOR CALCULATION OF
 !            ATMOSPHERIC PROPERTIES AT A GIVEN
 !            ALTITUDE.
@@ -752,7 +656,9 @@ SUBROUTINE stjrmo(Tinf,Sat3,Tz,Dn)
 !
 !  AUTHOR : HELIO KOITI KUGA - JUNE 1985
 !           INPE - DMC/DDO
-!
+
+SUBROUTINE stjrmo(Tinf,Sat3,Tz,Dn)
+
    IMPLICIT NONE
 
    real(dp) :: Dn(6) , Sat3 , Tinf , Tz
@@ -776,11 +682,7 @@ SUBROUTINE stjrmo(Tinf,Sat3,Tz,Dn)
 
 END SUBROUTINE stjrmo
 
-
-SUBROUTINE stjr01(Tinf,Sat3,Tl2,Al10n)
-!
-!-----
-!
+!>
 !  PURPOSE : STATIC MODEL FOR CALCULATION OF
 !            ATMOSPHERIC PROPERTIES FOR THE
 !            BAND FROM 90 TO 100 KM.
@@ -804,7 +706,9 @@ SUBROUTINE stjr01(Tinf,Sat3,Tl2,Al10n)
 !  REF. : JACCHIA,L.G.-"ATMOSPHERIC MODELS IN THE
 !              REGION FROM 110 TO 2000 KM".IN :
 !              CIRA 1972,PART.3,PP. 225-338
-!
+
+SUBROUTINE stjr01(Tinf,Sat3,Tl2,Al10n)
+
    IMPLICIT NONE
 
    real(dp) :: ain , al , Al10n(6) , am1 , am2 , an , anm , dens , dz , dzx , &
@@ -868,11 +772,7 @@ SUBROUTINE stjr01(Tinf,Sat3,Tl2,Al10n)
 !
 END SUBROUTINE stjr01
 
-
-SUBROUTINE stjr02(Tinf,Sat3,Tz,Dn)
-!
-!-----
-!
+!>
 !  PURPOSE : STATIC MODEL FOR CALCULATION OF
 !            ATMOSPHERIC PROPERTIES FOR THE
 !            BAND FROM 100 TO 125 KM.
@@ -902,7 +802,9 @@ SUBROUTINE stjr02(Tinf,Sat3,Tz,Dn)
 !              UPPER ATMOSPHERE DENSITIES BASED UPON
 !              JACCHIA'S 1970 MODELS."CELESTIAL
 !              MECHANICS 4:368-377,1971.
-!
+
+SUBROUTINE stjr02(Tinf,Sat3,Tz,Dn)
+
    IMPLICIT NONE
 
    real(dp) :: abs , am100 , atan , aux , aux1 , aux2 , c0a , cx , d1 , d2 , d3 , &
@@ -1051,11 +953,7 @@ SUBROUTINE stjr02(Tinf,Sat3,Tz,Dn)
 !
 END SUBROUTINE stjr02
 
-
-SUBROUTINE stjr03(Tinf,Sat3,Tz,Dn)
-!
-!-----
-!
+!>
 !  PURPOSE : STATIC MODEL FOR CALCULATION OF
 !            ATMOSPHERIC PROPERTIES FOR THE
 !            BAND ABOVE 125 KM.
@@ -1086,7 +984,9 @@ SUBROUTINE stjr03(Tinf,Sat3,Tz,Dn)
 !              ATMOSPHERE DENSITIES BASED UPON
 !              JACCHIA'S 1970 MODELS."CELESTIAL
 !              MECHANICS 4:368-377,1971
-!
+
+SUBROUTINE stjr03(Tinf,Sat3,Tz,Dn)
+
    IMPLICIT NONE
 
    real(dp) a1 , a1a2a , a2 , al , aux , aux1 , aux2 , d1 , d2 , d3 , d4 , d5 , d6 , Dn(6) , exp , h500 , Sat3
@@ -1104,15 +1004,15 @@ SUBROUTINE stjr03(Tinf,Sat3,Tz,Dn)
    tsubx = 371.6678_dp + 0.0518806_dp*Tinf - 294.3503_dp*exp(-0.00216222_dp*Tinf)
 !
    d1 = ((((-0.2296182e-19_dp*Tinf*Tinf+0.1969715e-15_dp*Tinf)*Tinf-0.7139785e-12_dp*Tinf)*Tinf+0.1420228e-08_dp*Tinf)*Tinf-0.1677341e-05_dp*Tinf)&
-      & *Tinf + 0.1186783e-02_dp*Tinf + 0.1093155e+02_dp
+       *Tinf + 0.1186783e-02_dp*Tinf + 0.1093155e+02_dp
    d2 = ((((-0.4837461e-19_dp*Tinf*Tinf+0.4127600e-15_dp*Tinf)*Tinf-0.1481702e-11_dp*Tinf)*Tinf+0.2909714e-08_dp*Tinf)*Tinf-0.3391366e-05_dp*Tinf)&
-      & *Tinf + 0.2382822e-02_dp*Tinf + 0.8049405e+01_dp
+       *Tinf + 0.2382822e-02_dp*Tinf + 0.8049405e+01_dp
    d3 = (((-0.1270838e-16_dp*Tinf*Tinf+0.9451989e-13_dp*Tinf)*Tinf-0.2894886e-09_dp*Tinf)*Tinf+0.4694319e-06_dp*Tinf) &
-      & *Tinf - 0.4383486D-03*Tinf + 0.7646886D+01
+       *Tinf - 0.4383486D-03*Tinf + 0.7646886D+01
    d4 = ((((-0.3131808e-19_dp*Tinf*Tinf+0.2698450e-15_dp*Tinf)*Tinf-0.9782183e-12_dp*Tinf)*Tinf+0.1938454e-08_dp*Tinf)*Tinf-0.2274761e-05_dp*Tinf)&
-      & *Tinf + 0.1600311e-02_dp*Tinf + 0.9924237e+01_dp
+       *Tinf + 0.1600311e-02_dp*Tinf + 0.9924237e+01_dp
    d5 = (((0.5116298e-17_dp*Tinf*Tinf-0.3490739e-13_dp*Tinf)*Tinf+0.9239354e-10_dp*Tinf)*Tinf-0.1165003e-06_dp*Tinf) &
-      & *Tinf + 0.6118742e-04_dp*Tinf + 0.1097083e+02_dp
+       *Tinf + 0.6118742e-04_dp*Tinf + 0.1097083e+02_dp
    z = Sat3
    al = ((0.2462708e-09_dp*Tinf*Tinf-0.1252487e-05_dp*Tinf)*Tinf+0.1579202e-02_dp*Tinf)*Tinf + 0.2341230e+01_dp*Tinf + 0.1031445e+05_dp
 !
@@ -1168,10 +1068,7 @@ SUBROUTINE stjr03(Tinf,Sat3,Tz,Dn)
 !
 END SUBROUTINE stjr03
 
-FUNCTION temlo(Altu,C)
-!
-!------
-!
+!>
 ! PURPOSE:
 !
 !     THE FUNCTION TEMLO  EVALUATES  THE  TEMPERATURE AT THE
@@ -1194,10 +1091,12 @@ FUNCTION temlo(Altu,C)
 !                375).
 !
 ! AUTHOR:    VALDEMIR CARRARA  APR/87    V 1.0
-!
+
+FUNCTION temlo(Altu,C)
+
    IMPLICIT NONE
 
-   real(dp) Altu , auxi , C(7), higo , higx , temlo
+   real(dp) :: Altu , auxi , C(7), higo , higx , temlo
 
    real(dp),parameter :: zx = 125.0_dp
    real(dp),parameter :: zo = 90.0_dp
@@ -1218,17 +1117,12 @@ FUNCTION temlo(Altu,C)
 
 END FUNCTION temlo
 
-
-SUBROUTINE sealat(Tyfr,Sudc,Rlat,Altu,Al)
-!
-!------
-!
+!>
 ! PURPOSE:
 !
 !     THE SUBROUTINE SEALAT  OBTAINS  THE VARIATIONS  ON THE
 !     NUMBER DENSITY OF THE ATMOSPHERE, DUE TO THE SEAZONAL-
 !     LATITUDINAL EFFECT.
-!     ---
 !
 ! INPUTS:
 !
@@ -1258,7 +1152,9 @@ SUBROUTINE sealat(Tyfr,Sudc,Rlat,Altu,Al)
 !
 ! AUTHOR:    VALDEMIR CARRARA       APR/87             V 1.0
 !            BENTO SILVA DE MATOS
-!
+
+SUBROUTINE sealat(Tyfr,Sudc,Rlat,Altu,Al)
+
    IMPLICIT NONE
 
    real(dp) :: Al(6) , Altu , delz , dslm , dslt , esse , pcap , Rlat , sila , Sudc , Tyfr
@@ -1281,17 +1177,12 @@ SUBROUTINE sealat(Tyfr,Sudc,Rlat,Altu,Al)
 
 END SUBROUTINE sealat
 
-
-SUBROUTINE semian(Tyfr,Altu,Alco)
-!
-!------
-!
+!>
 ! PURPOSE:
 !
 !     THE SUBROUTINE SEMIAN GIVES THE CORRECTION FACTOR ALCO
 !     FOR   THE  ATMOSPHERE   NUMBER  DENSITY,  DUE  TO  THE
 !     SEMIANNUAL EFFECT.
-!     ------
 !
 ! INPUTS:
 !
@@ -1314,7 +1205,9 @@ SUBROUTINE semian(Tyfr,Altu,Alco)
 !
 ! AUTHOR:    VALDEMIR CARRARA        APR/87            V 1.0
 !            BENTO SILVA DE MATOS
-!
+
+SUBROUTINE semian(Tyfr,Altu,Alco)
+
    IMPLICIT NONE
 
    real(dp) :: Alco , Altu , auxi , foft , goft , tauc , Tyfr
@@ -1376,16 +1269,14 @@ END SUBROUTINE semian
 !  This avoids both issues and matches the timing logic of the new Fortran model.
 
 !---------------------------------------------------------------------------
-!> Initialize the soflud wrapper by loading a CSSI space weather file.
 !>
-!> Must be called once before any call to `soflud` or `rdymos_cssi`.
-!>
-!> @param[in]  filename  Path to the CSSI space weather file
-!> @param[out] status    0 = success, non-zero = error
+! Initialize the soflud wrapper by loading a CSSI space weather file.
+!
+! Must be called once before any call to [[soflud]] or [[rdymos_cssi]].
 
    subroutine soflud_init(filename, status)
-      character(len=*), intent(in)  :: filename
-      integer,          intent(out) :: status
+      character(len=*), intent(in)  :: filename !! Path to the CSSI space weather file
+      integer,          intent(out) :: status !! 0 = success, non-zero = error
 
       call sw_global%initialize(filename, status)
       if (status == 0) sw_initialized = .true.
