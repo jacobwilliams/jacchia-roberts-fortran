@@ -807,11 +807,11 @@ SUBROUTINE stjr02(Tinf,Sat3,Tz,Dn)
 
    IMPLICIT NONE
 
-   real(dp) :: abs , am100 , atan , aux , aux1 , aux2 , c0a , cx , d1 , d2 , d3 , &
+   real(dp) :: am100 , aux , aux1 , aux2 , c0a , cx , d1 , d2 , d3 , &
                d4 , d5 , de100 , deavog , dife , Dn(6) , dpz1 ,  &
                dpz2 , dzx , f3 , f4 , gsubx , h2 , h3 , h4 , prod , pz1 , pz2 , q1 , &
                q2 , q3 , q4 , q5 , q6 , r1 , r1n , r2 , r2n , Sat3 , sksf , sksf34 , &
-               soma , sqrt , t100 , t100tz , temp , Tinf , tsubx , txmt0 , Tz , ur1 , &
+               soma , t100 , t100tz , temp , Tinf , tsubx , txmt0 , Tz , ur1 , &
                ur1h2 , ur2 , ur2h3 , vra , wr1 , wr2 , x , x2y2 , y , z
    INTEGER :: i
 
