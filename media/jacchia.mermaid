@@ -1,0 +1,26 @@
+flowchart TB
+    subgraph inputs[" "]
+        direction LR
+        et[Ephemeris Time<br/>UTC MJD]
+        rpos[Spacecraft Position<br/>Vector]
+    end
+
+    jrmodel[Jacchia-Roberts<br/>Density Model]
+    sunpos[Sun Position Vector<br/>From Ephemeris]
+
+    et --> sunpos
+    et --> spacewx[Space Weather<br/>Data Lookup]
+
+    rpos --> lat[Spacecraft Geodetic<br/>Altitude and Latitude]
+
+    et --> lat
+
+    lat --> jrmodel
+    rpos --> jrmodel
+    sunpos --> jrmodel
+    spacewx --> jrmodel
+
+    jrmodel --> density[Atmospheric<br/>Density ρ]
+
+    style inputs fill:none,stroke:none
+    style jrmodel fill:#90EE90,stroke:#333,color:#000

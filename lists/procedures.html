@@ -1,0 +1,625 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Jacchia-Roberts atmosphere model in Modern Fortran">
+    <meta name="author" content="Jacob Williams" >
+    <link rel="icon" href="../favicon.png">
+
+    <title>All Procedures &ndash; jacchia-roberts-fortran
+</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../css/brands.min.css" rel="stylesheet">
+    <link href="../css/regular.min.css" rel="stylesheet">
+    <link href="../css/solid.min.css" rel="stylesheet">
+    <link href="../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="../css/local.css" rel="stylesheet">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <script src="../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../index.html">jacchia-roberts-fortran </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                  <li class="nav-item">
+                    <a class="nav-link" href="../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12" id='text'>
+			 <h1>Procedures</h1>
+			 <table class="table table-striped">
+			 <thead><tr><th>Procedure</th><th>Location</th><th>Procedure Type</th><th>Description</th></tr></thead>
+			 <tbody>
+			   <tr>
+                 <td><a href='../proc/copy_record.html'>copy_record</a></td>
+                 <td><a href='../module/space_weather_module.html'>space_weather_module</a></td>
+                 <td>Function</td>
+                 <td><p>Copy a single record from the space weather data</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/date_to_mjd.html'>date_to_mjd</a></td>
+                 <td><a href='../module/jacchia_roberts_utilities.html'>jacchia_roberts_utilities</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Convert calendar date to Modified Julian Date (MJD)</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/deflate_polynomial.html'>deflate_polynomial</a></td>
+                 <td><a href='../module/jacchia_roberts_utilities.html'>jacchia_roberts_utilities</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Reduces the order of a polynomial by division</p><a href="../proc/deflate_polynomial.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/exotherm.html'>exotherm</a></td>
+                 <td><a href='../module/jacchia_roberts_module.html'>jacchia_roberts_module</a></td>
+                 <td>Function</td>
+                 <td><p>Compute the temperature of Earth's atmosphere and auxiliary
+temperature-related quantities at a given altitude</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/find_cstar_roots.html'>find_cstar_roots</a></td>
+                 <td><a href='../module/jacchia_roberts_module.html'>jacchia_roberts_module</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Find the two real roots and the complex conjugate root pair of the
+   degree-4 temperature-profile polynomial c_star(z).</p><a href="../proc/find_cstar_roots.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/find_cstar_roots_original.html'>find_cstar_roots_original</a></td>
+                 <td><a href='../module/jacchia_roberts_module.html'>jacchia_roberts_module</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Original version of root-finding routine using the <code>roots</code> subroutine.
+  This is based on the routine from GMAT.</p><a href="../proc/find_cstar_roots_original.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/jacchia_roberts_density.html'>jacchia_roberts_density</a></td>
+                 <td><a href='../module/jacchia_roberts_module.html'>jacchia_roberts_module</a></td>
+                 <td>Function</td>
+                 <td><p>Compute atmospheric density using the Jacchia-Roberts model</p><a href="../proc/jacchia_roberts_density.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/jr_cleanup.html'>jr_cleanup</a></td>
+                 <td><a href='../module/jacchia_roberts_module.html'>jacchia_roberts_module</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Clean up module resources</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/jr_init.html'>jr_init</a></td>
+                 <td><a href='../module/jacchia_roberts_module.html'>jacchia_roberts_module</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Initialize the Jacchia-Roberts module with central body parameters.</p><a href="../proc/jr_init.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/julian_day.html'>julian_day</a></td>
+                 <td><a href='../module/jacchia_roberts_utilities.html'>jacchia_roberts_utilities</a></td>
+                 <td>Function</td>
+                 <td><p>Returns the Julian day number (i.e., the Julian date at Greenwich noon)
+  on the specified YEAR, MONTH, and DAY.</p><a href="../proc/julian_day.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/parms_to_temp.html'>parms_to_temp</a></td>
+                 <td><a href='../module/jacchia_roberts_module.html'>jacchia_roberts_module</a></td>
+                 <td>Function</td>
+                 <td><p>Compute exospheric temperature from F10.7 values using the Jacchia-Roberts formula</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/prepare_flux_data.html'>prepare_flux_data</a></td>
+                 <td><a href='../module/jacchia_roberts_module.html'>jacchia_roberts_module</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Prepare flux data for the current epoch, accounting for measurement timing.
+Kp selection matches the GMAT <code>PrepareKpData</code> historic-data branch:</p><a href="../proc/prepare_flux_data.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/rho_100.html'>rho_100</a></td>
+                 <td><a href='../module/jacchia_roberts_module.html'>jacchia_roberts_module</a></td>
+                 <td>Function</td>
+                 <td><p>Compute density of the atmosphere between 90 and 100 km</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/rho_125.html'>rho_125</a></td>
+                 <td><a href='../module/jacchia_roberts_module.html'>jacchia_roberts_module</a></td>
+                 <td>Function</td>
+                 <td><p>Compute density of the atmosphere between 100 and 125 km</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/rho_cor.html'>rho_cor</a></td>
+                 <td><a href='../module/jacchia_roberts_module.html'>jacchia_roberts_module</a></td>
+                 <td>Function</td>
+                 <td><p>Calculates the density correction factor</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/rho_high.html'>rho_high</a></td>
+                 <td><a href='../module/jacchia_roberts_module.html'>jacchia_roberts_module</a></td>
+                 <td>Function</td>
+                 <td><p>Compute density of the atmosphere between 125 and 2500 km</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/roots.html'>roots</a></td>
+                 <td><a href='../module/jacchia_roberts_utilities.html'>jacchia_roberts_utilities</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Finds the roots of a polynomial using Newton's method</p><a href="../proc/roots.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/sw_cleanup.html'>sw_cleanup</a></td>
+                 <td><a href='../module/space_weather_module.html'>space_weather_module</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Clean up allocated memory</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/sw_get_flux_data.html'>sw_get_flux_data</a></td>
+                 <td><a href='../module/space_weather_module.html'>space_weather_module</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Get space weather data for a given Modified Julian Date.
+Uses direct indexing for daily data and record selection for monthly data</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/sw_init.html'>sw_init</a></td>
+                 <td><a href='../module/space_weather_module.html'>space_weather_module</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Initialize the space weather module by reading a CSSI file</p></td>
+               </tr>
+			 </tbody></table>
+             <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: call~~graph~~CallGraph Pages: 1 -->
+<svg id="callgraphCallGraph" width="855pt" height="367pt"
+ viewBox="0.00 0.00 855.00 367.30" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="call~~graph~~CallGraph" class="graph" transform="scale(0.92 0.92) rotate(0) translate(4 395.08)">
+<title>call~~graph~~CallGraph</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-395.08 925,-395.08 925,4 -4,4"/>
+<!-- proc~copy_record -->
+<g id="call~~graph~~CallGraph_node1" class="node">
+<title>proc~copy_record</title>
+<g id="a_call~~graph~~CallGraph_node1"><a xlink:href="../proc/copy_record.html" xlink:title="sw_data_type%copy_record">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="921,-119.08 762,-119.08 762,-95.08 921,-95.08 921,-119.08"/>
+<text text-anchor="middle" x="841.5" y="-104.68" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">sw_data_type%copy_record</text>
+</a>
+</g>
+</g>
+<!-- proc~date_to_mjd -->
+<g id="call~~graph~~CallGraph_node2" class="node">
+<title>proc~date_to_mjd</title>
+<g id="a_call~~graph~~CallGraph_node2"><a xlink:href="../proc/date_to_mjd.html" xlink:title="date_to_mjd">
+<polygon fill="#d9534f" stroke="#d9534f" points="673,-349.08 595,-349.08 595,-325.08 673,-325.08 673,-349.08"/>
+<text text-anchor="middle" x="634" y="-334.68" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">date_to_mjd</text>
+</a>
+</g>
+</g>
+<!-- proc~julian_day -->
+<g id="call~~graph~~CallGraph_node10" class="node">
+<title>proc~julian_day</title>
+<g id="a_call~~graph~~CallGraph_node10"><a xlink:href="../proc/julian_day.html" xlink:title="julian_day">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="875,-349.08 808,-349.08 808,-325.08 875,-325.08 875,-349.08"/>
+<text text-anchor="middle" x="841.5" y="-334.68" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">julian_day</text>
+</a>
+</g>
+</g>
+<!-- proc~date_to_mjd&#45;&gt;proc~julian_day -->
+<g id="call~~graph~~CallGraph_edge1" class="edge">
+<title>proc~date_to_mjd&#45;&gt;proc~julian_day</title>
+<path fill="none" stroke="#000000" d="M673.17,-337.08C708.46,-337.08 760.83,-337.08 797.56,-337.08"/>
+<polygon fill="#000000" stroke="#000000" points="797.95,-340.58 807.95,-337.08 797.95,-333.58 797.95,-340.58"/>
+</g>
+<!-- proc~deflate_polynomial -->
+<g id="call~~graph~~CallGraph_node3" class="node">
+<title>proc~deflate_polynomial</title>
+<g id="a_call~~graph~~CallGraph_node3"><a xlink:href="../proc/deflate_polynomial.html" xlink:title="deflate_polynomial">
+<polygon fill="#d9534f" stroke="#d9534f" points="899,-307.08 784,-307.08 784,-283.08 899,-283.08 899,-307.08"/>
+<text text-anchor="middle" x="841.5" y="-292.68" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">deflate_polynomial</text>
+</a>
+</g>
+</g>
+<!-- proc~exotherm -->
+<g id="call~~graph~~CallGraph_node4" class="node">
+<title>proc~exotherm</title>
+<g id="a_call~~graph~~CallGraph_node4"><a xlink:href="../proc/exotherm.html" xlink:title="jacchia_roberts_type%exotherm">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="490.5,-307.08 307.5,-307.08 307.5,-283.08 490.5,-283.08 490.5,-307.08"/>
+<text text-anchor="middle" x="399" y="-292.68" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">jacchia_roberts_type%exotherm</text>
+</a>
+</g>
+</g>
+<!-- proc~find_cstar_roots -->
+<g id="call~~graph~~CallGraph_node5" class="node">
+<title>proc~find_cstar_roots</title>
+<g id="a_call~~graph~~CallGraph_node5"><a xlink:href="../proc/find_cstar_roots.html" xlink:title="find_cstar_roots">
+<polygon fill="#d9534f" stroke="#d9534f" points="682,-307.08 586,-307.08 586,-283.08 682,-283.08 682,-307.08"/>
+<text text-anchor="middle" x="634" y="-292.68" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">find_cstar_roots</text>
+</a>
+</g>
+</g>
+<!-- proc~exotherm&#45;&gt;proc~find_cstar_roots -->
+<g id="call~~graph~~CallGraph_edge2" class="edge">
+<title>proc~exotherm&#45;&gt;proc~find_cstar_roots</title>
+<path fill="none" stroke="#000000" d="M490.75,-295.08C519.28,-295.08 549.97,-295.08 575.52,-295.08"/>
+<polygon fill="#000000" stroke="#000000" points="575.77,-298.58 585.77,-295.08 575.77,-291.58 575.77,-298.58"/>
+</g>
+<!-- proc~find_cstar_roots_original -->
+<g id="call~~graph~~CallGraph_node6" class="node">
+<title>proc~find_cstar_roots_original</title>
+<g id="a_call~~graph~~CallGraph_node6"><a xlink:href="../proc/find_cstar_roots_original.html" xlink:title="find_cstar_roots_original">
+<polygon fill="#d9534f" stroke="#d9534f" points="705,-265.08 563,-265.08 563,-241.08 705,-241.08 705,-265.08"/>
+<text text-anchor="middle" x="634" y="-250.68" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">find_cstar_roots_original</text>
+</a>
+</g>
+</g>
+<!-- proc~exotherm&#45;&gt;proc~find_cstar_roots_original -->
+<g id="call~~graph~~CallGraph_edge3" class="edge">
+<title>proc~exotherm&#45;&gt;proc~find_cstar_roots_original</title>
+<path fill="none" stroke="#000000" d="M466.77,-283.05C494.68,-278.02 527.27,-272.14 556.17,-266.93"/>
+<polygon fill="#000000" stroke="#000000" points="557,-270.34 566.22,-265.12 555.76,-263.45 557,-270.34"/>
+</g>
+<!-- proc~find_cstar_roots_original&#45;&gt;proc~deflate_polynomial -->
+<g id="call~~graph~~CallGraph_edge4" class="edge">
+<title>proc~find_cstar_roots_original&#45;&gt;proc~deflate_polynomial</title>
+<path fill="none" stroke="#000000" d="M693.89,-265.12C718.81,-270.21 747.96,-276.17 773.68,-281.43"/>
+<polygon fill="#000000" stroke="#000000" points="773.23,-284.91 783.73,-283.48 774.63,-278.05 773.23,-284.91"/>
+</g>
+<!-- proc~roots -->
+<g id="call~~graph~~CallGraph_node17" class="node">
+<title>proc~roots</title>
+<g id="a_call~~graph~~CallGraph_node17"><a xlink:href="../proc/roots.html" xlink:title="roots">
+<polygon fill="#d9534f" stroke="#d9534f" points="868.5,-265.08 814.5,-265.08 814.5,-241.08 868.5,-241.08 868.5,-265.08"/>
+<text text-anchor="middle" x="841.5" y="-250.68" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">roots</text>
+</a>
+</g>
+</g>
+<!-- proc~find_cstar_roots_original&#45;&gt;proc~roots -->
+<g id="call~~graph~~CallGraph_edge5" class="edge">
+<title>proc~find_cstar_roots_original&#45;&gt;proc~roots</title>
+<path fill="none" stroke="#000000" d="M705.15,-253.08C738.4,-253.08 776.75,-253.08 804.11,-253.08"/>
+<polygon fill="#000000" stroke="#000000" points="804.39,-256.58 814.39,-253.08 804.39,-249.58 804.39,-256.58"/>
+</g>
+<!-- proc~jacchia_roberts_density -->
+<g id="call~~graph~~CallGraph_node7" class="node">
+<title>proc~jacchia_roberts_density</title>
+<g id="a_call~~graph~~CallGraph_node7"><a xlink:href="../proc/jacchia_roberts_density.html" xlink:title="jacchia_roberts_type%jacchia_roberts_density">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="256,-160.08 0,-160.08 0,-136.08 256,-136.08 256,-160.08"/>
+<text text-anchor="middle" x="128" y="-145.68" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">jacchia_roberts_type%jacchia_roberts_density</text>
+</a>
+</g>
+</g>
+<!-- proc~jacchia_roberts_density&#45;&gt;proc~exotherm -->
+<g id="call~~graph~~CallGraph_edge6" class="edge">
+<title>proc~jacchia_roberts_density&#45;&gt;proc~exotherm</title>
+<path fill="none" stroke="#000000" d="M140.76,-160.43C165.91,-186.02 227.86,-244.91 292,-274.08 296.73,-276.24 301.69,-278.17 306.76,-279.91"/>
+<polygon fill="#000000" stroke="#000000" points="306.03,-283.35 316.62,-283.01 308.13,-276.67 306.03,-283.35"/>
+</g>
+<!-- proc~parms_to_temp -->
+<g id="call~~graph~~CallGraph_node11" class="node">
+<title>proc~parms_to_temp</title>
+<g id="a_call~~graph~~CallGraph_node11"><a xlink:href="../proc/parms_to_temp.html" xlink:title="jacchia_roberts_type%parms_to_temp">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="506,-265.08 292,-265.08 292,-241.08 506,-241.08 506,-265.08"/>
+<text text-anchor="middle" x="399" y="-250.68" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">jacchia_roberts_type%parms_to_temp</text>
+</a>
+</g>
+</g>
+<!-- proc~jacchia_roberts_density&#45;&gt;proc~parms_to_temp -->
+<g id="call~~graph~~CallGraph_edge7" class="edge">
+<title>proc~jacchia_roberts_density&#45;&gt;proc~parms_to_temp</title>
+<path fill="none" stroke="#000000" d="M148.27,-160.3C177.99,-178.59 237.29,-213 292,-232.08 298.88,-234.49 306.11,-236.64 313.43,-238.57"/>
+<polygon fill="#000000" stroke="#000000" points="312.89,-242.04 323.44,-241.06 314.59,-235.25 312.89,-242.04"/>
+</g>
+<!-- proc~prepare_flux_data -->
+<g id="call~~graph~~CallGraph_node12" class="node">
+<title>proc~prepare_flux_data</title>
+<g id="a_call~~graph~~CallGraph_node12"><a xlink:href="../proc/prepare_flux_data.html" xlink:title="prepare_flux_data">
+<polygon fill="#d9534f" stroke="#d9534f" points="453,-223.08 345,-223.08 345,-199.08 453,-199.08 453,-223.08"/>
+<text text-anchor="middle" x="399" y="-208.68" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">prepare_flux_data</text>
+</a>
+</g>
+</g>
+<!-- proc~jacchia_roberts_density&#45;&gt;proc~prepare_flux_data -->
+<g id="call~~graph~~CallGraph_edge8" class="edge">
+<title>proc~jacchia_roberts_density&#45;&gt;proc~prepare_flux_data</title>
+<path fill="none" stroke="#000000" d="M173.11,-160.17C205.81,-168.96 251.54,-180.87 292,-190.08 305.76,-193.22 320.59,-196.32 334.67,-199.15"/>
+<polygon fill="#000000" stroke="#000000" points="334.28,-202.64 344.77,-201.15 335.64,-195.77 334.28,-202.64"/>
+</g>
+<!-- proc~rho_100 -->
+<g id="call~~graph~~CallGraph_node13" class="node">
+<title>proc~rho_100</title>
+<g id="a_call~~graph~~CallGraph_node13"><a xlink:href="../proc/rho_100.html" xlink:title="jacchia_roberts_type%rho_100">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="486.5,-181.08 311.5,-181.08 311.5,-157.08 486.5,-157.08 486.5,-181.08"/>
+<text text-anchor="middle" x="399" y="-166.68" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">jacchia_roberts_type%rho_100</text>
+</a>
+</g>
+</g>
+<!-- proc~jacchia_roberts_density&#45;&gt;proc~rho_100 -->
+<g id="call~~graph~~CallGraph_edge9" class="edge">
+<title>proc~jacchia_roberts_density&#45;&gt;proc~rho_100</title>
+<path fill="none" stroke="#000000" d="M256.02,-158C271.27,-159.19 286.65,-160.39 301.37,-161.54"/>
+<polygon fill="#000000" stroke="#000000" points="301.21,-165.04 311.45,-162.33 301.75,-158.06 301.21,-165.04"/>
+</g>
+<!-- proc~rho_125 -->
+<g id="call~~graph~~CallGraph_node14" class="node">
+<title>proc~rho_125</title>
+<g id="a_call~~graph~~CallGraph_node14"><a xlink:href="../proc/rho_125.html" xlink:title="jacchia_roberts_type%rho_125">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="486.5,-139.08 311.5,-139.08 311.5,-115.08 486.5,-115.08 486.5,-139.08"/>
+<text text-anchor="middle" x="399" y="-124.68" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">jacchia_roberts_type%rho_125</text>
+</a>
+</g>
+</g>
+<!-- proc~jacchia_roberts_density&#45;&gt;proc~rho_125 -->
+<g id="call~~graph~~CallGraph_edge10" class="edge">
+<title>proc~jacchia_roberts_density&#45;&gt;proc~rho_125</title>
+<path fill="none" stroke="#000000" d="M256.02,-138.17C271.27,-136.98 286.65,-135.78 301.37,-134.63"/>
+<polygon fill="#000000" stroke="#000000" points="301.75,-138.11 311.45,-133.84 301.21,-131.13 301.75,-138.11"/>
+</g>
+<!-- proc~rho_cor -->
+<g id="call~~graph~~CallGraph_node15" class="node">
+<title>proc~rho_cor</title>
+<g id="a_call~~graph~~CallGraph_node15"><a xlink:href="../proc/rho_cor.html" xlink:title="rho_cor">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="426,-97.08 372,-97.08 372,-73.08 426,-73.08 426,-97.08"/>
+<text text-anchor="middle" x="399" y="-82.68" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">rho_cor</text>
+</a>
+</g>
+</g>
+<!-- proc~jacchia_roberts_density&#45;&gt;proc~rho_cor -->
+<g id="call~~graph~~CallGraph_edge11" class="edge">
+<title>proc~jacchia_roberts_density&#45;&gt;proc~rho_cor</title>
+<path fill="none" stroke="#000000" d="M173.11,-136C205.81,-127.21 251.54,-115.3 292,-106.08 315.16,-100.81 341.34,-95.62 361.89,-91.71"/>
+<polygon fill="#000000" stroke="#000000" points="362.6,-95.14 371.78,-89.85 361.3,-88.26 362.6,-95.14"/>
+</g>
+<!-- proc~rho_high -->
+<g id="call~~graph~~CallGraph_node16" class="node">
+<title>proc~rho_high</title>
+<g id="a_call~~graph~~CallGraph_node16"><a xlink:href="../proc/rho_high.html" xlink:title="jacchia_roberts_type%rho_high">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="488,-55.08 310,-55.08 310,-31.08 488,-31.08 488,-55.08"/>
+<text text-anchor="middle" x="399" y="-40.68" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">jacchia_roberts_type%rho_high</text>
+</a>
+</g>
+</g>
+<!-- proc~jacchia_roberts_density&#45;&gt;proc~rho_high -->
+<g id="call~~graph~~CallGraph_edge12" class="edge">
+<title>proc~jacchia_roberts_density&#45;&gt;proc~rho_high</title>
+<path fill="none" stroke="#000000" d="M148.27,-135.87C177.99,-117.58 237.29,-83.17 292,-64.08 298.88,-61.68 306.11,-59.53 313.43,-57.6"/>
+<polygon fill="#000000" stroke="#000000" points="314.59,-60.92 323.44,-55.11 312.89,-54.13 314.59,-60.92"/>
+</g>
+<!-- proc~sw_get_flux_data -->
+<g id="call~~graph~~CallGraph_node19" class="node">
+<title>proc~sw_get_flux_data</title>
+<g id="a_call~~graph~~CallGraph_node19"><a xlink:href="../proc/sw_get_flux_data.html" xlink:title="sw_data_type%sw_get_flux_data">
+<polygon fill="#d9534f" stroke="#d9534f" points="726,-119.08 542,-119.08 542,-95.08 726,-95.08 726,-119.08"/>
+<text text-anchor="middle" x="634" y="-104.68" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">sw_data_type%sw_get_flux_data</text>
+</a>
+</g>
+</g>
+<!-- proc~jacchia_roberts_density&#45;&gt;proc~sw_get_flux_data -->
+<g id="call~~graph~~CallGraph_edge13" class="edge">
+<title>proc~jacchia_roberts_density&#45;&gt;proc~sw_get_flux_data</title>
+<path fill="none" stroke="#000000" d="M139.27,-135.95C162.89,-109.1 224.3,-45.2 292,-22.08 382.01,8.65 414.99,5.56 506,-22.08 548.46,-34.98 589.66,-67.32 613.11,-88.18"/>
+<polygon fill="#000000" stroke="#000000" points="610.89,-90.89 620.64,-95.03 615.6,-85.71 610.89,-90.89"/>
+</g>
+<!-- proc~jr_cleanup -->
+<g id="call~~graph~~CallGraph_node8" class="node">
+<title>proc~jr_cleanup</title>
+<g id="a_call~~graph~~CallGraph_node8"><a xlink:href="../proc/jr_cleanup.html" xlink:title="jacchia_roberts_type%jr_cleanup">
+<polygon fill="#d9534f" stroke="#d9534f" points="492.5,-391.08 305.5,-391.08 305.5,-367.08 492.5,-367.08 492.5,-391.08"/>
+<text text-anchor="middle" x="399" y="-376.68" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">jacchia_roberts_type%jr_cleanup</text>
+</a>
+</g>
+</g>
+<!-- proc~sw_cleanup -->
+<g id="call~~graph~~CallGraph_node18" class="node">
+<title>proc~sw_cleanup</title>
+<g id="a_call~~graph~~CallGraph_node18"><a xlink:href="../proc/sw_cleanup.html" xlink:title="sw_data_type%sw_cleanup">
+<polygon fill="#d9534f" stroke="#d9534f" points="711.5,-391.08 556.5,-391.08 556.5,-367.08 711.5,-367.08 711.5,-391.08"/>
+<text text-anchor="middle" x="634" y="-376.68" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">sw_data_type%sw_cleanup</text>
+</a>
+</g>
+</g>
+<!-- proc~jr_cleanup&#45;&gt;proc~sw_cleanup -->
+<g id="call~~graph~~CallGraph_edge14" class="edge">
+<title>proc~jr_cleanup&#45;&gt;proc~sw_cleanup</title>
+<path fill="none" stroke="#000000" d="M492.76,-379.08C510.37,-379.08 528.73,-379.08 546.15,-379.08"/>
+<polygon fill="#000000" stroke="#000000" points="546.29,-382.58 556.29,-379.08 546.29,-375.58 546.29,-382.58"/>
+</g>
+<!-- proc~jr_init -->
+<g id="call~~graph~~CallGraph_node9" class="node">
+<title>proc~jr_init</title>
+<g id="a_call~~graph~~CallGraph_node9"><a xlink:href="../proc/jr_init.html" xlink:title="jacchia_roberts_type%jr_init">
+<polygon fill="#d9534f" stroke="#d9534f" points="208.5,-349.08 47.5,-349.08 47.5,-325.08 208.5,-325.08 208.5,-349.08"/>
+<text text-anchor="middle" x="128" y="-334.68" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">jacchia_roberts_type%jr_init</text>
+</a>
+</g>
+</g>
+<!-- proc~sw_init -->
+<g id="call~~graph~~CallGraph_node20" class="node">
+<title>proc~sw_init</title>
+<g id="a_call~~graph~~CallGraph_node20"><a xlink:href="../proc/sw_init.html" xlink:title="sw_data_type%sw_init">
+<polygon fill="#d9534f" stroke="#d9534f" points="463.5,-349.08 334.5,-349.08 334.5,-325.08 463.5,-325.08 463.5,-349.08"/>
+<text text-anchor="middle" x="399" y="-334.68" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">sw_data_type%sw_init</text>
+</a>
+</g>
+</g>
+<!-- proc~jr_init&#45;&gt;proc~sw_init -->
+<g id="call~~graph~~CallGraph_edge15" class="edge">
+<title>proc~jr_init&#45;&gt;proc~sw_init</title>
+<path fill="none" stroke="#000000" d="M208.62,-337.08C245.14,-337.08 288.17,-337.08 323.99,-337.08"/>
+<polygon fill="#000000" stroke="#000000" points="324.37,-340.58 334.37,-337.08 324.37,-333.58 324.37,-340.58"/>
+</g>
+<!-- proc~prepare_flux_data&#45;&gt;proc~sw_get_flux_data -->
+<g id="call~~graph~~CallGraph_edge16" class="edge">
+<title>proc~prepare_flux_data&#45;&gt;proc~sw_get_flux_data</title>
+<path fill="none" stroke="#000000" d="M453.19,-204.65C470.45,-201.49 489.41,-196.85 506,-190.08 545.71,-173.89 586.27,-144.73 610.55,-125.64"/>
+<polygon fill="#000000" stroke="#000000" points="612.8,-128.32 618.43,-119.34 608.43,-122.85 612.8,-128.32"/>
+</g>
+<!-- proc~sw_get_flux_data&#45;&gt;proc~copy_record -->
+<g id="call~~graph~~CallGraph_edge17" class="edge">
+<title>proc~sw_get_flux_data&#45;&gt;proc~copy_record</title>
+<path fill="none" stroke="#000000" d="M726.03,-107.08C734.5,-107.08 743.08,-107.08 751.54,-107.08"/>
+<polygon fill="#000000" stroke="#000000" points="751.77,-110.58 761.77,-107.08 751.77,-103.58 751.77,-110.58"/>
+</g>
+<!-- proc~sw_init&#45;&gt;proc~date_to_mjd -->
+<g id="call~~graph~~CallGraph_edge18" class="edge">
+<title>proc~sw_init&#45;&gt;proc~date_to_mjd</title>
+<path fill="none" stroke="#000000" d="M463.67,-337.08C501.77,-337.08 549.43,-337.08 584.47,-337.08"/>
+<polygon fill="#000000" stroke="#000000" points="584.92,-340.58 594.92,-337.08 584.92,-333.58 584.92,-340.58"/>
+</g>
+<!-- proc~sw_init&#45;&gt;proc~sw_cleanup -->
+<g id="call~~graph~~CallGraph_edge19" class="edge">
+<title>proc~sw_init&#45;&gt;proc~sw_cleanup</title>
+<path fill="none" stroke="#000000" d="M463.67,-348.56C492.24,-353.71 526.18,-359.83 556.16,-365.23"/>
+<polygon fill="#000000" stroke="#000000" points="555.69,-368.71 566.15,-367.03 556.93,-361.82 555.69,-368.71"/>
+</g>
+</g>
+</svg>
+</div>                <script>
+                  var pancallgraphCallGraph = svgPanZoom('#callgraphCallGraph',
+                    {zoomEnabled: true, controlIconsEnabled: true, fit: true, center: true,}
+                  );
+                </script>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#CallGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="CallGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="641pt" height="28pt"
+ viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.86 0.86) rotate(0) translate(4 28)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
+<!-- Subroutine -->
+<g id="node1" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
+<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node2" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
+<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+</g>
+<!-- Interface -->
+<g id="node3" class="node">
+<title>Interface</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
+<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+</g>
+<!-- Type Bound Procedure -->
+<g id="node4" class="node">
+<title>Type Bound Procedure</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
+<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+</g>
+<!-- Unknown Procedure Type -->
+<g id="node5" class="node">
+<title>Unknown Procedure Type</title>
+<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
+<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+</g>
+<!-- Program -->
+<g id="node6" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
+<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node7" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
+<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+<p>Solid arrows point from a procedure to one which it calls. Dashed 
+arrows point from an interface to procedures which implement that interface.
+This could include the module procedures in a generic interface or the
+implementation in a submodule of an interface in a parent module.
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              jacchia-roberts-fortran
+ was developed by Jacob Williams<br>              &copy; 2026 
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+            </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>
